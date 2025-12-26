@@ -1,0 +1,30 @@
+@import 'tailwindcss';
+@plugin "daisyui";
+
+
+/* ШРИФТЫ */
+
+@font-face {
+  font-family: 'SyncopaLogoFont'; 
+  src: url('./assets/fonts/K2D-Regular.ttf');
+  font-weight: 100;
+  font-style: normal;
+  font-display: swap; 
+}
+
+@font-face {
+  font-family: 'SyncopaFontNormal'; 
+  src: url('./assets/fonts/K2D-Regular.ttf');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap; 
+}
+
+@font-face {
+  font-family: 'BaseTextCyrillicFont'; 
+  src: url('./assets/fonts/K2D-Regular.ttf');
+  font-weight: 400;
+  font-style: normal;
+  font-display: swap; 
+}
+
