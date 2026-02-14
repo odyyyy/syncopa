@@ -4,10 +4,12 @@ import { render } from "solid-js/web";
 import "./index.css";
 
 import { Route, Router } from "@solidjs/router";
-import App from "./pages/App";
-import NotFound404 from "./pages/Errors/NotFound404";
+import NotFound404 from "./pages/errors/NotFound404";
 import Landing from "./pages/Landing";
 import Projects from "./pages/Projects";
+import Login from "./pages/auth/Login";
+import Register from "./pages/auth/Register";
+import { Toaster } from "solid-toast";
 
 // const Users = lazy(() => import("./pages/Users"));
 // const Home = lazy(() => import("./pages/Home"));
@@ -22,12 +24,16 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 
 render(
   () => (
-    <Router >
-      <Route path="" component={Landing} />
-      <Route path="/app" component={Projects} />
-      <Route path="/app/project/:id" component={App} />
-      <Route path="*404" component={NotFound404}  />
-    </Router>
+    <>
+      <Router>
+        <Route path="/" component={Landing} />
+        <Route path="login/" component={Login} />
+        <Route path="register/" component={Register} />
+        <Route path="app/" component={Projects} />
+        <Route path="*404" component={NotFound404} />
+      </Router>
+      <Toaster position="top-center" gutter={24} />
+    </>
   ),
   root!,
 );
