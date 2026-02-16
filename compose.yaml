@@ -4,31 +4,33 @@ services:
     build: frontend/.
     command: npm run dev -- --host 0.0.0.0
     volumes:
-      - /frontend:/frontend
+      - ./frontend:/frontend
       - /frontend/node-modules/
       - /frontend/public/assets:/frontend/public/assets
     restart: always
     ports:
       - "3000:3000"
     networks:
-        - frontend-network
-      
-      
+      - frontend-network
+
   backend:
     container_name: backend
     build: backend/.
     command: uvicorn core.main:app --reload --host 0.0.0.0 --port 8000
+    restart: always
     volumes:
-      - /backend:/backend
+      - ./backend:/backend
       - /backend/.venv
     ports:
       - "8000:8000"
     networks:
-        - frontend-network
-        - backend-network
+      - frontend-network
+      - backend-network
     depends_on:
       - postgres
       - mongo
+    env_file:
+      - .env
 
   postgres:
     container_name: postgres
@@ -38,6 +40,8 @@ services:
       - db_data:/var/lib/postgresql/data
     env_file:
       - .env
+    networks:
+      - backend-network
 
   mongo:
     container_name: mongo
