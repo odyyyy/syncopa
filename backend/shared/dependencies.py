@@ -1,17 +1,21 @@
-from pymongo.asynchronous.database import AsyncDatabase
-from sqlalchemy.ext.asyncio import AsyncSession
 from typing import Annotated, AsyncGenerator
-from core.db_setup import mongo_db, postgres_session
 
 from fastapi.params import Depends
+from pymongo.asynchronous.database import AsyncDatabase
+from sqlalchemy.ext.asyncio import AsyncSession
+
+from core.settings import mongo_manager, postgres_manager
+
 
 async def get_postgres_session() -> AsyncGenerator[AsyncSession, None]:
-    async with postgres_session() as session:
+    sessionmaker = postgres_manager.get_sessionmaker()
+    async with sessionmaker() as session:
         yield session
-        
+
 PostgresDep = Annotated[AsyncSession, Depends(get_postgres_session)]
 
-async def get_mongo_session() -> AsyncDatabase:
-    return mongo_db
 
-MongoDep = Annotated[AsyncDatabase, Depends(get_mongo_session)]
+async def get_mongo_db_session() -> AsyncDatabase:
+    return mongo_manager.get_database()
+
+MongoDep = Annotated[AsyncDatabase, Depends(get_mongo_db_session)]
