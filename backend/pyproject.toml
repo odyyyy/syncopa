@@ -5,9 +5,11 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "argon2-cffi>=25.1.0",
     "asyncpg>=0.31.0",
+    "authx>=1.5.0",
+    "authx-extra>=1.2.0",
     "fastapi[standard]>=0.127.0",
     "pydantic-settings>=2.12.0",
-    "pymongo>=4.16.0",
-    "sqlalchemy>=2.0.45",
+    "tortoise-orm[asyncpg]>=1.1.4",
 ]
