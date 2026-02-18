@@ -1,6 +1,6 @@
 FROM node:25.6-bookworm-slim
 
-WORKDIR /app/frontend/
+WORKDIR /frontend
 
 COPY package*.json ./
 
