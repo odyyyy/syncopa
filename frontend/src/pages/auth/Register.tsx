@@ -1,4 +1,4 @@
-import { Component, createSignal, Show } from "solid-js";
+import { Component, Show } from "solid-js";
 import useRegisterForm from "../../hooks/auth/useRegisterForm";
 
 const Register: Component = () => {
@@ -7,21 +7,22 @@ const Register: Component = () => {
     handleRegister,
     passwordVisibility,
     togglePassword,
-    checkPasswordsMatch
+    checkPasswordsMatch,
   } = useRegisterForm();
 
   return (
     <div class="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 ">
       <form
         onsubmit={handleRegister}
-        class="fieldset bg-base-200 border-base-300 rounded-2xl w-xs border p-4">
+        class="fieldset bg-base-200 border-base-300 rounded-2xl w-xs border p-4"
+      >
         <fieldset class="fieldset">
           <label class="label">Email</label>
           <input
-            type="email"
+          pattern="[A-Za-z0-9._+\-']+@[A-Za-z0-9.\-]+\.[A-Za-z]{2,}$"
+            type="text"
             name="email"
-            class="input validator"
-            pattern="[a-z0-9._%+-]+@[a-z0-9.-]+\.[a-z]{2,}$"
+            class="input validator email"
             placeholder="Email"
             required
             onInput={handleFieldInput}
@@ -61,7 +62,8 @@ const Register: Component = () => {
               required
               placeholder="Пароль"
               minlength="8"
-              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+              maxlength="64"
+              pattern="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[A-Za-z0-9]{8,64}$"
               onInput={handleFieldInput}
               onBlur={(e) => checkPasswordsMatch(e.target)}
             />
@@ -130,7 +132,7 @@ const Register: Component = () => {
               required
               placeholder="Подтвердите пароль"
               minlength="8"
-              pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
+              pattern="^(?=.*[0-9])(?=.*[a-z])(?=.*[A-Z])[A-Za-z0-9]{8,64}$"
               onInput={handleFieldInput}
               onBlur={(e) => checkPasswordsMatch(e.target)}
             />

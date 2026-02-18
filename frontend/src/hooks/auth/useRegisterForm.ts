@@ -2,6 +2,7 @@ import { useNavigate } from "@solidjs/router";
 import { createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
 import toast from "solid-toast";
+import { register } from "../../api/auth.api";
 
 export default function useRegisterForm() {
   const [formFields, setFormFields] = createStore<RegisterFormData>({
@@ -13,22 +14,26 @@ export default function useRegisterForm() {
 
   const [passwordVisibility, setPasswordVisibility] = createSignal(false);
 
+  const navigate = useNavigate();
+
   const handleFieldInput = (e: CustomInputEvent) => {
     const { name, value } = e.currentTarget;
+    
     setFormFields(name as keyof RegisterFormData, value);
   };
 
   const handleRegister = async (e: SubmitEvent) => {
     e.preventDefault();
-    const navigate = useNavigate();
-
-    const response = await register(formFields);
+    const payload = { ...formFields }; 
+    delete payload.confirmPassword;
+    
+    const response = await register(payload);
 
     if (response.type === "success") {
       toast.success("Вы успешно зарегистировались!");
-      navigate("/auth/login");
+      navigate("/login");
     } else if (response.type === "error") {
-      toast.error(response.message);
+      toast.error(response.detail);
     }
   };
 

@@ -1,16 +1,22 @@
-async function register(data: RegisterFormData) {
+import { BACKEND_URL } from "../config/config";
+
+
+export async function register(data: RegisterFormData) {
   try {
-    const response = await fetch("http://localhost:8000/auth/register/", {
+    const response = await fetch(`${BACKEND_URL}/auth/register`, {
       method: "POST",
       body: JSON.stringify(data),
+      headers: {'content-type': 'application/json'}
     });
+    
 
     const responseData = await response.json();
+    
 
     if (!response.ok) {
       return {
         type: "error",
-        message: responseData?.message,
+        detail: responseData?.detail,
       };
     }
 
@@ -21,14 +27,14 @@ async function register(data: RegisterFormData) {
   } catch (error) {
     return {
       type: "error",
-      message: "Ошибка соединения с сервером. Повторите попытку позже",
+      detail: "Ошибка соединения с сервером. Повторите попытку позже",
     };
   }
 }
 
-async function login(data: LoginFormData) {
+export async function login(data: LoginFormData) {
   try {
-    const response = await fetch("http://localhost:8000/auth/login/", {
+    const response = await fetch(`${BACKEND_URL}/auth/login`, {
       method: "POST",
       body: JSON.stringify(data),
     });
@@ -38,7 +44,7 @@ async function login(data: LoginFormData) {
     if (!response.ok) {
       return {
         type: "error",
-        message: responseData?.message,
+        detail: responseData?.detail,
       };
     }
 
@@ -49,7 +55,8 @@ async function login(data: LoginFormData) {
   } catch (error) {
     return {
       type: "error",
-      message: "Ошибка соединения с сервером. Повторите попытку позже",
+      detail: "Ошибка соединения с сервером. Повторите попытку позже",
     };
   }
 }
+
