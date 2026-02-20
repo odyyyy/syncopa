@@ -7,7 +7,8 @@ from tortoise.exceptions import DoesNotExist
 
 async def does_not_exist_handler(request: Request, exc: DoesNotExist):
     return JSONResponse(
-        status_code=status.HTTP_404_NOT_FOUND, content={"detail": "Объект не найден"},
+        status_code=status.HTTP_404_NOT_FOUND,
+        content={"detail": "Объект не найден"},
     )
 
 
@@ -32,7 +33,8 @@ async def validation_exception_handler(
 
 async def value_error_handler(request: Request, exc: ValueError) -> JSONResponse:
     return JSONResponse(
-        status_code=status.HTTP_400_BAD_REQUEST, content={"detail": str(exc)},
+        status_code=status.HTTP_400_BAD_REQUEST,
+        content={"detail": str(exc)},
     )
 
 

@@ -16,7 +16,7 @@ services:
   backend:
     container_name: backend
     build: backend/.
-    command: uv run uvicorn core.main:app --reload --host 0.0.0.0 --port 8000 
+    command: uv run uvicorn core.main:app --reload --host 0.0.0.0 --port 8000
     restart: always
     volumes:
       - ./backend:/backend
@@ -27,6 +27,7 @@ services:
       - backend-network
     depends_on:
       - postgres
+      - redis
     env_file:
       - .env
 
@@ -35,14 +36,25 @@ services:
     image: postgres:18-alpine
     restart: always
     volumes:
-      - db_data:/var/lib/postgresql/data
+      - db_data:/var/lib/postgresql
     env_file:
       - .env
     networks:
       - backend-network
 
+  redis:
+    image: redis:alpine
+    container_name: redis
+    env_file:
+      - .env
+    volumes:
+        - redis_data:/data
+    networks:
+      - backend-network
+
 volumes:
   db_data:
+  redis_data:
 
 networks:
   frontend-network:

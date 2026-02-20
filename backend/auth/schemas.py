@@ -49,7 +49,6 @@ class RegisterPayload(BaseSchema):
         return value
 
 
-class LoginRequest(BaseSchema):
+class LoginPayload(BaseSchema):
     email: EmailStr
     password: str
-

@@ -14,3 +14,18 @@ type CustomInputEvent = {
   currentTarget: HTMLInputElement;
   target: Element;
 };
+
+
+type AuthContextType = {
+  accessToken: () => string | null;
+  setAccessToken: (token: string | null) => void;
+  logout: () => void;
+  refresh: () => Promise<void>;
+  loading: () => boolean;
+};
+
+
+interface ProtectedProps {
+  children: any;
+  redirectTo?: string;
+}

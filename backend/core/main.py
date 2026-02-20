@@ -1,4 +1,4 @@
-from fastapi import FastAPI
+from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from tortoise.exceptions import DoesNotExist
@@ -12,18 +12,21 @@ from .exceptions_handlers import (
     validation_exception_handler,
     value_error_handler,
 )
-from .settings import lifespan, settings
+from .settings import lifespan, get_settings
 
 app = FastAPI(
     title="Syncopa API",
     lifespan=lifespan,
-    docs_url="/docs" if settings.DEBUG else None,
-    redoc_url="/redoc" if settings.DEBUG else None,
-    openapi_url="/openapi.json" if settings.DEBUG else None,
+    docs_url="/docs" if get_settings().DEBUG else None,
+    redoc_url="/redoc" if get_settings().DEBUG else None,
+    openapi_url="/openapi.json" if get_settings().DEBUG else None,
 )
 
 # Routers
-app.include_router(auth_router)
+api_router = APIRouter(prefix="/api")
+api_router.include_router(auth_router)
+
+app.include_router(api_router)
 
 # Auth
 setup_auth(app)
@@ -31,7 +34,7 @@ setup_auth(app)
 # CORS Configuration
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=settings.CORS_ALLOW_ORIGINS,
+    allow_origins=get_settings().CORS_ALLOW_ORIGINS,
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],

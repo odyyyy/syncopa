@@ -1,19 +1,12 @@
 /* @refresh reload */
 import "solid-devtools";
-import { render } from "solid-js/web";
+import { render, Suspense } from "solid-js/web";
 import "./index.css";
 
-import { Route, Router } from "@solidjs/router";
-import NotFound404 from "./pages/errors/NotFound404";
-import Landing from "./pages/Landing";
-import Projects from "./pages/Projects";
-import Login from "./pages/auth/Login";
-import Register from "./pages/auth/Register";
 import { Toaster } from "solid-toast";
-
-// const Users = lazy(() => import("./pages/Users"));
-// const Home = lazy(() => import("./pages/Home"));
-
+import { AuthProvider } from "./context/auth";
+import AppRouter from "./router/AppRouter";
+import SyncopaLoader from "./components/utils/SyncopaLoading";
 const root = document.getElementById("root");
 
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
@@ -25,14 +18,12 @@ if (import.meta.env.DEV && !(root instanceof HTMLElement)) {
 render(
   () => (
     <>
-      <Router>
-        <Route path="/" component={Landing} />
-        <Route path="login/" component={Login} />
-        <Route path="register/" component={Register} />
-        <Route path="app/" component={Projects} />
-        <Route path="*404" component={NotFound404} />
-      </Router>
-      <Toaster position="top-center" gutter={24} />
+      <AuthProvider>
+        <Suspense fallback={<SyncopaLoader />}>
+          <AppRouter />
+        </Suspense>
+        <Toaster position="top-center" gutter={24} />
+      </AuthProvider>
     </>
   ),
   root!,

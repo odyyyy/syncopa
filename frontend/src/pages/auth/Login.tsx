@@ -18,10 +18,11 @@ const Login: Component = () => {
           <label class="label">Email</label>
           <input
             type="email"
+            name="email"
             class="input validator"
             placeholder="Email"
             required
-            onchange={handleFieldInput}
+            onInput={handleFieldInput}
           />
           <p class="validator-hint hidden">
             Введите ваш Email (Пример: example@mail.com)
@@ -36,10 +37,11 @@ const Login: Component = () => {
               type={passwordVisibility() ? "text" : "password"}
               class="input validator peer w-full pr-10"
               required
+              name="password"
               placeholder="Пароль"
               minlength="8"
               pattern="(?=.*\d)(?=.*[a-z])(?=.*[A-Z]).{8,}"
-              onchange={handleFieldInput}
+              onInput={handleFieldInput}
             />
 
             <button
