@@ -1,8 +1,7 @@
 @import 'tailwindcss';
 @plugin "daisyui" {
-  themes: black --default, dark --prefersdark;
+  themes: luxury --default, light --light;
 }
-
 
 /* ШРИФТЫ */
 
