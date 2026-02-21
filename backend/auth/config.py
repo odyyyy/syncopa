@@ -14,10 +14,10 @@ auth_config = AuthXConfig(
     JWT_COOKIE_SECURE=False,  # !!! Set to True in production (requires HTTPS)
     JWT_COOKIE_HTTP_ONLY=True,
     JWT_COOKIE_SAMESITE="lax",
-    JWT_COOKIE_CSRF_PROTECT=True,
+    JWT_REFRESH_COOKIE_NAME="refresh_token_cookie",
     JWT_REFRESH_CSRF_COOKIE_NAME="csrf_refresh_token",
     JWT_REFRESH_CSRF_HEADER_NAME="X-CSRF-TOKEN",
-    # JWT_CSRF_CHECK_FORM=True,
+    JWT_COOKIE_CSRF_PROTECT=True,
 )
 
 auth = AuthX(config=auth_config)

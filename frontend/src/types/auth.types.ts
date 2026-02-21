@@ -29,3 +29,7 @@ interface ProtectedProps {
   children: any;
   redirectTo?: string;
 }
+
+interface LoginResponse {
+  access_token: string;
+}

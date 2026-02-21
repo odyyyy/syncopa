@@ -1,66 +1,55 @@
-import toast from "solid-toast";
 import { BACKEND_URL } from "../config/config";
-import { accessToken, setAccessToken } from "../store/auth";
-import { useNavigate } from "@solidjs/router";
+import { getCsrfToken } from "../context/auth";
 import { useAuth } from "../hooks/auth/useAuth";
+import { accessToken } from "../store/auth";
 
-export async function register(data: RegisterFormData) {
+export async function apiRequest<T>(input: RequestInfo, init?: RequestInit) {
   try {
-    const response = await fetch(`${BACKEND_URL}/auth/register`, {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: { "content-type": "application/json" },
-    });
-
-    const responseData = await response.json();
+    const response = await fetch(input, init);
+    const data = await response.json();
 
     if (!response.ok) {
       return {
-        type: "error",
-        detail: responseData?.detail,
+        type: "error" as const,
+        detail: data?.detail,
       };
     }
 
     return {
-      type: "success",
-      data: responseData,
+      type: "success" as const,
+      data: data as T,
     };
-  } catch (error) {
+  } catch {
     return {
-      type: "error",
+      type: "error" as const,
       detail: "Ошибка соединения с сервером. Повторите попытку позже",
     };
   }
 }
 
-export async function login(data: LoginFormData) {
-  try {
-    const response = await fetch(`${BACKEND_URL}/auth/login`, {
-      method: "POST",
-      body: JSON.stringify(data),
-      headers: { "content-type": "application/json" },
-      credentials: "include"
-    });
+export function register(data: RegisterFormData) {
+  return apiRequest(`${BACKEND_URL}/auth/register`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(data),
+  });
+}
 
-    const responseData = await response.json();
+export function login(data: LoginFormData) {
+  return apiRequest<LoginResponse>(`${BACKEND_URL}/auth/login`, {
+    method: "POST",
+    headers: { "content-type": "application/json" },
+    body: JSON.stringify(data),
+    credentials: "include",
+  });
+}
 
-    if (!response.ok) {
-      return {
-        type: "error",
-        detail: responseData?.detail,
-      };
-    }
-
-    return {
-      type: "success",
-      data: responseData,
-    };
-  } catch (error) {
-    return {
-      type: "error",
-      detail: "Ошибка соединения с сервером. Повторите попытку позже",
-    };
-  }
+export function logoutFetch() {
+  return apiRequest(`${BACKEND_URL}/auth/logout`, {
+    method: "POST",
+    headers: { "X-CSRF-TOKEN": getCsrfToken() },
+    credentials: "include",
+  });
 }
 
 export function authFetch() {

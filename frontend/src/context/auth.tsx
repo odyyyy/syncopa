@@ -7,25 +7,20 @@ import {
 } from "solid-js";
 import { BACKEND_URL } from "../config/config";
 import { accessToken, setAccessToken } from "../store/auth";
+import { logoutFetch } from "../api/auth.api";
 
 export const AuthContext = createContext<AuthContextType>();
 
 export const AuthProvider: ParentComponent = (props) => {
-
   let refreshPromise: Promise<void> | null = null;
-
-  function getCsrfToken() {
-    return document.cookie.match(/csrf_refresh_token=([^;]+)/)?.[1];
-  }
 
   const refresh = async () => {
     if (!refreshPromise) {
       refreshPromise = fetch(`${BACKEND_URL}/auth/refresh`, {
         method: "POST",
         credentials: "include",
-        headers: { "X-CSRF-TOKEN": String(getCsrfToken()) },
-      }
-      )
+        headers: { "X-CSRF-TOKEN": getCsrfToken() },
+      })
         .then(async (res) => {
           if (!res.ok) throw new Error("Ошибка при обновлении токена");
           const data = await res.json();
@@ -39,11 +34,15 @@ export const AuthProvider: ParentComponent = (props) => {
     return refreshPromise;
   };
 
-  const logout = () => {
-    setAccessToken(null);
-    // TODO: дописать запрос на бек с auth/logout
-    toast.error("Срок сессии истек. Войдите в аккаунт снова!");
-    window.location.href = "/login";
+  const logout = async () => {
+    const response = await logoutFetch();
+    if (response.type === "success") {
+      toast.success(response.detail);
+      setAccessToken(null);
+      window.location.href = "/login";
+    } else if (response.type === "error") {
+      toast.error(response.detail);
+    }
   };
 
   const [loading, setLoading] = createSignal(true);
@@ -66,3 +65,7 @@ export const AuthProvider: ParentComponent = (props) => {
     </AuthContext.Provider>
   );
 };
+
+export function getCsrfToken() {
+  return String(document.cookie.match(/csrf_refresh_token=([^;]+)/)?.[1]);
+}
