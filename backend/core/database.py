@@ -1,5 +1,5 @@
-import redis.asyncio as redis
 from fastapi import FastAPI
+from redis.asyncio import Redis
 from tortoise.contrib.fastapi import RegisterTortoise
 
 
@@ -16,4 +16,11 @@ def register_orm(app: FastAPI):
 
 
 # Redis
-redis_client = redis.Redis()
+async def setup_redis_client():
+    from core.settings import get_settings
+
+    redis_client = Redis.from_url(
+        url=get_settings().REDIS_AUTH_DB_URI,
+        decode_responses=True,
+    )
+    return redis_client

@@ -1,4 +1,5 @@
-from fastapi import APIRouter, Depends, Request, Response, status
+from fastapi import APIRouter, Request, Response, status
+from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 
 from auth.config import auth
@@ -9,8 +10,10 @@ from auth.services import (
     get_authenticated_user,
     get_new_access_token,
 )
+from shared.dependencies import RedisDep
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
+
 
 @auth_router.post("/register")
 async def register(user_data: RegisterPayload):
@@ -33,18 +36,24 @@ async def login(user_data: LoginPayload, response: Response):
 
 
 @auth_router.post("/logout")
-async def logout(request: Request, response: Response):
-    auth.unset_refresh_cookies(response)
+async def logout(request: Request, response: Response, redis: RedisDep):
 
-    refresh_token = await auth.get_refresh_token_from_request(request)
+    refresh_token = await auth.get_refresh_token_from_request(
+        request, locations=["cookies"]
+    )
 
-    await add_token_in_blacklist(refresh_token)
-
-    return {"detail": "Вы вышли из аккаунта"}
+    if refresh_token is not None:
+        await add_token_in_blacklist(refresh_token, redis)
+        auth.unset_refresh_cookies(response)
+        return {"detail": "Вы вышли из аккаунта"}
+    else:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Данные не найдены",
+        )
 
 
 @auth_router.post("/refresh")
-async def refresh(request: Request):
-    new_access_token = await get_new_access_token(request)
+async def refresh(request: Request, redis: RedisDep):
+    new_access_token = await get_new_access_token(request, redis)
     return {"access_token": new_access_token}
-

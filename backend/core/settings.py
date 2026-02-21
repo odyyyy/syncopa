@@ -6,7 +6,7 @@ from typing import List
 from fastapi import FastAPI
 from pydantic_settings import BaseSettings
 
-from core.database import redis_client, register_orm
+from core.database import register_orm, setup_redis_client
 
 
 # ====== Global settings ======
@@ -83,17 +83,14 @@ TORTOISE_ORM: dict = {
 # ====== App lifespan ======
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
-
-    global redis_client
-    redis_client.from_url(
-        get_settings().REDIS_AUTH_DB_URI,
-        encoding="utf-8",
-        decode_responses=True,
-    )
+    # Redis
+    redis_client = await setup_redis_client()
+    await redis_client.ping()
+    app.state.redis_client = redis_client
 
     async with register_orm(app):
         # db connected
         yield
         # app teardown
 
-    await redis_client.aclose()
+    await app.state.redis_client.close()

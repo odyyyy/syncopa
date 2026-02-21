@@ -5,7 +5,6 @@ from fastapi import Depends
 from redis.asyncio import Redis as RedisAsync
 
 from auth.config import auth
-from core.database import redis_client
 
 AccessTokenRequiredPayload = Annotated[
     TokenPayload,
@@ -19,4 +18,8 @@ RefreshTokenRequiredPayload = Annotated[
 
 
 async def get_redis() -> RedisAsync:
-    return redis_client
+    from core.main import app
+    return app.state.redis_client
+
+
+RedisDep = Annotated[RedisAsync, Depends(get_redis)]
