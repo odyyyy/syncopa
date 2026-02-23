@@ -9,7 +9,7 @@ from tortoise.contrib.pydantic import PydanticModel
 from auth.config import auth
 from auth.schemas import LoginPayload, RegisterPayload
 from shared.dependencies import RedisAsync
-from users.models import Users
+from users.models import Role, Users
 from users.schemas import UserCreate
 
 from .utils import hash_password, verify_password
@@ -30,6 +30,7 @@ async def create_user(user_data: RegisterPayload) -> PydanticModel:
         username=user_data.username,
         email=user_data.email,
         password_hash=hash_password(user_data.password),
+        role=Role.USER.value,
     )
 
     user = await UserCreate.from_tortoise_orm(created_user)
@@ -50,10 +51,6 @@ async def get_authenticated_user(user_data: LoginPayload) -> Users:
 async def get_new_access_token(request: Request, redis_auth: RedisAsync) -> str:
     try:
         refresh_token = await auth.get_refresh_token_from_request(request)
-        print("GET NEW ACCESS GET NEW ACCESSS!!!!!!!!!!!!!!!!")
-        print(refresh_token)
-        print(request.headers)
-        print(request.cookies)
         if await redis_auth.exists(
             f"{BLACKLIST_TAG}:{hashlib.sha256(refresh_token.token.encode()).hexdigest()}"
         ):
@@ -72,7 +69,9 @@ async def get_new_access_token(request: Request, redis_auth: RedisAsync) -> str:
         raise HTTPException(status_code=401, detail="Сессия истекла")
 
 
-async def add_token_in_blacklist(refresh_token: RequestToken, redis_auth: RedisAsync) -> None:
+async def add_token_in_blacklist(
+    refresh_token: RequestToken, redis_auth: RedisAsync
+) -> None:
     payload = auth.verify_token(refresh_token)
 
     exp_at = payload.expiry_datetime
