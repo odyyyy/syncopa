@@ -5,6 +5,7 @@ from tortoise.exceptions import DoesNotExist
 
 from auth.config import setup_auth
 from auth.routes import auth_router
+from users.routes import users_router
 
 from .exceptions_handlers import (
     does_not_exist_handler,
@@ -12,7 +13,7 @@ from .exceptions_handlers import (
     validation_exception_handler,
     value_error_handler,
 )
-from .settings import lifespan, get_settings
+from .settings import get_settings, lifespan
 
 app = FastAPI(
     title="Syncopa API",
@@ -25,6 +26,7 @@ app = FastAPI(
 # Routers
 api_router = APIRouter(prefix="/api")
 api_router.include_router(auth_router)
+api_router.include_router(users_router)
 
 app.include_router(api_router)
 

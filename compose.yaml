@@ -43,12 +43,13 @@ services:
       - backend-network
 
   redis:
-    image: redis:alpine
+    image: redis:8.6-alpine
     container_name: redis
     env_file:
       - .env
     volumes:
-        - redis_data:/data
+      - redis_data:/data
+    command: redis-server --appendonly yes --requirepass ${REDIS_PASSWORD}
     networks:
       - backend-network
 

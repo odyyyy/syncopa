@@ -46,7 +46,7 @@ class Settings(BaseSettings):
     def REDIS_AUTH_DB_URI(self) -> str:
         return (
             f"redis://"
-            f"{self.REDIS_USER}:{self.REDIS_PASSWORD}"
+            f":{self.REDIS_PASSWORD}"
             f"@{self.REDIS_HOST}:{self.REDIS_PORT}"
             f"/{self.REDIS_DB_AUTH}"
         )
