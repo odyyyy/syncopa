@@ -1,7 +1,5 @@
 import { BACKEND_URL } from "../config/config";
 import { getCsrfToken } from "../context/auth";
-import { useAuth } from "../hooks/auth/useAuth";
-import { accessToken } from "../store/auth";
 
 export async function apiRequest<T>(input: RequestInfo, init?: RequestInit) {
   try {
@@ -50,42 +48,4 @@ export function logoutFetch() {
     headers: { "X-CSRF-TOKEN": getCsrfToken() },
     credentials: "include",
   });
-}
-
-export function authFetch() {
-  const { accessToken, refresh, logout } = useAuth();
-
-  return async function authFetch(input: RequestInfo, init: RequestInit = {}) {
-    const makeRequest = () =>
-      fetch(input, {
-        ...init,
-        headers: {
-          ...init.headers,
-          ...(accessToken() && {
-            Authorization: `Bearer ${accessToken()}`,
-          }),
-        },
-        credentials: "include",
-      });
-
-    let response = await makeRequest();
-
-    if (response.status !== 401) {
-      return response;
-    }
-
-    try {
-      await refresh();
-    } catch {
-      logout();
-    }
-
-    response = await makeRequest();
-
-    if (response.status === 401) {
-      logout();
-    }
-
-    return response;
-  };
 }

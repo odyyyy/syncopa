@@ -1,5 +1,6 @@
 import {
   Component,
+  createResource,
   createSignal,
   onCleanup,
   onMount,
@@ -11,12 +12,16 @@ import ThemeController from "../components/utils/ThemeController";
 import ProjectCreatePopup from "../components/ProjectsManagement/ProjectCreatePopup";
 import LogoutModal from "../components/ProjectsManagement/LogoutModal";
 import { useAuth } from "../hooks/auth/useAuth";
+import { userData } from "../store/user";
 
 const ProjectsManagement: Component = () => {
   // Получение данных
 
-  //const projectsList = createResource(fetchProjectsList);
+  // const projectsList = createResource(fetchProjectsList);
   const projectsList = [{}];
+
+  const username = userData.username;
+  const avatar = userData.avatar;
 
   const [openSidebar, setOpenSidebar] = createSignal(false);
   const [logoutOpen, setLogoutOpen] = createSignal(false);
@@ -50,7 +55,7 @@ const ProjectsManagement: Component = () => {
   });
 
   return (
-    <div class="bg-bg ">
+    <div class="bg-bg">
       {/* Navbar */}
       <div class="navbar bg-base-100 shadow-sm relative z-40">
         <div class="navbar-start">
@@ -94,16 +99,27 @@ const ProjectsManagement: Component = () => {
         <div class="p-3 flex flex-col h-full">
           <div class="flex items-center justify-between pb-3 border-b border-base-300">
             <div class="flex items-center gap-2">
-              <div class="avatar">
-                <div class="w-12 rounded-full">
-                  <img src="https://img.daisyui.com/images/profile/demo/spiderperson@192.webp" />
+              <Show when={!avatar}>
+                <div class="avatar avatar-placeholder">
+                  <div class="bg-neutral text-neutral-content w-12 rounded-full">
+                    <span>{username.charAt(0).toUpperCase()}</span>
+                  </div>
                 </div>
-              </div>
+              </Show>
+
+              <Show when={avatar}>
+                <div class="avatar">
+                  <div class="w-12 rounded-full">
+                    <img src={avatar} />
+                  </div>
+                </div>
+              </Show>
+
               <div
                 class="font-semibold text-base-content max-w-[160px] truncate cursor-default"
-                title="customname"
+                title={username}
               >
-                customname
+                {username}
               </div>
             </div>
 
@@ -129,7 +145,7 @@ const ProjectsManagement: Component = () => {
           </div>
 
           {/* Menu */}
-          <ul class="menu mt-4 flex-1 text-base-content p-0">
+          <ul class="menu mt-4 flex-1 text-base-content p-0 ">
             <li>
               <a class="pl-1 hover:bg-base-300 rounded-lg ">
                 Настройки аккаунта
@@ -158,7 +174,7 @@ const ProjectsManagement: Component = () => {
 
       <div class="p-4">
         {/* Контент */}
-        <main class="relative flex flex-row  flex-wrap gap-5 ">
+        <main class="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6 max-w-8xl mx-auto">
           <Show when={projectsList} fallback=<ComponentLoading />>
             <ProjectItemCard
               name="Midnight Synthwave"

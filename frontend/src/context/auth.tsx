@@ -8,11 +8,26 @@ import {
 import { BACKEND_URL } from "../config/config";
 import { accessToken, setAccessToken } from "../store/auth";
 import { logoutFetch } from "../api/auth.api";
+import { useAuthFetch } from "../hooks/auth/useAuth";
+import { setUserData, userData } from "../store/user";
 
 export const AuthContext = createContext<AuthContextType>();
 
 export const AuthProvider: ParentComponent = (props) => {
   let refreshPromise: Promise<void> | null = null;
+
+  const setupUserData = async () => {
+    const response = await fetch(`${BACKEND_URL}/users/me`, {
+      method: "GET",
+      headers: {
+        ...(accessToken() && {
+          Authorization: `Bearer ${accessToken()}`,
+          "X-CSRF-TOKEN": getCsrfToken(),
+        }),
+      },
+    });
+    setUserData(await response.json());
+  };
 
   const refresh = async () => {
     if (!refreshPromise) {
@@ -25,6 +40,7 @@ export const AuthProvider: ParentComponent = (props) => {
           if (!res.ok) throw new Error("Ошибка при обновлении токена");
           const data = await res.json();
           setAccessToken(data.access_token);
+          await setupUserData();
         })
         .finally(() => {
           refreshPromise = null;
