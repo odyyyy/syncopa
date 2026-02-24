@@ -60,7 +60,6 @@ const ProjectItemContextMenu: Component<ContextMenuProps> = (
         <ul class="menu bg-base-200 absolute z-50 rounded-xl w-51  right-0 ">
           <li>
             <a>
-
               <svg
                 fill="currentColor"
                 width="800px"
@@ -85,22 +84,22 @@ const ProjectItemContextMenu: Component<ContextMenuProps> = (
               Изменить название
             </a>
           </li>
-    
+
           <li class="rounded-4xl">
             <p class="text-red-700">
               <svg
-                xmlns="http://www.w3.org/2000/svg"
                 class="h-5 w-5"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
+                fill="currentColor"
+                viewBox="0 0 36 36"
+                xmlns="http://www.w3.org/2000/svg"
               >
                 <path
                   stroke-linecap="round"
                   stroke-linejoin="round"
                   stroke-width="2"
-                  d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"
+                  d="M18 2a16 16 0 1 0 16 16A16 16 0 0 0 18 2m8 22.1a1.4 1.4 0 0 1-2 2l-6-6-6 6.02a1.4 1.4 0 1 1-2-2l6-6.04-6.17-6.22a1.4 1.4 0 1 1 2-2L18 16.1l6.17-6.17a1.4 1.4 0 1 1 2 2L20 18.08Z"
                 />
+                <path fill="none" d="M0 0h36v36H0z" />
               </svg>
               Удалить
             </p>

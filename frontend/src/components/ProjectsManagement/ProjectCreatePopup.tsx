@@ -13,7 +13,7 @@ const ProjectCreatePopup: Component = () => {
     <div>
       <button
         onclick={openModal}
-        class="group relative flex flex-col items-center justify-center bg-base-300 border-2 border-dashed border-zinc-800 hover:border-zinc-500 hover:bg-zinc-900/60 rounded-lg p-10 transition-all duration-200 cursor-pointer h-50 w-84"
+        class="group relative flex flex-col items-center justify-center bg-base-300 border-2 border-dashed border-zinc-800 hover:border-zinc-500 hover:bg-zinc-900/60 rounded-lg p-10 transition-all duration-200 cursor-pointer  w-full h-[220px]"
       >
         {/* Контейнер для иконки с эффектом масштабирования */}
         <div class="flex flex-col items-center gap-3 transition-transform duration-200 group-hover:scale-110">
@@ -169,7 +169,7 @@ const ProjectCreatePopup: Component = () => {
                     <div>userabc</div>
                   </div>
                 </li>
-                
+
                 <li class="list-row cursor-pointer hover:bg-base-200">
                   <div>
                     <img
@@ -181,7 +181,6 @@ const ProjectCreatePopup: Component = () => {
                     <div>Test</div>
                   </div>
                 </li>
-                
               </ul>
             </details>
           </form>

@@ -7,10 +7,11 @@ const ProjectItemCard: Component<ProjectItemProps> = (props) => {
   return (
     
     
-    <div class="group relative flex flex-col bg-base-200 hover:bg-base-300 border border-zinc-800 hover:border-zinc-600 rounded-lg p-4 transition-all duration-200 cursor-pointer shadow-lg   hover:shadow-black/40">
+    <div class="group relative flex flex-col bg-base-200 hover:bg-base-300  border light:border-zinc-300 border-zinc-800  hover:border-zinc-600 rounded-lg p-4 transition-all duration-200 cursor-pointer shadow-lg   hover:shadow-black/40">
       <div class="flex justify-between items-start mb-3">
-        <h2 class="text-lg font-semibold  truncate pr-4 group-hover:text-base-content">
-          {props.name}
+        <h2 class="text-lg font-semibold  truncate pr-4 group-hover:text-base-content"
+          title={props.name}>
+            {props.name}
         </h2>
         <div class="flex items-center  gap-2">
           <Show when={props.isFavorite}>

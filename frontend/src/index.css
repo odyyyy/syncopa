@@ -1,80 +1,80 @@
-@import 'tailwindcss';
+@import "tailwindcss";
 @plugin "daisyui" {
-  themes: luxury --default, light --light;
+    themes:
+        luxury --default,
+        light --light;
 }
+
+@custom-variant light (&:where([data-theme=light], [data-theme=light] *));
 
 /* ШРИФТЫ */
 
 @font-face {
-  font-family: 'SyncopaLogoFont'; 
-  src: url('./assets/fonts/K2D-Regular.ttf');
-  font-weight: 100;
-  font-style: normal;
-  font-display: swap; 
+    font-family: "SyncopaLogoFont";
+    src: url("./assets/fonts/K2D-Regular.ttf");
+    font-weight: 100;
+    font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
-  font-family: 'SyncopaFontNormal'; 
-  src: url('./assets/fonts/K2D-Regular.ttf');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap; 
+    font-family: "SyncopaFontNormal";
+    src: url("./assets/fonts/K2D-Regular.ttf");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }
 
 @font-face {
-  font-family: 'BaseTextCyrillicFont'; 
-  src: url('./assets/fonts/K2D-Regular.ttf');
-  font-weight: 400;
-  font-style: normal;
-  font-display: swap; 
+    font-family: "BaseTextCyrillicFont";
+    src: url("./assets/fonts/K2D-Regular.ttf");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
 }
-
 
 /* АНИМАЦИЯ СМЕНЫ КОМПОНЕНТОВ-СТРАНИЦ */
 @layer utilities {
-  .page-enter {
-    opacity: 0;
-    transform: translateY(8px);
-  }
-  .page-enter-active {
-    opacity: 1;
-    transform: translateY(0);
-    transition: 200ms ease-out;
-  }
-  .page-exit {
-    opacity: 1;
-    transform: translateY(0);
-  }
-  .page-exit-active {
-    opacity: 0;
-    transform: translateY(-8px);
-    transition: 200ms ease-in;
-  }
+    .page-enter {
+        opacity: 0;
+        transform: translateY(8px);
+    }
+    .page-enter-active {
+        opacity: 1;
+        transform: translateY(0);
+        transition: 200ms ease-out;
+    }
+    .page-exit {
+        opacity: 1;
+        transform: translateY(0);
+    }
+    .page-exit-active {
+        opacity: 0;
+        transform: translateY(-8px);
+        transition: 200ms ease-in;
+    }
 }
-
 
 /* Переопределение стилей input-полей */
 :root {
-  --input-border: 1px solid #d1d5db;
-  --input-border-radius: 0.5rem;
-  --input-padding: 0.75rem 1rem;
-  --input-focus-border: 2px solid #ffffff;
-  --input-focus-ring: 0 0 0 3px  rgba(59, 130, 246, 0.1);
-  
-  --rounded-btn: 0.5rem;
-  --border-btn: 1px;
-  
+    --input-border: 1px solid #d1d5db;
+    --input-border-radius: 0.5rem;
+    --input-padding: 0.75rem 1rem;
+    --input-focus-border: 2px solid #ffffff;
+    --input-focus-ring: 0 0 0 3px rgba(59, 130, 246, 0.1);
 
+    --rounded-btn: 0.5rem;
+    --border-btn: 1px;
+    user-select: none;
 }
 
 .input {
-  border-radius: var(--input-border-radius) !important;
-  padding: var(--input-padding) !important;
+    border-radius: var(--input-border-radius) !important;
+    padding: var(--input-padding) !important;
 }
 
 .input:focus {
-  border: var(--input-focus-border) !important;
-  box-shadow: var(--input-focus-ring) !important;
-  outline: none !important;
+    border: var(--input-focus-border) !important;
+    box-shadow: var(--input-focus-ring) !important;
+    outline: none !important;
 }
-
