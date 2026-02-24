@@ -4,6 +4,7 @@ import { createStore } from "solid-js/store";
 import toast from "solid-toast";
 import { login } from "../../api/auth.api";
 import { setAccessToken } from "../../store/auth";
+import { setupUserData } from "../../context/auth";
 
 export default function useLoginForm() {
   const [formFields, setFormFields] = createStore<LoginFormData>({
@@ -12,9 +13,9 @@ export default function useLoginForm() {
   });
 
   const [passwordVisibility, setPasswordVisibility] = createSignal(false);
-  
+
   const navigate = useNavigate();
-  
+
   const handleFieldInput = (e: CustomInputEvent) => {
     const { name, value } = e.currentTarget;
     setFormFields(name as keyof LoginFormData, value);
@@ -26,6 +27,7 @@ export default function useLoginForm() {
 
     if (response.type === "success") {
       setAccessToken(response.data.access_token);
+      await setupUserData();
       toast.success("Успешный вход!");
       navigate("/app");
     } else if (response.type === "error") {

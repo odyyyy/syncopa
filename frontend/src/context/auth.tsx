@@ -16,18 +16,7 @@ export const AuthContext = createContext<AuthContextType>();
 export const AuthProvider: ParentComponent = (props) => {
   let refreshPromise: Promise<void> | null = null;
 
-  const setupUserData = async () => {
-    const response = await fetch(`${BACKEND_URL}/users/me`, {
-      method: "GET",
-      headers: {
-        ...(accessToken() && {
-          Authorization: `Bearer ${accessToken()}`,
-          "X-CSRF-TOKEN": getCsrfToken(),
-        }),
-      },
-    });
-    setUserData(await response.json());
-  };
+
 
   const refresh = async () => {
     if (!refreshPromise) {
@@ -85,3 +74,16 @@ export const AuthProvider: ParentComponent = (props) => {
 export function getCsrfToken() {
   return String(document.cookie.match(/csrf_refresh_token=([^;]+)/)?.[1]);
 }
+
+export const setupUserData = async () => {
+  const response = await fetch(`${BACKEND_URL}/users/me`, {
+    method: "GET",
+    headers: {
+      ...(accessToken() && {
+        Authorization: `Bearer ${accessToken()}`,
+        "X-CSRF-TOKEN": getCsrfToken(),
+      }),
+    },
+  });
+  setUserData(await response.json());
+};
