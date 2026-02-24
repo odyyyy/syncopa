@@ -4,14 +4,16 @@ from fastapi.middleware.cors import CORSMiddleware
 from tortoise.exceptions import DoesNotExist
 
 from auth.config import setup_auth
+from auth.exceptions import AuthException
 from auth.routes import auth_router
 from users.routes import users_router
 
 from .exceptions_handlers import (
-    does_not_exist_handler,
+    auth_exception_handler,
+    does_not_exist_exception_handler,
     general_exception_handler,
     validation_exception_handler,
-    value_error_handler,
+    value_exception_handler,
 )
 from .settings import get_settings, lifespan
 
@@ -44,7 +46,8 @@ app.add_middleware(
 
 
 # Add Exception Handlers
-app.add_exception_handler(DoesNotExist, does_not_exist_handler)
+app.add_exception_handler(DoesNotExist, does_not_exist_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
-app.add_exception_handler(ValueError, value_error_handler)
+app.add_exception_handler(ValueError, value_exception_handler)
+app.add_exception_handler(AuthException, auth_exception_handler)
 app.add_exception_handler(Exception, general_exception_handler)

@@ -4,8 +4,10 @@ from fastapi.responses import JSONResponse
 from starlette import status
 from tortoise.exceptions import DoesNotExist
 
+from auth.exceptions import AuthException
 
-async def does_not_exist_handler(request: Request, exc: DoesNotExist):
+
+async def does_not_exist_exception_handler(request: Request, exc: DoesNotExist):
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
         content={"detail": "Объект не найден"},
@@ -31,10 +33,17 @@ async def validation_exception_handler(
     )
 
 
-async def value_error_handler(request: Request, exc: ValueError) -> JSONResponse:
+async def value_exception_handler(request: Request, exc: ValueError) -> JSONResponse:
     return JSONResponse(
         status_code=status.HTTP_400_BAD_REQUEST,
         content={"detail": str(exc)},
+    )
+
+
+async def auth_exception_handler(request: Request, exc: AuthException) -> JSONResponse:
+    return JSONResponse(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        content={"detail": exc.detail},
     )
 
 

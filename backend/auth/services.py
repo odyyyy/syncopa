@@ -2,16 +2,17 @@ import hashlib
 from datetime import datetime, timezone
 
 from authx.schema import RequestToken
-from fastapi import HTTPException, Request, status
+from fastapi import Request
 from tortoise import transactions
 from tortoise.contrib.pydantic import PydanticModel
 
-from auth.config import auth
-from auth.schemas import LoginPayload, RegisterPayload
 from shared.dependencies import RedisAsync
 from users.models import Role, Users
-from users.schemas import UserCreate
+from users.schemas import UserIn
 
+from .config import auth
+from .exceptions import AuthException
+from .schemas import LoginPayload, RegisterPayload
 from .utils import hash_password, verify_password
 
 BLACKLIST_TAG = "blacklist"
@@ -33,7 +34,7 @@ async def create_user(user_data: RegisterPayload) -> PydanticModel:
         role=Role.USER.value,
     )
 
-    user = await UserCreate.from_tortoise_orm(created_user)
+    user = await UserIn.from_tortoise_orm(created_user)
     return user
 
 
@@ -54,10 +55,7 @@ async def get_new_access_token(request: Request, redis_auth: RedisAsync) -> str:
         if await redis_auth.exists(
             f"{BLACKLIST_TAG}:{hashlib.sha256(refresh_token.token.encode()).hexdigest()}"
         ):
-            raise HTTPException(
-                status_code=status.HTTP_403_UNAUTHORIZED,
-                detail="Доступ к ресурсу запрещен",
-            )
+            raise AuthException("Токен недействителен")
 
         payload = auth.verify_token(refresh_token)
 
@@ -66,7 +64,7 @@ async def get_new_access_token(request: Request, redis_auth: RedisAsync) -> str:
         return new_access_token
 
     except Exception:
-        raise HTTPException(status_code=401, detail="Сессия истекла")
+        raise AuthException("Сессия истекла")
 
 
 async def add_token_in_blacklist(

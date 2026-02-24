@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Request, Response, status
-from fastapi.exceptions import HTTPException
 from fastapi.responses import JSONResponse
 
 from auth.config import auth
+from auth.exceptions import AuthException
 from auth.schemas import LoginPayload, RegisterPayload
 from auth.services import (
     add_token_in_blacklist,
@@ -37,20 +37,15 @@ async def login(user_data: LoginPayload, response: Response):
 
 @auth_router.post("/logout")
 async def logout(request: Request, response: Response, redis: RedisDep):
-
     refresh_token = await auth.get_refresh_token_from_request(
         request, locations=["cookies"]
     )
+    if refresh_token is None:
+        raise AuthException("Токен не найден")
 
-    if refresh_token is not None:
-        await add_token_in_blacklist(refresh_token, redis)
-        auth.unset_refresh_cookies(response)
-        return {"detail": "Вы вышли из аккаунта"}
-    else:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Данные не найдены",
-        )
+    await add_token_in_blacklist(refresh_token, redis)
+    auth.unset_refresh_cookies(response)
+    return {"detail": "Вы вышли из аккаунта"}
 
 
 @auth_router.post("/refresh")
