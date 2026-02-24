@@ -72,7 +72,7 @@ TORTOISE_ORM: dict = {
     },
     "apps": {
         "models": {
-            "models": ["users.models"],
+            "models": ["users.models", "projects_management.models"],
             "default_connection": "default",
             "migrations": "migrations",
         },
