@@ -4,8 +4,16 @@ from shared.base_schema import BaseSchema
 from users.models import Users
 
 UserIn = pydantic_model_creator(
-    Users, name="UserCreate", model_config=BaseSchema.model_config
+    Users, name="UserIn", model_config=BaseSchema.model_config
 )
 UserOut = pydantic_model_creator(
-    Users, name="UserRead", model_config=BaseSchema.model_config, exclude_readonly=True
+    Users, name="UserOut", model_config=BaseSchema.model_config, exclude_readonly=True
+)
+
+UserUpdate = pydantic_model_creator(
+    Users,
+    name="UserUpdate",
+    model_config=BaseSchema.model_config,
+    include=("email", "name", "avatar"),
+    optional=("email", "name", "avatar"),
 )
