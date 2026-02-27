@@ -3,6 +3,7 @@ import { createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
 import toast from "solid-toast";
 import { register } from "../../api/auth.api";
+import { createFieldHandler } from "../shared";
 
 export default function useRegisterForm() {
   const [formFields, setFormFields] = createStore<RegisterFormData>({
@@ -16,17 +17,13 @@ export default function useRegisterForm() {
 
   const navigate = useNavigate();
 
-  const handleFieldInput = (e: CustomInputEvent) => {
-    const { name, value } = e.currentTarget;
-    
-    setFormFields(name as keyof RegisterFormData, value);
-  };
+  const handleFieldInput = createFieldHandler(setFormFields);
 
   const handleRegister = async (e: SubmitEvent) => {
     e.preventDefault();
-    const payload = { ...formFields }; 
+    const payload = { ...formFields };
     delete payload.confirmPassword;
-    
+
     const response = await register(payload);
 
     if (response.type === "success") {

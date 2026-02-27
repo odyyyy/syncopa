@@ -8,15 +8,12 @@ import {
 import { BACKEND_URL } from "../config/config";
 import { accessToken, setAccessToken } from "../store/auth";
 import { logoutFetch } from "../api/auth.api";
-import { useAuthFetch } from "../hooks/auth/useAuth";
-import { setUserData, userData } from "../store/user";
+import { setUserData } from "../store/user";
 
 export const AuthContext = createContext<AuthContextType>();
 
 export const AuthProvider: ParentComponent = (props) => {
   let refreshPromise: Promise<void> | null = null;
-
-
 
   const refresh = async () => {
     if (!refreshPromise) {

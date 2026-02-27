@@ -5,6 +5,7 @@ import toast from "solid-toast";
 import { login } from "../../api/auth.api";
 import { setAccessToken } from "../../store/auth";
 import { setupUserData } from "../../context/auth";
+import { createFieldHandler } from "../shared";
 
 export default function useLoginForm() {
   const [formFields, setFormFields] = createStore<LoginFormData>({
@@ -16,10 +17,7 @@ export default function useLoginForm() {
 
   const navigate = useNavigate();
 
-  const handleFieldInput = (e: CustomInputEvent) => {
-    const { name, value } = e.currentTarget;
-    setFormFields(name as keyof LoginFormData, value);
-  };
+  const handleFieldInput = createFieldHandler(setFormFields);
 
   const handleLogin = async (e: SubmitEvent) => {
     e.preventDefault();

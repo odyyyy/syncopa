@@ -18,11 +18,10 @@ export function useAuthFetch() {
           ...init.headers,
           ...(accessToken() && { Authorization: `Bearer ${accessToken()}` }),
         },
-        credentials: "include",
       });
 
     let response = await makeRequest();
-    if (response.status === 401) {
+    if (!response.ok) {
       try {
         await refresh();
       } catch {
@@ -32,7 +31,7 @@ export function useAuthFetch() {
 
       response = await makeRequest();
 
-      if (response.status === 401) {
+      if (!response.ok) {
         logout();
         throw new Error("Unauthorized");
       }
