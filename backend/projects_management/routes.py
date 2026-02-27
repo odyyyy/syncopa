@@ -1,12 +1,17 @@
 from fastapi.routing import APIRouter
 from pydantic.types import UUID4
 
+from projects_management.services import (
+    create_project_and_invite_members,
+)
+from shared.dependencies import AccessTokenRequiredPayload
+
 from .schemas import ProjectIn, ProjectOut
 
 project_router = APIRouter(prefix="/projects", tags=["projects"])
 
 
-@project_router.get("/")
+@project_router.get("")
 async def projects_list(user_id: UUID4):
     return {"message": "Projects list"}
 
@@ -16,9 +21,17 @@ async def project_details(project_id: UUID4):
     return {"message": f"Project details for project ID {project_id}"}
 
 
-@project_router.post("/", response_class=ProjectOut)
-async def project_create(project_data: ProjectIn):
-    return project_data
+# @project_router.post("", response_model=ProjectOut)
+@project_router.post("")
+async def project_create(
+    project_data: ProjectIn, user_payload: AccessTokenRequiredPayload
+):
+    created_project = await create_project_and_invite_members(
+        project_data, user_payload.sub
+    )
+    return {
+        "id": created_project.id,
+    }
 
 
 @project_router.put("/{project_uuid}")

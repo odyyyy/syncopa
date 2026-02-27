@@ -3,5 +3,11 @@ type User = {
   username: string;
   email: string;
   avatar: string;
-  role: string;
+  role?: string;
 };
+
+type ProjectMember = {
+  username: string;
+  avatar: string;
+};
+

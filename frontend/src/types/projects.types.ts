@@ -1,13 +1,13 @@
-
 interface ProjectItemProps {
-  name: string;
+  title: string;
   updatedAt: string;
-  bpm?: number;
-  sampleRate?: string;
-  duration?: string;
-  isFavorite?: boolean;
+  membersUsername?: ProjectMember[];
 }
 
+interface ProjectCreate {
+  title: string;
+  invitedMembers: string[];
+}
 
 type ProjectCreatePopupController = {
   isOpen: boolean;

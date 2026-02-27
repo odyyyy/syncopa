@@ -1,7 +1,6 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from functools import lru_cache
-from typing import List
 
 from fastapi import FastAPI
 from pydantic_settings import BaseSettings
@@ -14,7 +13,7 @@ class Settings(BaseSettings):
     DEBUG: bool = True
 
     # CORS Config
-    CORS_ALLOW_ORIGINS: List[str] = [
+    CORS_ALLOW_ORIGINS: list[str] = [
         "http://localhost:3000",
         "http://127.0.0.1:3000",
     ]
@@ -72,7 +71,11 @@ TORTOISE_ORM: dict = {
     },
     "apps": {
         "models": {
-            "models": ["users.models", "projects_management.models"],
+            "models": [
+                "users.models",
+                "projects_management.models",
+                "projects_management.signals",
+            ],
             "default_connection": "default",
             "migrations": "migrations",
         },
@@ -82,7 +85,7 @@ TORTOISE_ORM: dict = {
 
 # ====== App lifespan ======
 @asynccontextmanager
-async def lifespan(app: FastAPI) -> AsyncGenerator[None, None]:
+async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     # Redis
     redis_client = await setup_redis_client()
     await redis_client.ping()
