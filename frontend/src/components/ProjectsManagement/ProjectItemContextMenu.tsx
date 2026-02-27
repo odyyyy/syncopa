@@ -7,6 +7,8 @@ import {
   Show,
 } from "solid-js";
 
+import DeleteModal from "../utils/ConfirmActionModal";
+
 type ContextMenuProps = {
   children: JSX.Element;
 };
@@ -15,6 +17,7 @@ const ProjectItemContextMenu: Component<ContextMenuProps> = (
   props: ContextMenuProps,
 ) => {
   const [openContextMenu, setOpenContextMenu] = createSignal(false);
+  const [deleteOpen, setDeleteOpen] = createSignal(false);
 
   let triggerRef: HTMLDivElement | undefined;
 
@@ -85,7 +88,7 @@ const ProjectItemContextMenu: Component<ContextMenuProps> = (
             </a>
           </li>
 
-          <li class="rounded-4xl">
+          <li class="rounded-4xl" onclick={() => setDeleteOpen(true)}>
             <p class="text-red-700">
               <svg
                 class="h-5 w-5"
@@ -106,6 +109,15 @@ const ProjectItemContextMenu: Component<ContextMenuProps> = (
           </li>
         </ul>
       </Show>
+      <DeleteModal
+        title="Удалить проект?"
+        open={deleteOpen()}
+        onClose={() => setDeleteOpen(false)}
+        onConfirm={() => {
+          setDeleteOpen(false);
+          // deleteProject();
+        }}
+      />
     </div>
   );
 };

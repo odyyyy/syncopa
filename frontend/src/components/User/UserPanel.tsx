@@ -1,17 +1,15 @@
 import { Component, createSignal, onCleanup, onMount, Show } from "solid-js";
-import { BACKEND_URL } from "../../config/config";
-import { getCsrfToken } from "../../context/auth";
 import { useAuth } from "../../hooks/auth/useAuth";
-import { accessToken } from "../../store/auth";
-import { setUserData, userData } from "../../store/user";
+import { userData } from "../../store/user";
 import ThemeController from "../utils/ThemeController";
-import LogoutModal from "./LogoutModal";
+import LogoutModal from "../utils/ConfirmActionModal";
+import UserAccountSettings from "./UserAccountSettings";
 
 const UserPanel: Component = () => {
-  const username = userData.username;
-  const avatar = userData.avatar;
+  const { id, username, avatar, email } = userData;
 
   const [openSidebar, setOpenSidebar] = createSignal(false);
+  const [settingsOpen, setSettingsOpen] = createSignal(false);
   const [logoutOpen, setLogoutOpen] = createSignal(false);
 
   const { logout } = useAuth();
@@ -105,7 +103,7 @@ const UserPanel: Component = () => {
               </Show>
 
               <div
-                class="font-semibold text-base-content max-w-[160px] truncate cursor-default"
+                class="font-semibold text-base max-w-[160px] truncate cursor-default"
                 title={username}
               >
                 {username}
@@ -136,13 +134,19 @@ const UserPanel: Component = () => {
           {/* Menu */}
           <ul class="menu mt-4 flex-1 text-base-content p-0 ">
             <li>
-              <a class="pl-1 hover:bg-base-300 rounded-lg ">
+              <a
+                class="pl-1 text-base hover:bg-base-300 rounded-lg"
+                onclick={() => {
+                  setSettingsOpen(true);
+                  setOpenSidebar(false);
+                }}
+              >
                 Настройки аккаунта
               </a>
             </li>
             <li class="inline-flex">
               <a
-                class="pl-1 text-error hover:bg-error/10 rounded-lg inline-flex"
+                class="pl-1 text-error hover:bg-error/10 text-base rounded-lg inline-flex"
                 onClick={() => setLogoutOpen(true)}
               >
                 Выйти
@@ -152,7 +156,17 @@ const UserPanel: Component = () => {
         </div>
       </aside>
 
+      <UserAccountSettings
+        open={settingsOpen()}
+        onClose={() => setSettingsOpen(false)}
+        id={id}
+        avatar={avatar}
+        username={username}
+        email={email}
+      />
+
       <LogoutModal
+        title="Выйти из аккаунта?"
         open={logoutOpen()}
         onClose={() => setLogoutOpen(false)}
         onConfirm={() => {
