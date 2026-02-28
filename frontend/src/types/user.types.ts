@@ -6,8 +6,9 @@ type User = {
   role?: string;
 };
 
-type ProjectMember = {
-  username: string;
-  avatar: string;
-};
 
+type Invitation = {
+  id: string;
+  senderUsername: string;
+  projectTitle: string;
+}
