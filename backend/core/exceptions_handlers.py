@@ -1,4 +1,5 @@
-from fastapi import Request, Response
+from authx.exceptions import JWTDecodeError
+from fastapi import Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.responses import JSONResponse
 from starlette import status
@@ -7,17 +8,19 @@ from tortoise.exceptions import DoesNotExist
 from auth.exceptions import AuthException
 
 
-async def does_not_exist_exception_handler(request: Request, exc: DoesNotExist):
+async def does_not_exist_exception_handler(
+    request: Request, exc: DoesNotExist
+) -> JSONResponse:
     return JSONResponse(
         status_code=status.HTTP_404_NOT_FOUND,
-        content={"detail": "Объект не найден"},
+        content={"detail": exc.args[0]},
     )
 
 
 async def validation_exception_handler(
     request: Request,
     exc: Exception,
-) -> Response:
+) -> JSONResponse:
 
     if not isinstance(exc, RequestValidationError):
         raise exc
@@ -43,7 +46,16 @@ async def value_exception_handler(request: Request, exc: ValueError) -> JSONResp
 async def auth_exception_handler(request: Request, exc: AuthException) -> JSONResponse:
     return JSONResponse(
         status_code=status.HTTP_401_UNAUTHORIZED,
-        content={"detail": exc.detail},
+        content={"detail": exc.args[0]},
+    )
+
+
+async def invalid_token_exception_handler(
+    request: Request, exc: JWTDecodeError
+) -> JSONResponse:
+    return JSONResponse(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        content={"detail": exc.args[0]},
     )
 
 

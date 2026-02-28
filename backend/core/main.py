@@ -1,3 +1,4 @@
+from authx.exceptions import JWTDecodeError
 from fastapi import APIRouter, FastAPI
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
@@ -52,4 +53,5 @@ app.add_exception_handler(DoesNotExist, does_not_exist_exception_handler)
 app.add_exception_handler(RequestValidationError, validation_exception_handler)
 app.add_exception_handler(ValueError, value_exception_handler)
 app.add_exception_handler(AuthException, auth_exception_handler)
+app.add_exception_handler(JWTDecodeError, auth_exception_handler)
 app.add_exception_handler(Exception, general_exception_handler)
