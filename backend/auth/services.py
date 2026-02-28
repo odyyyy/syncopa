@@ -1,14 +1,13 @@
 import hashlib
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
+from authx.exceptions import AuthXException
 from authx.schema import RequestToken
 from fastapi import Request
 from tortoise import transactions
-from tortoise.contrib.pydantic import PydanticModel
 
 from shared.dependencies import RedisAsync
 from users.models import Role, Users
-from users.schemas import UserIn
 
 from .config import auth
 from .exceptions import AuthException
@@ -19,7 +18,7 @@ BLACKLIST_TAG = "blacklist"
 
 
 @transactions.atomic()
-async def create_user(user_data: RegisterPayload) -> PydanticModel:
+async def create_user(user_data: RegisterPayload) -> Users:
 
     if await Users.get_or_none(email=user_data.email) is not None:
         raise ValueError("Пользователь с таким email уже существует")
@@ -33,9 +32,7 @@ async def create_user(user_data: RegisterPayload) -> PydanticModel:
         password_hash=hash_password(user_data.password),
         role=Role.USER.value,
     )
-
-    user = await UserIn.from_tortoise_orm(created_user)
-    return user
+    return created_user
 
 
 async def get_authenticated_user(user_data: LoginPayload) -> Users:
@@ -63,8 +60,8 @@ async def get_new_access_token(request: Request, redis_auth: RedisAsync) -> str:
 
         return new_access_token
 
-    except Exception:
-        raise AuthException("Сессия истекла")
+    except AuthXException:
+        raise AuthException("Сессия истекла")  # noqa: B904
 
 
 async def add_token_in_blacklist(
@@ -73,7 +70,7 @@ async def add_token_in_blacklist(
     payload = auth.verify_token(refresh_token)
 
     exp_at = payload.expiry_datetime
-    if refresh_token and exp_at > datetime.now(timezone.utc):
+    if refresh_token and exp_at > datetime.now(UTC):
         await redis_auth.set(
             f"{BLACKLIST_TAG}:{hashlib.sha256(refresh_token.token.encode()).hexdigest()}",
             "1",

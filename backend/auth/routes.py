@@ -1,5 +1,4 @@
 from fastapi import APIRouter, Request, Response, status
-from fastapi.responses import JSONResponse
 
 from auth.config import auth
 from auth.exceptions import AuthException
@@ -11,24 +10,25 @@ from auth.services import (
     get_new_access_token,
 )
 from shared.dependencies import RedisDep
+from users.schemas import UserOut
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@auth_router.post("/register")
+@auth_router.post(
+    "/register", response_model=UserOut, status_code=status.HTTP_201_CREATED
+)
 async def register(user_data: RegisterPayload):
     created_user = await create_user(user_data)
-    return JSONResponse(
-        status_code=status.HTTP_201_CREATED, content=created_user.model_dump_json()
-    )
+    return created_user
 
 
 @auth_router.post("/login")
 async def login(user_data: LoginPayload, response: Response):
     user = await get_authenticated_user(user_data)
 
-    refresh_token = auth.create_refresh_token(uid=user.username)
-    access_token = auth.create_access_token(uid=user.username)
+    refresh_token = auth.create_refresh_token(uid=str(user.id))
+    access_token = auth.create_access_token(uid=str(user.id))
 
     auth.set_refresh_cookies(refresh_token, response)
 

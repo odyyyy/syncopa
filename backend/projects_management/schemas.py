@@ -1,15 +1,13 @@
 from datetime import datetime
-from typing import Optional
-from uuid import UUID
 
-from pydantic import Field, field_validator
+from pydantic import UUID4, Field, field_validator
 
 from shared.base_schema import BaseSchema
 from users.schemas import UserOut
 
 
 class ProjectOut(BaseSchema):
-    id: UUID
+    id: UUID4
     title: str
     owner: UserOut
     members: list[UserOut]
