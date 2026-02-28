@@ -5,7 +5,7 @@ import { apiRequest } from "./base.api";
 export function useProjectsApi() {
   const protectedRequest = useAuthFetch();
 
-  const createProject = (data: ProjectCreate) =>
+  const createProject = (data: ProjectCreate):ApiResponse<ProjectItemProps> =>
     apiRequest(
       `${BACKEND_URL}/projects`,
       {
@@ -16,7 +16,7 @@ export function useProjectsApi() {
       protectedRequest,
     );
 
-  const fetchProjectsList = () =>
+  const getProjectsList = ():ApiResponse<ProjectItemProps[]> =>
     apiRequest(
       `${BACKEND_URL}/projects`,
       {
@@ -24,6 +24,15 @@ export function useProjectsApi() {
       },
       protectedRequest,
     );
+  
+  const deleteProject = (project_id: string):ApiResponse<ProjectItemProps> =>
+    apiRequest(
+      `${BACKEND_URL}/projects/${project_id}`,
+      {
+        method: "DELETE",
+      },
+      protectedRequest,
+    );
 
-  return { createProject };
+  return { createProject, getProjectsList, deleteProject };
 }

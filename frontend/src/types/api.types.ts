@@ -1,0 +1,1 @@
+type ApiResponse<T> = Promise<{ type: "success"; data: T } | { type: "error" }>

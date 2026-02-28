@@ -1,8 +1,19 @@
 interface ProjectItemProps {
+  id: string;
   title: string;
-  updatedAt: string;
-  membersUsername?: ProjectMember[];
+  modifiedAt: string;
+  members: ProjectMember[];
 }
+
+type ProjectMember = {
+  username: string;
+  avatar?: string;
+};
+
+type MemberAvatarProps = {
+  username: string;
+  avatar?: string;
+};
 
 interface ProjectCreate {
   title: string;

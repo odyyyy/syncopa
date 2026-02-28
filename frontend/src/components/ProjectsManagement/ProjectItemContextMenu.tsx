@@ -8,9 +8,13 @@ import {
 } from "solid-js";
 
 import DeleteModal from "../utils/ConfirmActionModal";
+import { useProjectsApi } from "../../api/projects-management.api";
+import toast from "solid-toast";
 
 type ContextMenuProps = {
   children: JSX.Element;
+  project_id: string;
+  onRemove?: (id: string) => void;
 };
 
 const ProjectItemContextMenu: Component<ContextMenuProps> = (
@@ -46,6 +50,17 @@ const ProjectItemContextMenu: Component<ContextMenuProps> = (
     document.removeEventListener("click", handleClickOutside);
     document.removeEventListener("keydown", handleEsc);
   });
+  const { deleteProject } = useProjectsApi();
+  const handleDeleteProject = async (project_id: string) => {
+    const res = await deleteProject(project_id);
+    if (res.type === "success") {
+      toast.success(`Проект ${res.data.title} успешно удален`);
+      props.onRemove?.(props.project_id);
+    } else {
+      toast.error("Ошибка при удалении проекта");
+    }
+    return res;
+  };
 
   return (
     <div class="relative ">
@@ -115,7 +130,8 @@ const ProjectItemContextMenu: Component<ContextMenuProps> = (
         onClose={() => setDeleteOpen(false)}
         onConfirm={() => {
           setDeleteOpen(false);
-          // deleteProject();
+          handleDeleteProject(props.project_id);
+          setOpenContextMenu(false);
         }}
       />
     </div>

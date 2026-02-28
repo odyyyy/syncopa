@@ -6,7 +6,9 @@ import { debounce } from "@solid-primitives/scheduled";
 import toast from "solid-toast";
 import { useProjectsApi } from "../../api/projects-management.api";
 
-export default function useCreateProject() {
+export default function useCreateProject(
+  onProjectCreated: (project: ProjectItemProps) => void,
+) {
   const [projectData, setProjectData] = createStore<ProjectCreate>({
     title: "",
     invitedMembers: [],
@@ -29,6 +31,14 @@ export default function useCreateProject() {
       } else {
         toast.success("Проект успешно создан!");
       }
+      const newProject: ProjectItemProps = {
+        id: response.data.id,
+        title: response.data.title,
+        modifiedAt: response.data.modifiedAt,
+        members: response.data.members || [],
+      };
+      
+      onProjectCreated(newProject);
     } else {
       toast.error("Ошибка при создании проекта. Попробуйте снова");
     }

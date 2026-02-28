@@ -2,7 +2,11 @@ import { Component } from "solid-js";
 import ProjectItemContextMenu from "./ProjectItemContextMenu";
 import ProjectMembersAvatars from "./ProjectMembersAvatars";
 
-const ProjectItemCard: Component<ProjectItemProps> = (project) => {
+interface ProjectItemCardProps extends ProjectItemProps {
+  onRemove?: (id: string) => void;
+}
+
+const ProjectItemCard: Component<ProjectItemCardProps> = (project) => {
   return (
     <div
       class="group relative flex flex-col justify-between h-52 w-full p-6
@@ -13,14 +17,17 @@ const ProjectItemCard: Component<ProjectItemProps> = (project) => {
       <div class="flex justify-between items-start">
         <h3
           class="text-xl font-bold tracking-tight text-base-content leading-tight
-                   group-hover:text-primary light:group-hover:text-[#1e1810] transition-colors line-clamp-2 max-w-[85%]"
+                   group-hover:text-primary light:group-hover:text-[#1e1810] transition-colors truncate line-clamp-2 max-w-[85%]"
           title={project.title}
         >
           {project.title}
         </h3>
 
         <div class="relative z-10">
-          <ProjectItemContextMenu>
+          <ProjectItemContextMenu
+            project_id={project.id}
+            onRemove={project.onRemove}
+          >
             <button class="btn btn-ghost btn-sm btn-circle text-base-content/40 hover:text-primary hover:bg-primary/10 transition-all">
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -42,16 +49,16 @@ const ProjectItemCard: Component<ProjectItemProps> = (project) => {
       </div>
 
       <div class="flex flex-col gap-4">
-        <div class="flex items-center">
-          <ProjectMembersAvatars />
+        <div class="flex items-center self-end">
+          <ProjectMembersAvatars members={project.members || []} />
         </div>
 
         <div class="flex items-center justify-between pt-4 border-t border-base-200">
-          <span class="text-xs uppercase tracking-[0.1em] font-bold text-base-content/30">
+          <span class="text-xs uppercase tracking-[0.1em] font-bold text-base-content/60">
             Изменено
           </span>
-          <span class="text-xs font-medium text-base-content/50">
-            {project.updatedAt}
+          <span class="text-xs font-medium text-base-content/60">
+            {project.modifiedAt ?? "Не известно"}
           </span>
         </div>
       </div>
