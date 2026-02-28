@@ -21,7 +21,7 @@ export function useAuthFetch() {
       });
 
     let response = await makeRequest();
-    if (!response.ok) {
+    if (response.status === 401) {
       try {
         await refresh();
       } catch {
@@ -31,7 +31,7 @@ export function useAuthFetch() {
 
       response = await makeRequest();
 
-      if (!response.ok) {
+      if (response.status === 401) {
         logout();
         throw new Error("Unauthorized");
       }

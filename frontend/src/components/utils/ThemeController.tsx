@@ -1,16 +1,16 @@
 import { Component, createSignal, onMount } from "solid-js";
 
 const ThemeController: Component = () => {
-  const [theme, setTheme] = createSignal<"light" | "dark">("light");
+  const [theme, setTheme] = createSignal<"light" | "luxury">("light");
 
   onMount(() => {
-    const saved = (localStorage.getItem("theme") as "light" | "dark") || "light";
+    const saved = (localStorage.getItem("theme") as "light" | "luxury") || "light";
     setTheme(saved);
     document.documentElement.setAttribute("data-theme", saved);
   });
 
   const toggleTheme = (e: Event) => {
-    const newTheme = (e.target as HTMLInputElement).checked ? "dark" : "light";
+    const newTheme = (e.target as HTMLInputElement).checked ? "luxury" : "light";
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
     document.documentElement.setAttribute("data-theme", newTheme);
@@ -20,7 +20,7 @@ const ThemeController: Component = () => {
     <label class="swap swap-rotate cursor-pointer ">
       <input 
         type="checkbox" 
-        checked={theme() === "dark"} 
+        checked={theme() === "luxury"} 
         onChange={toggleTheme} 
       />
 

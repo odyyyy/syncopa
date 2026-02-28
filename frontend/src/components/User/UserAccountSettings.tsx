@@ -66,7 +66,14 @@ const UserAccountSettings: Component<Props> = (props: Props) => {
   };
 
   return (
-    <dialog ref={dialogRef} class="modal">
+    <dialog
+      ref={dialogRef}
+      class="modal"
+      onClose={() => {
+        setOpenPasswordChangeFields(false);
+        props.onClose(); 
+      }}
+    >
       <div class="modal-box flex items-center justify-center flex-col gap-3 bg-base-200">
         <h3 class="text-xl font-bold mb-3 ">Настройки аккаунта</h3>
 
@@ -76,7 +83,7 @@ const UserAccountSettings: Component<Props> = (props: Props) => {
         >
           <Show when={!avatarPreview() && !props.avatar}>
             <div class="avatar avatar-placeholder">
-              <div class="bg-neutral text-neutral-content w-25 rounded-full">
+              <div class="bg-neutral text-neutral-content w-25 text-4xl rounded-full">
                 <span>{props.username.charAt(0).toUpperCase()}</span>
               </div>
             </div>
@@ -227,12 +234,8 @@ const UserAccountSettings: Component<Props> = (props: Props) => {
       <form
         method="dialog"
         class="modal-backdrop"
-        onsubmit={() => {
-          setOpenPasswordChangeFields(false);
-          props.onClose();
-        }}
       >
-        <button>close</button>
+        <button aria-label="close"></button>
       </form>
     </dialog>
   );
