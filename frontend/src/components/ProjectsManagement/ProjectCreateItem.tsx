@@ -3,7 +3,9 @@ import ComponentLoading from "../utils/ComponentLoading";
 import useCreateProject from "../../hooks/projects_management/useCreateProject";
 import { userData } from "../../store/user";
 
-const ProjectCreatePopup: Component<{ onCreate: (project: ProjectItemProps) => void }> = (props) => {
+const ProjectCreatePopup: Component<{
+  onCreate: (project: ProjectItemProps) => void;
+}> = (props) => {
   const {
     setRawQuery,
     debounced,
@@ -26,7 +28,7 @@ const ProjectCreatePopup: Component<{ onCreate: (project: ProjectItemProps) => v
     <div>
       <button
         onclick={openModal}
-        class="group relative flex flex-col items-center justify-center bg-base-300 border-2 border-dashed border-zinc-800 hover:border-zinc-500 light:hover:bg-zinc-300/60 hover:bg-zinc-900/60 rounded-lg p-10 transition-all duration-200 cursor-pointer  w-full h-52"
+        class="group relative flex flex-col items-center justify-center bg-base-300 border-2 border-dashed border-zinc-800 hover:border-zinc-500 light:hover:bg-primary/10 hover:bg-zinc-900/60 rounded-lg p-10 transition-all duration-200 cursor-pointer  w-full h-52"
       >
         <div class="flex flex-col items-center gap-3 transition-transform duration-200 group-hover:scale-110">
           <div class="flex items-center justify-center w-12 h-12 rounded-full bg-zinc-800 group-hover:bg-zinc-700 text-zinc-400 group-hover:text-white transition-colors">

@@ -54,7 +54,7 @@ const ProjectItemCard: Component<ProjectItemCardProps> = (project) => {
         </div>
 
         <div class="flex items-center justify-between pt-4 border-t border-base-200">
-          <span class="text-xs uppercase tracking-[0.1em] font-bold text-base-content/60">
+          <span class="text-xs uppercase tracking-widest font-bold text-base-content/60">
             Изменено
           </span>
           <span class="text-xs font-medium text-base-content/60">
@@ -63,7 +63,7 @@ const ProjectItemCard: Component<ProjectItemCardProps> = (project) => {
         </div>
       </div>
 
-      <div class="absolute inset-0 rounded-2xl bg-gradient-to-b from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-500" />
+      <div class="absolute inset-0 rounded-2xl bg-linear-to-b from-primary/2 to-transparent opacity-0 group-hover:opacity-100 pointer-events-none transition-opacity duration-500" />
     </div>
   );
 };

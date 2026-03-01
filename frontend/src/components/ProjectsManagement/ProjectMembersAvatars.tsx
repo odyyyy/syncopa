@@ -11,7 +11,7 @@ const ProjectMembersAvatars: Component<{ members: MemberAvatarProps[] }> = (
         {(member, index) => (
           <>
             <Show when={member.avatar && index() < membersToShow}>
-              <div class="avatar">
+              <div class="avatar  hover:scale-105 hover:z-50 transition-all duration-150">
                 <div class="w-12">
                   <img src={member.avatar} />
                 </div>
@@ -31,7 +31,7 @@ const ProjectMembersAvatars: Component<{ members: MemberAvatarProps[] }> = (
         )}
       </For>
       <Show when={restMemberNumber > 0}>
-        <div class="avatar avatar-placeholder">
+        <div class="avatar avatar-placeholder  hover:scale-105 hover:z-50 transition-all duration-150">
           <div class="bg-neutral text-neutral-content w-12">
             <span>+{restMemberNumber}</span>
           </div>
