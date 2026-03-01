@@ -1,6 +1,7 @@
 from collections.abc import AsyncGenerator
 from contextlib import asynccontextmanager
 from functools import lru_cache
+from pathlib import Path
 
 from fastapi import FastAPI
 from pydantic_settings import BaseSettings
@@ -11,6 +12,8 @@ from core.database import register_orm, setup_redis_client
 # ====== Global settings ======
 class Settings(BaseSettings):
     DEBUG: bool = True
+    BASE_DIR: Path = Path(__file__).parent.parent
+    BASE_AVATARS_DIR: Path = BASE_DIR / "users/users_files/"
 
     # CORS Config
     CORS_ALLOW_ORIGINS: list[str] = [

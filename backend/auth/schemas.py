@@ -6,11 +6,7 @@ from pydantic.networks import EmailStr
 from shared.base_schema import BaseSchema
 
 
-class RegisterPayload(BaseSchema):
-    email: EmailStr
-    username: str
-    password: str
-
+class UserValidatorsMixin:
     @field_validator("email", mode="before")
     @classmethod
     def validate_email(cls, value: str) -> str:
@@ -31,7 +27,7 @@ class RegisterPayload(BaseSchema):
     @field_validator("password")
     @classmethod
     def validate_password(cls, value: str) -> str:
-        if len(value) <= 8:
+        if len(value) < 8:
             raise ValueError("Пароль должен содержать не менее 8 символов")
 
         if len(value) > 64:
@@ -47,6 +43,12 @@ class RegisterPayload(BaseSchema):
             raise ValueError("Пароль должен содержать хотя бы одну заглавную букву")
 
         return value
+
+
+class RegisterPayload(UserValidatorsMixin, BaseSchema):
+    email: EmailStr
+    username: str
+    password: str
 
 
 class LoginPayload(BaseSchema):

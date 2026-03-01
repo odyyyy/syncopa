@@ -5,6 +5,7 @@ description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
+    "aiofiles>=25.1.0",
     "argon2-cffi>=25.1.0",
     "asyncpg>=0.31.0",
     "authx>=1.5.0",
@@ -25,6 +26,13 @@ lint.select = [
     "UP",  # pyupgrade
 ]
 
+lint.ignore = [
+    "E501",  # line too long, handled by black
+    "B008",  # do not perform function calls in argument defaults
+    "C901",  # too complex
+    "W191",  # indentation contains tabs
+]
+
 exclude = [
     ".git",
     ".venv",
@@ -35,13 +43,6 @@ exclude = [
 ]
 
 target-version = "py313"
-
-lint.ignore = [
-    "E501",  # line too long, handled by black
-    "B008",  # do not perform function calls in argument defaults
-    "C901",  # too complex
-    "W191",  # indentation contains tabs
-]
 
 [tool.ruff.lint.per-file-ignores]
 "__init__.py" = ["F401"]
