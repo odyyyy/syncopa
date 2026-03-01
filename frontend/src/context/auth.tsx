@@ -82,5 +82,11 @@ export const setupUserData = async () => {
       }),
     },
   });
+  
+  if (!response.ok) {
+    toast.error("Ошибка при получении данных пользователя");
+    throw new Error("Ошибка при получении данных пользователя");
+  }
+  
   setUserData(await response.json());
 };

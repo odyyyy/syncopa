@@ -31,3 +31,20 @@ export function useInvitationsApi() {
     getInvitationsList,
   };
 }
+
+export function useUserDataManagementApi() {
+  const protectedRequest = useAuthFetch();
+
+  const updateUserData = (data: FormData): ApiResponse<UserDataUpdate> =>
+    apiRequest(
+      `${BACKEND_URL}/users/`,
+      {
+        method: "PATCH",
+        body: data,
+      },
+      protectedRequest,
+    );
+  return {
+    updateUserData,
+  };
+}
