@@ -34,10 +34,6 @@ export default function useRegisterForm() {
     }
   };
 
-  const togglePassword = (e: MouseEvent) => {
-    e.preventDefault();
-    setPasswordVisibility((passwordVisibility) => !passwordVisibility);
-  };
 
   const checkPasswordsMatch = (e: HTMLInputElement) => {
     const matchPasswordsElement = document.querySelector(
@@ -61,7 +57,7 @@ export default function useRegisterForm() {
     handleFieldInput,
     handleRegister,
     passwordVisibility,
-    togglePassword,
-    checkPasswordsMatch,
+    setPasswordVisibility,
+    checkPasswordsMatch
   };
 }

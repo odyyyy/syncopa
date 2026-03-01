@@ -33,15 +33,10 @@ export default function useLoginForm() {
     }
   };
 
-  const togglePassword = (e: MouseEvent) => {
-    e.preventDefault();
-    setPasswordVisibility((passwordVisibility) => !passwordVisibility);
-  };
-
   return {
     handleFieldInput,
     handleLogin,
     passwordVisibility,
-    togglePassword,
+    setPasswordVisibility,
   };
 }
