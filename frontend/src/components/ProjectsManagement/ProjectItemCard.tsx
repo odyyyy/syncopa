@@ -12,7 +12,7 @@ const ProjectItemCard: Component<ProjectItemCardProps> = (project) => {
       class="group relative flex flex-col justify-between h-52 w-full p-6
                 bg-base-200 light:bg-base-300 border border-base-300 rounded-2xl cursor-pointer
                 transition-all duration-300 ease-out
-                hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-primary/30"
+                hover:shadow-xl hover:shadow-primary/5 hover:-translate-y-1 hover:border-primary/30 animate-fade-in-up"
     >
       <div class="flex justify-between items-start">
         <h3
@@ -50,7 +50,7 @@ const ProjectItemCard: Component<ProjectItemCardProps> = (project) => {
 
       <div class="flex flex-col gap-4">
         <div class="flex items-center self-end">
-          <ProjectMembersAvatars members={project.members || []} />
+          <ProjectMembersAvatars members={project.invitedMembers || []} />
         </div>
 
         <div class="flex items-center justify-between pt-4 border-t border-base-200">

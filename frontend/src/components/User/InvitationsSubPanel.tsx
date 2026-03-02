@@ -1,13 +1,38 @@
 import { Component, Show, For } from "solid-js";
+import {
+  useInvitationsApi,
+} from "../../api/user.api";
+import toast from "solid-toast";
+import { Resource } from "solid-js/types/server/rendering.js";
 
 type InvitationPanelProps = {
-  incomeInvitations: Invitation[];
+  incomeInvitations: Resource<Invitation[]>;
+  mutateInvitations: (updater: (prev: Invitation[] | undefined) => Invitation[]) => void;
 };
 
 const InvitationsSubPanel: Component<InvitationPanelProps> = (props) => {
+  const { updateInvitationStatus } = useInvitationsApi();
+
+  const handleStatusChange = async (
+    invitationId: string,
+    status: "accepted" | "rejected",
+  ) => {
+    const response = await updateInvitationStatus(invitationId, status);
+    if (response.type === "success") {
+      toast.success(
+        `Приглашение успешно ${status === "accepted" ? "принято" : "отклонено"}`,
+      );
+      props.mutateInvitations(prev => 
+            (prev ?? []).filter(invite => invite.id !== invitationId)
+          );
+    } else {
+      toast.error("Ошибка при обновлении статуса приглашения");
+    }
+  };
+
   return (
     <>
-      <Show when={props.incomeInvitations?.length === 0}>
+      <Show when={props.incomeInvitations()?.length === 0}>
         <div class="flex-1 flex flex-col items-center justify-center mb-20">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -24,9 +49,9 @@ const InvitationsSubPanel: Component<InvitationPanelProps> = (props) => {
         </div>
       </Show>
 
-      <Show when={props.incomeInvitations?.length !== 0}>
+      <Show when={props.incomeInvitations()?.length !== 0}>
         <ul class="list flex-col rounded-box  bg-base-200 mt-5 gap-2 ">
-          <For each={props.incomeInvitations}>
+          <For each={props.incomeInvitations()}>
             {(invite, index) => (
               <li class="list-row shadow-none border-red-700 flex items-center hover:scale-105 cursor-pointer duration-300 gap-3 p-3">
                 <span class="text-xs font-mono w-6 text-center opacity-50">
@@ -41,10 +66,20 @@ const InvitationsSubPanel: Component<InvitationPanelProps> = (props) => {
                 </div>
 
                 <div class="flex gap-0.5">
-                  <button class="btn btn-xs btn-square btn-ghost text-success">
+                  <button
+                    class="btn btn-xs btn-square btn-ghost text-success"
+                    onclick={async (e) => {
+                      await handleStatusChange(invite.id, "accepted");
+                    }}
+                  >
                     ✓
                   </button>
-                  <button class="btn btn-xs btn-square btn-ghost text-error">
+                  <button
+                    class="btn btn-xs btn-square btn-ghost text-error"
+                    onclick={async (e) => {
+                      await handleStatusChange(invite.id, "rejected");
+                    }}
+                  >
                     ✕
                   </button>
                 </div>

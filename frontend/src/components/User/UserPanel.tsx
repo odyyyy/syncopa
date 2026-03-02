@@ -22,11 +22,10 @@ const UserPanel: Component = () => {
   const { logout } = useAuth();
 
   const { getInvitationsList } = useInvitationsApi();
-  const [incomeInvitations] = createResource<Invitation[]>(async () => {
+  const [incomeInvitations, { mutate }] = createResource<Invitation[]>(async () => {
     const res = await getInvitationsList();
     return res.type === "success" ? res.data : [];
   });
-
   let sidebarRef: HTMLDivElement | undefined;
 
   onMount(() => {
@@ -103,7 +102,13 @@ const UserPanel: Component = () => {
       >
         <div class="p-3 flex flex-col h-full">
           <div class="flex items-center justify-between pb-3 border-b border-base-300">
-            <div class="flex items-center gap-2">
+            <div
+              class="flex items-center gap-2 cursor-pointer"
+              onclick={() => {
+                setSettingsOpen(true);
+                setOpenSidebar(false);
+              }}
+            >
               <Show when={!userData.avatar}>
                 <div class="avatar avatar-placeholder">
                   <div class="bg-neutral text-neutral-content w-12 rounded-full">
@@ -121,7 +126,7 @@ const UserPanel: Component = () => {
               </Show>
 
               <div
-                class="font-semibold text-base max-w-40 truncate cursor-default"
+                class="font-semibold text-base max-w-40 truncate cursor-pointer"
                 title={userData.username}
               >
                 {userData.username}
@@ -207,7 +212,8 @@ const UserPanel: Component = () => {
               </li>
             </ul>
             <InvitationsSubPanel
-              incomeInvitations={incomeInvitations() ?? []}
+            mutateInvitations={mutate}
+              incomeInvitations={incomeInvitations ?? []}
             />
           </div>
         </div>

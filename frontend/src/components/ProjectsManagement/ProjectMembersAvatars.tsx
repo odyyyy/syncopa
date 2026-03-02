@@ -11,7 +11,10 @@ const ProjectMembersAvatars: Component<{ members: MemberAvatarProps[] }> = (
         {(member, index) => (
           <>
             <Show when={member.avatar && index() < membersToShow}>
-              <div class="avatar  hover:scale-105 hover:z-50 transition-all duration-150">
+              <div
+                class="avatar  hover:scale-105 hover:z-50 transition-all duration-150"
+                title={member.username}
+              >
                 <div class="w-12">
                   <img src={member.avatar} />
                 </div>

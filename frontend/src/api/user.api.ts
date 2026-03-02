@@ -27,8 +27,24 @@ export function useInvitationsApi() {
       },
       protectedRequest,
     );
+
+  const updateInvitationStatus = (
+    invitationId: string,
+    status: "accepted" | "rejected",
+  ): ApiResponse<Invitation> =>
+    apiRequest(
+      `${BACKEND_URL}/users/me/invitations/${invitationId}`,
+      {
+        method: "PATCH",
+        body: JSON.stringify({ status }),
+        headers: { "content-type": "application/json" },
+      },
+      protectedRequest,
+    );
+
   return {
     getInvitationsList,
+    updateInvitationStatus,
   };
 }
 
