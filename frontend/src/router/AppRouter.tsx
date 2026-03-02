@@ -22,8 +22,8 @@ const AppRouter: Component = () => {
       <Route path="/" component={Landing} />
       <Route path="login/" component={LoginGuest} />
       <Route path="register/" component={RegisterGuest} />
-      <Route path="app/" component={ProtectedProjectsProtected} />
-      <Route path="app/project/:uuid" component={ProtectedProjectsProtected} />
+      <Route path="projects/" component={ProtectedProjectsProtected} />
+      <Route path="projects/:uuid" component={ProtectedProjectsProtected} />
       <Route path="*404" component={NotFound404} />
     </Router>
   );

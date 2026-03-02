@@ -11,7 +11,7 @@ export function withGuest(ComponentToWrap: Component): Component {
       <Show when={!loading()} fallback={<SyncopaLoader/>}>
         <Show
           when={!accessToken()}
-          fallback={<Navigate href="/app" />}
+          fallback={<Navigate href="/projects" />}
         >
           <ComponentToWrap />
         </Show>

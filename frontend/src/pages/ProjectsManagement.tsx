@@ -42,13 +42,13 @@ const ProjectsManagement: Component = () => {
                         .slice(0, -3)
                     : "Не известно"
                 }
-                members={[
+                invitedMembers={[
                   {
                     username: userData.username,
                     avatar: userData.avatar,
                   },
 
-                  ...project.members,
+                  ...project.invitedMembers,
                 ]}
                 onRemove={handleRemoveProject}
               />

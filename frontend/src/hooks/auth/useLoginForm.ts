@@ -27,7 +27,7 @@ export default function useLoginForm() {
       setAccessToken(response.data.access_token);
       await setupUserData();
       toast.success("Успешный вход!");
-      navigate("/app");
+      navigate("/projects");
     } else if (response.type === "error") {
       toast.error(response.detail);
     }

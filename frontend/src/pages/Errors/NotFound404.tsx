@@ -8,7 +8,7 @@ const NotFound404: Component = () => {
         <h1 class="text-8xl decoration-amber-50 animate-bounce">404</h1>
         <h2 class="text-2xl decoration-amber-50">Страница не найдена :(</h2>
         <img />
-        <A href="/app">
+        <A href="/projects">
           <button class="btn btn-primary p-5 m-5 rounded-xl">Главная</button>
         </A>
       </div>
