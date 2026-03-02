@@ -3,14 +3,17 @@ from datetime import datetime
 from pydantic import UUID4, Field, field_validator
 
 from shared.base_schema import BaseSchema
-from users.schemas import UserOut
+
+
+class ProjectMember(BaseSchema):
+    username: str
+    avatar: str | None = None
 
 
 class ProjectOut(BaseSchema):
     id: UUID4
     title: str
-    owner: UserOut
-    members: list[UserOut]
+    invited_members: list[ProjectMember]
     modified_at: datetime
 
 

@@ -1,4 +1,4 @@
-from typing import Self
+from typing import Literal, Self
 
 from fastapi.datastructures import UploadFile
 from pydantic import field_validator, model_validator
@@ -8,6 +8,7 @@ from pydantic.types import UUID4
 from tortoise.contrib.pydantic import pydantic_model_creator
 
 from auth.schemas import UserValidatorsMixin
+from projects_management.models.invitations import InvitationStatus
 from shared.base_schema import BaseSchema
 from users.models import Users
 
@@ -107,3 +108,7 @@ class Invitation(BaseSchema):
     id: UUID4
     sender_username: str
     project_title: str
+
+
+class InvitationUpdate(BaseModel):
+    status: Literal[InvitationStatus.ACCEPTED, InvitationStatus.REJECTED]

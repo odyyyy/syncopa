@@ -4,8 +4,15 @@ from fastapi import APIRouter, Depends, File, Form, UploadFile
 from auth.config import auth
 from core.settings import get_settings
 from shared.dependencies import AccessTokenRequiredPayload
-from users.schemas import Invitation, UserOut, UserUpdateIn, UserUpdateOut
+from users.schemas import (
+    Invitation,
+    InvitationUpdate,
+    UserOut,
+    UserUpdateIn,
+    UserUpdateOut,
+)
 from users.services import (
+    change_invitation_status,
     get_matched_users_by_username,
     get_user_avatar_base64,
     get_user_by_id,
@@ -24,9 +31,10 @@ async def get_current_user_info(
     payload: AccessTokenRequiredPayload,
 ):
     user_data = await get_user_by_id(payload.sub)
-    user_data.avatar = await get_user_avatar_base64(
-        get_settings().BASE_AVATARS_DIR / user_data.avatar
-    )
+    if user_data.avatar:
+        user_data.avatar = await get_user_avatar_base64(
+            get_settings().BASE_AVATARS_DIR / user_data.avatar
+        )
     return user_data
 
 
@@ -36,7 +44,11 @@ async def search_users_by_username(username: str):
     return users
 
 
-@users_router.patch("/", response_model=UserUpdateOut, response_model_exclude_none=True)
+@users_router.patch(
+    "/",
+    response_model=UserUpdateOut,
+    response_model_exclude_none=True,
+)
 async def update_user_account_info(
     email: str | None = Form(None),
     username: str | None = Form(None),
@@ -59,4 +71,16 @@ async def update_user_account_info(
 @users_router.get("/me/invitations", response_model=list[Invitation])
 async def user_invitations_list(user_payload: AccessTokenRequiredPayload):
     user_invitations = await get_user_invitations(user_payload.sub)
+    return user_invitations
+
+
+@users_router.patch("/me/invitations/{invitation_id}")
+async def patch_invitation_status(
+    invitation_id: str,
+    user_payload: AccessTokenRequiredPayload,
+    invitation_update: InvitationUpdate,
+):
+    user_invitations = await change_invitation_status(
+        invitation_id, invitation_update.status, user_payload.sub
+    )
     return user_invitations

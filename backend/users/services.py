@@ -30,6 +30,7 @@ async def get_matched_users_by_username(username: str):
     return users
 
 
+# Invitations
 async def get_user_invitations(user_id: str):
     invitations = await Invitations.filter(
         Q(to_user=user_id)
@@ -41,6 +42,32 @@ async def get_user_invitations(user_id: str):
     return invitations
 
 
+@transactions.atomic()
+async def change_invitation_status(
+    invitation_id: str, status: InvitationStatus, user_id: str
+):
+    invitation = await Invitations.filter(
+        id=invitation_id,
+        to_user=user_id
+    ).select_related("project").first()
+    if invitation is None:
+        raise ValueError("Данные о приглашении не найдены")
+
+    invitation.status = status
+
+    if invitation.status == InvitationStatus.ACCEPTED.value:
+        from projects_management.services import add_member_to_project
+
+        await add_member_to_project(
+            user_id=user_id,
+            project=invitation.project,
+        )
+
+    await invitation.save()
+    return invitation
+
+
+# Data update
 @transactions.atomic()
 async def update_user_data(user_id: str, user_data: UserUpdateIn):
     user_updated_data: dict = user_data.model_dump(exclude_none=True)
@@ -75,6 +102,7 @@ async def update_user_data(user_id: str, user_data: UserUpdateIn):
     return user_updated_data
 
 
+# Images
 async def get_avatar_path(avatar: UploadFile, user_id: str) -> str:
 
     avatar_extension = get_image_extension_by_memetype(avatar)

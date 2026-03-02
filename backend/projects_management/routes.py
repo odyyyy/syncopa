@@ -1,36 +1,29 @@
-from fastapi.responses import JSONResponse
+import asyncio
+
 from fastapi.routing import APIRouter
 from pydantic.types import UUID4
+from fastapi import status
 
 from projects_management.services import (
     create_project_and_invite_members,
     delete_project,
     get_user_projects,
+    serialize_project,
 )
 from shared.dependencies import AccessTokenRequiredPayload
 
-from .schemas import ProjectIn
+from .schemas import ProjectIn, ProjectOut
 
 project_router = APIRouter(prefix="/projects", tags=["projects"])
 
 
-@project_router.get("")
+@project_router.get("", response_model=list[ProjectOut])
 async def projects_list(user_payload: AccessTokenRequiredPayload):
-    user_projects = await get_user_projects(user_payload.sub)
-    return JSONResponse(
-        content=[
-            {
-                "id": str(project.id),
-                "title": str(project.title),
-                "members": list(project.invited_members),
-                "modifiedAt": str(project.modified_at),
-            }
-            for project in user_projects
-        ]
-    )
+    projects = await get_user_projects(user_payload.sub)
+    return await asyncio.gather(*(serialize_project(p) for p in projects))
 
 
-@project_router.post("", status_code=201)
+@project_router.post("", status_code=status.HTTP_201_CREATED)
 async def project_create(
     project_data: ProjectIn, user_payload: AccessTokenRequiredPayload
 ):
