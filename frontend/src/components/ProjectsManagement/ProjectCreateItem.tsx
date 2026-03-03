@@ -214,12 +214,25 @@ const ProjectCreatePopup: Component<{
                             class="list-row cursor-pointer hover:bg-base-200"
                             onclick={() => addMember(user.username)}
                           >
-                            <div>
+                            <Show
+                              when={user.avatar}
+                            >
                               <img
                                 class="size-5  rounded-box"
-                                src="https://img.daisyui.com/images/profile/demo/1@94.webp"
+                                src={user.avatar}
                               />
-                            </div>
+                            </Show>
+                            <Show
+                              when={!user.avatar}
+                            >
+                              <div
+                                class="avatar avatar-placeholder hover:scale-105 hover:z-50 transition-all duration-150"
+                              >
+                                <div class="bg-neutral text-neutral-content size-5 rounded-full">
+                                  <span>{user.username.charAt(0).toUpperCase()}</span>
+                                </div>
+                              </div>
+                            </Show>
                             <div>
                               <div>{user.username}</div>
                             </div>

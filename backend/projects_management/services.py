@@ -74,16 +74,10 @@ async def add_member_to_project(user_id: str, project: Projects):
 
 async def serialize_project(project: Projects):
     members = await project.invited_members.all()
-
-    members_get_avatars_tasks = [
-        get_user_avatar_base64(get_settings().BASE_AVATARS_DIR / member.avatar)
-        if member.avatar
-        else asyncio.sleep(0, result=None)
-        for member in members
-    ]
-
-    members_avatars = await asyncio.gather(*members_get_avatars_tasks)
-
+    if members:
+        members_avatars = await gather_users_avatars(members)
+    else:
+        members_avatars = []
     serialized_members = [
         ProjectMember(username=m.username, avatar=avatar)
         for m, avatar in zip(members, members_avatars, strict=False)
@@ -95,3 +89,27 @@ async def serialize_project(project: Projects):
         invited_members=serialized_members,
         modified_at=project.modified_at,
     )
+
+
+async def gather_users_avatars(users: list[Users]):
+    results = [None] * len(users)
+
+    tasks = []
+    indices = []
+
+    base_dir = get_settings().BASE_AVATARS_DIR
+
+    for i, user in enumerate(users):
+        if user.avatar:
+            tasks.append(get_user_avatar_base64(base_dir / user.avatar))
+            indices.append(i)
+
+    if not tasks:
+        return results
+
+    avatars = await asyncio.gather(*tasks)
+
+    for idx, avatar in zip(indices, avatars, strict=False):
+        results[idx] = avatar
+
+    return results

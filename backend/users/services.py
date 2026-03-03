@@ -24,9 +24,10 @@ async def get_user_by_id(user_id: str):
 
 
 async def get_matched_users_by_username(username: str):
-    users = await Users.filter(username__icontains=username).values(
-        "username", "avatar"
-    )
+    from projects_management.services import gather_users_avatars
+
+    users = await Users.filter(username__icontains=username).only("username", "avatar")
+    users = await gather_users_avatars(users)
     return users
 
 
@@ -46,10 +47,11 @@ async def get_user_invitations(user_id: str):
 async def change_invitation_status(
     invitation_id: str, status: InvitationStatus, user_id: str
 ):
-    invitation = await Invitations.filter(
-        id=invitation_id,
-        to_user=user_id
-    ).select_related("project").first()
+    invitation = (
+        await Invitations.filter(id=invitation_id, to_user=user_id)
+        .select_related("project")
+        .first()
+    )
     if invitation is None:
         raise ValueError("Данные о приглашении не найдены")
 

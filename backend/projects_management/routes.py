@@ -1,8 +1,8 @@
 import asyncio
 
+from fastapi import status
 from fastapi.routing import APIRouter
 from pydantic.types import UUID4
-from fastapi import status
 
 from projects_management.services import (
     create_project_and_invite_members,
