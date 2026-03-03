@@ -4,6 +4,7 @@ import ProjectCreatePopup from "../components/ProjectsManagement/ProjectCreateIt
 import UserPanel from "../components/User/UserPanel";
 import { useProjectsApi } from "../api/projects-management.api";
 import { userData } from "../store/user";
+import { A } from "@solidjs/router";
 
 const ProjectsManagement: Component = () => {
   const { getProjectsList } = useProjectsApi();
@@ -31,27 +32,29 @@ const ProjectsManagement: Component = () => {
         <main class="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6 max-w-8xl mx-auto">
           <For each={projects()}>
             {(project) => (
-              <ProjectItemCard
-                id={project.id}
-                title={project.title}
-                modifiedAt={
-                  project.modifiedAt
-                    ? new Date(project.modifiedAt)
-                        .toLocaleString()
-                        .replace(/,/g, "\u00A0\u00A0")
-                        .slice(0, -3)
-                    : "Не известно"
-                }
-                invitedMembers={[
-                  {
-                    username: userData.username,
-                    avatar: userData.avatar,
-                  },
+              <A href={`/projects/${project.id}`}>
+                <ProjectItemCard
+                  id={project.id}
+                  title={project.title}
+                  modifiedAt={
+                    project.modifiedAt
+                      ? new Date(project.modifiedAt)
+                          .toLocaleString()
+                          .replace(/,/g, "\u00A0\u00A0")
+                          .slice(0, -3)
+                      : "Не известно"
+                  }
+                  invitedMembers={[
+                    {
+                      username: userData.username,
+                      avatar: userData.avatar,
+                    },
 
-                  ...project.invitedMembers,
-                ]}
-                onRemove={handleRemoveProject}
-              />
+                    ...project.invitedMembers,
+                  ]}
+                  onRemove={handleRemoveProject}
+                />
+              </A>
             )}
           </For>
 

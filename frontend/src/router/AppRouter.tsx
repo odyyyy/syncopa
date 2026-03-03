@@ -11,7 +11,10 @@ const ProjectsManagement = lazy(() => import("../pages/ProjectsManagement"));
 
 const NotFound404 = lazy(() => import("../pages/errors/NotFound404"));
 
+const SyncopaApp = lazy(() => import("../pages/SyncopaApp"));
+
 const ProtectedProjectsProtected = withAuth(ProjectsManagement);
+const ProtectedSyncopaApp = withAuth(SyncopaApp);
 
 const LoginGuest = withGuest(Login);
 const RegisterGuest = withGuest(Register);
@@ -23,7 +26,7 @@ const AppRouter: Component = () => {
       <Route path="login/" component={LoginGuest} />
       <Route path="register/" component={RegisterGuest} />
       <Route path="projects/" component={ProtectedProjectsProtected} />
-      <Route path="projects/:uuid" component={ProtectedProjectsProtected} />
+      <Route path="projects/:uuid" component={ProtectedSyncopaApp} />
       <Route path="*404" component={NotFound404} />
     </Router>
   );
