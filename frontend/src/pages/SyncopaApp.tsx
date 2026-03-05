@@ -1,7 +1,7 @@
 import { useParams } from "@solidjs/router";
 import { Component, onMount } from "solid-js";
-import SyncopaUpperControlPanel from "../components/SyncopaApp/SyncopaUpperControlPanel";
-import SyncopaLowerControlPanel from "../components/SyncopaApp/SyncopaLowerControlPanel";
+import UpperControlPanel from "../components/SyncopaApp/UpperControlPanel";
+import LowerControlPanel from "../components/SyncopaApp/LowerControlPanel";
 import SyncopaMain from "../components/SyncopaApp/SyncopaMain";
 
 const SyncopaApp: Component = () => {
@@ -13,9 +13,9 @@ const SyncopaApp: Component = () => {
 
   return (
     <div class="flex flex-col h-screen">
-      <SyncopaUpperControlPanel />
+      <UpperControlPanel />
       <SyncopaMain />
-      <SyncopaLowerControlPanel />
+      <LowerControlPanel />
     </div>
   );
 };

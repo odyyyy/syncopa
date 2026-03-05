@@ -1,34 +1,64 @@
-import { Component } from "solid-js";
+import { Component, createSignal } from "solid-js";
 import ThemeController from "../utils/ThemeController";
 
-const SyncopaUpperControlPanel: Component = () => {
+const UpperControlPanel: Component = () => {
+  const [time, setTime] = createSignal("00:00.0");
+
   return (
-    <nav class="navbar bg-base-200 p-2 shadow-sm relative z-40 shrink-0">
+    <nav class="navbar bg-header p-2.5 shadow-sm relative z-40 shrink-0">
       <div class="navbar-start gap-1">
         {/*<h2>Projectasdasdsd</h2>*/}
         <div class="dropdown dropdown-hover">
           <div tabindex="0" role="button" class="btn-main m-1 p-2">
+            <svg
+              viewBox="0 0 16 16"
+              class="h-5 w-5 fill-current"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                fill-rule="evenodd"
+                clip-rule="evenodd"
+                d="M2 13.122a1 1 0 0 0 .741.966l7 1.876A1 1 0 0 0 11 14.998V14h2a1 1 0 0 0 1-1V3a1 1 0 0 0-1-1h-2v-.994A1 1 0 0 0 9.741.04l-7 1.876A1 1 0 0 0 2 2.882zM9 2.31v11.384l-5-1.34V3.65zM11 12V4h1v8z"
+              />
+            </svg>
             Проект
           </div>
           <ul
             tabindex="-1"
             class="dropdown-content rounded-2xl menu bg-base-200 z-1 w-40 p-2 shadow-sm"
           >
-            <li>
-              <a>Item 1</a>
+            <li class="hover:bg-base-200 border-b border-b-base-300 w-full">
+              <div class="hover:bg-base-200 cursor-default ">
+                <p class="text-base text-center">Project name</p>
+              </div>
             </li>
             <li>
-              <a>Item 2</a>
+              <a>Новый проект</a>
+            </li>
+            <li>
+              <a>Сохранить</a>
+            </li>
+            <li>
+              <a>Импорт</a>
+            </li>
+            <li>
+              <a>Экспорт</a>
+            </li>
+            <li>
+              <a>Закрыть</a>
             </li>
           </ul>
         </div>
 
         {/* Undo */}
-        <button class="btn-main">
+        <button
+          class="btn-main bg-header tooltip tooltip-bottom"
+          data-tip="Действие назад"
+        >
           <svg
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
-            class="h-7 w-7"
+            class="h-7 w-7 "
             fill="none"
           >
             <path
@@ -42,7 +72,10 @@ const SyncopaUpperControlPanel: Component = () => {
           </svg>
         </button>
         {/* Redo  */}
-        <button class="btn-main">
+        <button
+          class="btn-main bg-header tooltip tooltip-bottom"
+          data-tip="Действие вперед"
+        >
           <svg
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
@@ -64,7 +97,7 @@ const SyncopaUpperControlPanel: Component = () => {
       <div class="navbar-center">
         <ul class="menu menu-horizontal bg-base-200 rounded-box">
           {/* Backward */}
-          <li>
+          <li class="tooltip tooltip-bottom" data-tip="Воспроизвести с начала">
             <a>
               <svg
                 fill="currentColor"
@@ -79,7 +112,7 @@ const SyncopaUpperControlPanel: Component = () => {
           </li>
 
           {/* Play */}
-          <li>
+          <li class="tooltip tooltip-bottom" data-tip="Пуск">
             <a>
               <svg
                 fill="currentColor"
@@ -93,7 +126,7 @@ const SyncopaUpperControlPanel: Component = () => {
             </a>
           </li>
           {/* Record */}
-          <li>
+          <li class="tooltip tooltip-bottom tooltip-error" data-tip="Запись">
             <a>
               <svg
                 xmlns="http://www.w3.org/2000/svg"
@@ -104,9 +137,17 @@ const SyncopaUpperControlPanel: Component = () => {
               </svg>
             </a>
           </li>
+          <li class="text-xl ml-5 text-base-content/95 font-bold hover:bg">
+            {time()}
+          </li>
         </ul>
-        <div class="flex gap-2 items-center ">
-          <button class="btn-main p-2">
+      </div>
+
+      <div class="navbar-end gap-4">
+        {/* Volume Range */}
+
+        <div class="flex items-center ">
+          <button class="btn-main p-2 bg-base-200">
             <svg
               viewBox="0 0 800 800"
               class="w-5 h-5"
@@ -123,7 +164,6 @@ const SyncopaUpperControlPanel: Component = () => {
             </svg>
           </button>
 
-          {/* Volume Range */}
           <input
             type="range"
             min="0"
@@ -132,10 +172,8 @@ const SyncopaUpperControlPanel: Component = () => {
             class="range range-xs max-w-36 max-h-7"
           />
         </div>
-      </div>
 
-      <div class="navbar-end gap-4">
-        <button class="btn p-2 bg-primary text-neutral light:text-white">
+        <button class="btn p-2 bg-primary/80 text-neutral light:text-white">
           <svg
             viewBox="0 0 15 15"
             fill="currentColor"
@@ -157,7 +195,7 @@ const SyncopaUpperControlPanel: Component = () => {
           <svg
             viewBox="0 0 24 24"
             xmlns="http://www.w3.org/2000/svg"
-            class="w-5 h-5 icon flat-color fill-black"
+            class="w-5 h-5 icon flat-color fill-neutral"
           >
             <path d="M21 20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2 6 6 0 0 1 6-6h6a6 6 0 0 1 6 6m-9-8a5 5 0 1 0-5-5 5 5 0 0 0 5 5" />
           </svg>
@@ -170,4 +208,4 @@ const SyncopaUpperControlPanel: Component = () => {
   );
 };
 
-export default SyncopaUpperControlPanel;
+export default UpperControlPanel;

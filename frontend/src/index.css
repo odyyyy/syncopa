@@ -1,4 +1,6 @@
 @import "tailwindcss";
+/* Theme */
+
 @plugin "daisyui" {
     themes:
         luxury --default,
@@ -74,28 +76,6 @@
     font-display: swap;
 }
 
-/* АНИМАЦИЯ СМЕНЫ КОМПОНЕНТОВ-СТРАНИЦ */
-@layer utilities {
-    .page-enter {
-        opacity: 0;
-        transform: translateY(8px);
-    }
-    .page-enter-active {
-        opacity: 1;
-        transform: translateY(0);
-        transition: 200ms ease-out;
-    }
-    .page-exit {
-        opacity: 1;
-        transform: translateY(0);
-    }
-    .page-exit-active {
-        opacity: 0;
-        transform: translateY(-8px);
-        transition: 200ms ease-in;
-    }
-}
-
 /* Переопределение стилей input-полей */
 :root {
     --input-border: 1px solid #d1d5db;
@@ -118,6 +98,34 @@
     border: var(--input-focus-border) !important;
     box-shadow: var(--input-focus-ring) !important;
     outline: none !important;
+}
+
+/*Header DAW Control Panel*/
+@layer components {
+    .bg-header {
+        @apply bg-base-200/33;
+    }
+}
+
+/* Btn */
+
+@layer components {
+    .btn-main {
+        @apply btn p-1 size-fit border-none shadow-none hover:bg-base-content/10;
+    }
+    .icon-size {
+        @apply w-5.5 h-5.5;
+    }
+}
+
+/* Tracks */
+@layer components {
+    .tact-el {
+        @apply bg-base-300/70 border-r border-r-base-100/37;
+    }
+    .tact {
+        @apply bg-base-300 border-b border-b-base-100/20 gap-0 grid grid-cols-4 grid-flow-col w-full h-25 max-h-30;
+    }
 }
 
 /* Animations */
