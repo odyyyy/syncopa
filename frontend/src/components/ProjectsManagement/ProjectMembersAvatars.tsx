@@ -6,7 +6,13 @@ const ProjectMembersAvatars: Component<{ members: MemberAvatarProps[] }> = (
   const membersToShow = 3;
   const restMemberNumber = props.members.length - membersToShow;
   return (
-    <div class="avatar-group  -space-x-6  p-0.5 -mr-2">
+    <div
+      class="avatar-group  -space-x-6  p-0.5 -mr-2 cursor-default"
+      onclick={(e) => {
+        e.stopPropagation();
+        e.preventDefault();
+      }}
+    >
       <For each={props.members.slice(0, membersToShow)}>
         {(member, index) => (
           <>

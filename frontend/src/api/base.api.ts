@@ -7,6 +7,7 @@ export async function apiRequest<T>(input: RequestInfo, init?: RequestInit, fetc
       return {
         type: "error" as const,
         detail: data?.detail,
+        status: response.status
       };
     }
 

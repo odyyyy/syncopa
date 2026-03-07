@@ -1,1 +1,1 @@
-type ApiResponse<T> = Promise<{ type: "success"; data: T } | { type: "error"; detail?: string }>
+type ApiResponse<T> = Promise<{ type: "success"; data: T } | { type: "error"; detail?: string; status?: number }>

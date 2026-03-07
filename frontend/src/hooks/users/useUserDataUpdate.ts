@@ -23,7 +23,6 @@ export default function useUserDataUpdate() {
   const { updateUserData } = useUserDataManagementApi();
   const handleUserDataUpdate = async (formRef: HTMLFormElement) => {
     const formData = new FormData(formRef);
-    console.log(formData)
     if (avatarFile()) {
       formData.append("avatar", avatarFile()!);
     }
@@ -33,8 +32,6 @@ export default function useUserDataUpdate() {
 
     const response = await updateUserData(formData);
     if (response.type === "success") {
-      console.log(response.data);
-      console.log(response.data)
       Object.entries(response.data).forEach(([key, value]) => {
         setUserData(key as keyof User, value);
       });

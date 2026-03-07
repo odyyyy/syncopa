@@ -32,7 +32,6 @@ const ProjectsManagement: Component = () => {
         <main class="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6 max-w-8xl mx-auto">
           <For each={projects()}>
             {(project) => (
-              <A href={`/projects/${project.id}`}>
                 <ProjectItemCard
                   id={project.id}
                   title={project.title}
@@ -54,7 +53,6 @@ const ProjectsManagement: Component = () => {
                   ]}
                   onRemove={handleRemoveProject}
                 />
-              </A>
             )}
           </For>
 

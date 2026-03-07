@@ -57,25 +57,39 @@ const ProjectItemContextMenu: Component<ContextMenuProps> = (
       toast.success(`Проект ${res.data.title} успешно удален`);
       props.onRemove?.(props.project_id);
     } else {
-      toast.error("Ошибка при удалении проекта");
+      if (res.status === 403) {
+        toast.error("Проект может удалять только его создатель");
+      } else if (res.status === 404) {
+        toast.error("Проект не найден");
+      } else {
+        toast.error("Ошибка при удалении проекта");
+      }
     }
     return res;
   };
 
   return (
-    <div class="relative ">
+    <div class="relative project-item-context-menu">
       {/* Trigger */}
       <div
         ref={triggerRef}
         onClick={(e) => {
           e.stopPropagation();
+          e.preventDefault();
           setOpenContextMenu(!openContextMenu());
         }}
       >
         {props.children}
       </div>
       <Show when={openContextMenu()}>
-        <ul class="menu bg-base-200 absolute z-50 rounded-xl w-51  right-0 ">
+        <ul
+          class="menu bg-base-200 absolute z-50 rounded-xl w-51  right-0 "
+          onClick={(e) => {
+            e.stopPropagation();
+            e.preventDefault();
+            setOpenContextMenu(!openContextMenu());
+          }}
+        >
           <li>
             <a>
               <svg
