@@ -1,7 +1,7 @@
 from tortoise import BaseDBAsyncClient, timezone
 from tortoise.signals import post_save
 
-from projects_management.models import ProjectsPayloads
+from daw.models import ProjectsPayloads
 from projects_management.models.projects import Projects
 
 

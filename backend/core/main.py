@@ -7,6 +7,7 @@ from tortoise.exceptions import DoesNotExist
 from auth.config import setup_auth
 from auth.exceptions import AuthException
 from auth.routes import auth_router
+from daw.routes import daw_router
 from projects_management.routes import project_router
 from users.routes import users_router
 
@@ -32,6 +33,8 @@ api_router = APIRouter(prefix="/api")
 api_router.include_router(auth_router)
 api_router.include_router(users_router)
 api_router.include_router(project_router)
+api_router.include_router(daw_router)
+
 
 app.include_router(api_router)
 
