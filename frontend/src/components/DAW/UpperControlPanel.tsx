@@ -1,11 +1,18 @@
-import { Component, createSignal } from "solid-js";
+import { Component, createSignal, useContext } from "solid-js";
 import ThemeController from "../utils/ThemeController";
+import useProjectPayloadManager from "../../hooks/daw/useProjectPayloadManager";
+import { ProjectContext } from "../../context/daw";
+import { useProjectData } from "../../hooks/daw/useProject";
+
 
 const UpperControlPanel: Component = () => {
   const [time, setTime] = createSignal("00:00.0");
+  const { project } = useProjectData();
+
+  const { saveProjectChanges } = useProjectPayloadManager();
 
   return (
-    <nav class="navbar bg-header p-2.5 shadow-sm relative z-40 shrink-0">
+    <nav class="navbar bg-header p-2.5 shadow-sm relative z-40 shrink-0 ">
       <div class="navbar-start gap-1">
         {/*<h2>Projectasdasdsd</h2>*/}
         <div class="dropdown dropdown-hover">
@@ -29,13 +36,18 @@ const UpperControlPanel: Component = () => {
           >
             <li class="hover:bg-base-200 border-b border-b-base-300 w-full">
               <div class="hover:bg-base-200 cursor-default ">
-                <p class="text-base text-center">Project name</p>
+                <p class="text-base text-center">{project()?.title}</p>
               </div>
             </li>
             <li>
               <a>Новый проект</a>
             </li>
-            <li>
+            <li
+              onclick={(e) => {
+                e.preventDefault();
+                saveProjectChanges(project()?.projectId ?? "");
+              }}
+            >
               <a>Сохранить</a>
             </li>
             <li>
@@ -141,13 +153,8 @@ const UpperControlPanel: Component = () => {
             {time()}
           </li>
         </ul>
-      </div>
-
-      <div class="navbar-end gap-4">
-        {/* Volume Range */}
-
-        <div class="flex items-center ">
-          <button class="btn-main p-2 bg-base-200">
+        <div class="flex items-center ml-3">
+          <button class="btn-main p-2 bg-base-200 mr-1">
             <svg
               viewBox="0 0 800 800"
               class="w-5 h-5"
@@ -172,8 +179,12 @@ const UpperControlPanel: Component = () => {
             class="range range-xs max-w-36 max-h-7"
           />
         </div>
+      </div>
 
-        <button class="btn p-2 bg-primary/80 text-neutral light:text-white">
+      <div class="navbar-end gap-4">
+        {/* Volume Range */}
+
+        {/*<button class="btn p-2 bg-primary/80 text-neutral light:text-white">
           <svg
             viewBox="0 0 15 15"
             fill="currentColor"
@@ -200,7 +211,7 @@ const UpperControlPanel: Component = () => {
             <path d="M21 20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2 6 6 0 0 1 6-6h6a6 6 0 0 1 6 6m-9-8a5 5 0 1 0-5-5 5 5 0 0 0 5 5" />
           </svg>
           Пригласить
-        </button>
+        </button>*/}
 
         <ThemeController />
       </div>

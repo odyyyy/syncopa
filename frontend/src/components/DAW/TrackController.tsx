@@ -1,16 +1,16 @@
 import { Component } from "solid-js";
+import useMainDawTrackPanel from "../../hooks/daw/useTracksManagerPanel";
+import { Track } from "../../types/daw.types";
 
 interface TrackControllerProps {
-  track: {
-    id: number;
-    name: string;
-    elements: any[];
-  };
+  track: Track
 }
 
 const TrackController: Component<TrackControllerProps> = ({ track }) => {
+  const { onTrackVolumeChange } = useMainDawTrackPanel();
+  
   return (
-    <div class="flex flex-col h-25 max-h-30 w-full bg-base-100/22  justify-between p-2 border-b border-b-base-300">
+    <div class="flex flex-col h-25 max-h-30 w-full bg-base-100/22  justify-between p-2 border-b border-b-base-300 ">
       <div class="flex justify-start ">
         <div class="flex items-center gap-2 justify-center stroke-black stroke-2 fill-current ">
           <svg
@@ -26,8 +26,8 @@ const TrackController: Component<TrackControllerProps> = ({ track }) => {
           <input
             class="text-base w-fit selection:bg-base-content/15 cursor-pointer focus-visible:border-none outline-none  border-none user-select-none"
             type="text"
-            value={track.name}
-            onChange={(e) => track.name = e.target.value}
+            value={track.title}
+            onChange={(e) => track.title = e.target.value}
           />
         </div>
       </div>
@@ -37,7 +37,8 @@ const TrackController: Component<TrackControllerProps> = ({ track }) => {
             type="range"
             min="0"
             max="100"
-            value="50"
+            value={track.volume ?? 50}
+            oninput={(e) => onTrackVolumeChange(e, track.trackId)}
             class="range range-xs max-w-50 w-50 max-h-4"
           />
         </div>

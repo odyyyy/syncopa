@@ -1,21 +1,31 @@
-import { useParams } from "@solidjs/router";
-import { Component, onMount } from "solid-js";
-import UpperControlPanel from "../components/SyncopaApp/UpperControlPanel";
-import LowerControlPanel from "../components/SyncopaApp/LowerControlPanel";
-import SyncopaMain from "../components/SyncopaApp/SyncopaMain";
+import { Component, onCleanup, onMount } from "solid-js";
+import UpperControlPanel from "../components/DAW/UpperControlPanel";
+import LowerControlPanel from "../components/DAW/LowerControlPanel";
+import MainDawTrackPanel from "../components/DAW/MainDawTrackPanel";
+import { ProjectProvider } from "../context/daw";
 
 const SyncopaApp: Component = () => {
-  onMount(() => {
-    const { uuid } = useParams();
+  
+  const onBeforeUnload = (event: BeforeUnloadEvent) => {
+    event.preventDefault();
+    event.returnValue = "";
+    return "";
+  };
 
-    console.log(uuid);
+  onMount(() => {
+    window.addEventListener("beforeunload", onBeforeUnload);
+    onCleanup(() => {
+      window.removeEventListener("beforeunload", onBeforeUnload);
+    });
   });
 
   return (
     <div class="flex flex-col h-screen">
-      <UpperControlPanel />
-      <SyncopaMain />
-      <LowerControlPanel />
+      <ProjectProvider>
+        <UpperControlPanel />
+        <MainDawTrackPanel />
+        <LowerControlPanel />
+      </ProjectProvider>
     </div>
   );
 };

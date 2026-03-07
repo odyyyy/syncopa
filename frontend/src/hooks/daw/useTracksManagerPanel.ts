@@ -1,21 +1,10 @@
-import { createSignal } from "solid-js";
-import { createStore } from "solid-js/store";
+import { createSignal, useContext } from "solid-js";
 import toast from "solid-toast";
+import { useProjectData } from "./useProject";
+import { Track } from "../../types/daw.types";
 
-const useTracksManagerPanel = () => {
-  const [tracks, setTracks] = createStore([
-    {
-      id: 1,
-      name: "Track 1",
-      elements: [],
-    },
-    {
-      id: 2,
-      name: "Track 2",
-      elements: [],
-    },
-  ]);
-
+const useMainDawTrackPanel = () => {
+  const { tracks, setTracks } = useProjectData();
   const [tactWidth, setTactWidth] = createSignal(180);
   const [tactElementsNumber, setTactElementsNumber] = createSignal(30);
 
@@ -24,17 +13,18 @@ const useTracksManagerPanel = () => {
       toast.error("Максимальное количество дорожек достигнуто");
       return;
     }
+
     if (!title) {
       title = `Дорожка ${tracks.length + 1}`;
     }
-    if (!title.trim()) return;
-    setTracks((prev) => [
+
+    setTracks((prev: Track[]) => [
       ...prev,
-      { id: tracks.length + 1, name: title, elements: [] },
+      { trackId: tracks.length + 1, title: title, patterns: [], volume: 50 },
     ]);
   };
 
-  const handleWheel = (e: WheelEvent) => {
+  const handleOnWheelAndCtrlChangeTactsWidth = (e: WheelEvent) => {
     if (e.ctrlKey) {
       if (e.deltaY < 0) {
         setTactWidth((prev) => Math.min(prev + 20, 400));
@@ -44,13 +34,29 @@ const useTracksManagerPanel = () => {
     }
   };
 
+  const onTrackVolumeChange = (
+    e: Event & {
+      currentTarget: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
+    },
+    trackId: number,
+  ) => {
+    const trackIndex = tracks.findIndex((t) => t.trackId === trackId);
+
+    setTracks(trackIndex, (prev) => ({
+      ...prev,
+      volume: Number(e.currentTarget.value),
+    }));
+  };
+
   return {
     tracks,
     tactWidth,
     tactElementsNumber,
-    handleWheel,
+    handleOnWheelAndCtrlChangeTactsWidth,
     addNewTrack,
+    setTracks,
+    onTrackVolumeChange,
   };
 };
 
-export default useTracksManagerPanel;
+export default useMainDawTrackPanel;
