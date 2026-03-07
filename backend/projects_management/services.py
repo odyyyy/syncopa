@@ -3,6 +3,7 @@ import asyncio
 from pydantic import UUID4
 from tortoise import transactions
 from tortoise.exceptions import DoesNotExist
+from tortoise.expressions import Q
 
 from core.settings import get_settings
 from users.models import Users
@@ -48,21 +49,16 @@ async def invite_members(project: Projects, invited_members_usernames: list[str]
 
 async def get_user_projects(user_id: str):
     user_projects = (
-        await Projects.filter(owner__id=user_id)
+        await Projects.filter(Q(owner__id=user_id) | Q(invited_members__id=user_id))
         .prefetch_related("invited_members", "owner")
         .order_by("-modified_at")
     )
     return user_projects
 
 
-async def delete_project(project_id: UUID4, user_id: str):
-    deleted_project = await Projects.filter(id=project_id, owner__id=user_id).first()
-
-    if not deleted_project:
-        raise DoesNotExist("Проект не найден")
-
-    await deleted_project.delete()
-    return deleted_project
+async def delete_project(project: Projects):
+    await project.delete()
+    return project
 
 
 async def add_member_to_project(user_id: str, project: Projects):
@@ -72,16 +68,25 @@ async def add_member_to_project(user_id: str, project: Projects):
     await project.save()
 
 
-async def serialize_project(project: Projects):
-    members = await project.invited_members.all()
-    if members:
-        members_avatars = await gather_users_avatars(members)
-    else:
-        members_avatars = []
+async def serialize_project_users(project: Projects, user_id: str):
+    members = list(project.invited_members)
+
+    if project.owner.id != user_id:
+        members.append(project.owner)
+
+    members = [m for m in members if str(m.id) != user_id]
+
+    members_avatars = await gather_users_avatars(members)
     serialized_members = [
         ProjectMember(username=m.username, avatar=avatar)
         for m, avatar in zip(members, members_avatars, strict=False)
     ]
+
+    return serialized_members
+
+
+async def serialize_project(project: Projects, user_id: str):
+    serialized_members = await serialize_project_users(project, user_id)
 
     return ProjectOut(
         id=project.id,

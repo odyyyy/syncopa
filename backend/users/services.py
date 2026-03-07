@@ -12,6 +12,7 @@ from tortoise.expressions import Q
 from auth.utils import hash_password, verify_password
 from core.settings import get_settings
 from projects_management.models.invitations import Invitations, InvitationStatus
+from shared.dependencies import AccessTokenRequiredPayload
 from users.models import Users
 from users.schemas import UserUpdateIn
 
@@ -20,6 +21,17 @@ async def get_user_by_id(user_id: str):
     user = await Users.get_or_none(id=user_id)
     if user is None:
         raise DoesNotExist("Пользователь не найден")
+    return user
+
+
+async def get_current_user(
+    user_payload: AccessTokenRequiredPayload,
+) -> Users:
+    user = await Users.get_or_none(id=user_payload.sub)
+
+    if user is None:
+        raise DoesNotExist("Пользователь не найден")
+
     return user
 
 

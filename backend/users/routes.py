@@ -69,7 +69,7 @@ async def update_user_account_info(
 
 
 @users_router.get("/me/invitations", response_model=list[Invitation])
-async def user_invitations_list(user_payload: AccessTokenRequiredPayload):
+async def list_user_invitations(user_payload: AccessTokenRequiredPayload):
     user_invitations = await get_user_invitations(user_payload.sub)
     return user_invitations
 
