@@ -1,13 +1,13 @@
-import { Component, createSignal, useContext } from "solid-js";
-import ThemeController from "../utils/ThemeController";
-import useProjectPayloadManager from "../../hooks/daw/useProjectPayloadManager";
-import { ProjectContext } from "../../context/daw";
-import { useProjectData } from "../../hooks/daw/useProject";
-
+import { Component, Show } from "solid-js";
+import ThemeController from "../../utils/ThemeController";
+import useProjectPayloadManager from "../../../hooks/daw/useProjectPayloadManager";
+import { useProjectContext } from "../../../hooks/daw/context/useProjectContext";
+import useMainDawTrackPanel from "../../../hooks/daw/useTracksManagerPanel";
+import { usePlayerContext } from "../../../hooks/daw/context/usePlayerContext";
 
 const UpperControlPanel: Component = () => {
-  const [time, setTime] = createSignal("00:00.0");
-  const { project } = useProjectData();
+  const { project } = useProjectContext();
+  const { time, isPlaying, startOrPausePlaying, setPlayerBeatPos } = usePlayerContext();
 
   const { saveProjectChanges } = useProjectPayloadManager();
 
@@ -109,7 +109,8 @@ const UpperControlPanel: Component = () => {
       <div class="navbar-center">
         <ul class="menu menu-horizontal bg-base-200 rounded-box">
           {/* Backward */}
-          <li class="tooltip tooltip-bottom" data-tip="Воспроизвести с начала">
+          <li class="tooltip tooltip-bottom" data-tip="Воспроизвести с начала"
+            onclick={() => setPlayerBeatPos(0)}>
             <a>
               <svg
                 fill="currentColor"
@@ -124,17 +125,39 @@ const UpperControlPanel: Component = () => {
           </li>
 
           {/* Play */}
-          <li class="tooltip tooltip-bottom" data-tip="Пуск">
+          <li
+            class="tooltip tooltip-bottom"
+            data-tip={isPlaying() ? "Пауза" : "Пуск"}
+            onclick={startOrPausePlaying}
+          >
             <a>
-              <svg
-                fill="currentColor"
-                stroke="currentColor"
-                class="w-5 h-5"
-                viewBox="0 0 16 16"
-                xmlns="http://www.w3.org/2000/svg"
-              >
-                <path d="M5.008 12.897a.644.644 0 0 1-.91-.227.7.7 0 0 1-.098-.364V3.693C4 3.31 4.296 3 4.662 3a.64.64 0 0 1 .346.103l6.677 4.306a.713.713 0 0 1 0 1.182z" />
-              </svg>
+              <Show when={!isPlaying()}>
+                <svg
+                  fill="currentColor"
+                  stroke="currentColor"
+                  class="w-5 h-5"
+                  viewBox="0 0 16 16"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M5.008 12.897a.644.644 0 0 1-.91-.227.7.7 0 0 1-.098-.364V3.693C4 3.31 4.296 3 4.662 3a.64.64 0 0 1 .346.103l6.677 4.306a.713.713 0 0 1 0 1.182z" />
+                </svg>
+              </Show>
+              <Show when={isPlaying()}>
+                <svg
+                  viewBox="0 0 16 16"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  fill="currentColor"
+                  stroke="currentColor"
+                  class="w-5 h-5"
+                  stroke-linejoin="round"
+                  stroke-miterlimit="1.414"
+                >
+                  <path d="M5.5 3.68A.684.684 0 0 0 4.822 3H3.466a.684.684 0 0 0-.678.68v8.631c0 .374.303.677.678.677h1.355a.68.68 0 0 0 .678-.677V3.68z"/>
+                  <path d="M11.5 3.68a.685.685 0 0 0-.68-.681H9.46a.683.683 0 0 0-.68.68v8.628c0 .376.304.68.68.68h1.36c.373 0 .68-.307.68-.68z"/>
+                </svg>
+              </Show>
             </a>
           </li>
           {/* Record */}

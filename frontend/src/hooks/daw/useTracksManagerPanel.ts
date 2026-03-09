@@ -1,12 +1,24 @@
-import { createSignal, useContext } from "solid-js";
+import { createEffect, createSignal, useContext } from "solid-js";
 import toast from "solid-toast";
-import { useProjectData } from "./useProject";
+import { useProjectContext } from "./context/useProjectContext";
 import { Track } from "../../types/daw.types";
+import useUpperControlPanel from "./useUpperControlPanel";
+import { usePlayerContext } from "./context/usePlayerContext";
+import { useContextMenu } from "../../context/daw/contextmenu.context";
 
 const useMainDawTrackPanel = () => {
-  const { tracks, setTracks } = useProjectData();
+  const { tracks, setTracks } = useProjectContext();
+  const { playerBeatPos, setPlayerBeatPos } = usePlayerContext();
+
   const [tactWidth, setTactWidth] = createSignal(180);
-  const [tactElementsNumber, setTactElementsNumber] = createSignal(30);
+  const [playerHeadPos, setPlayerHeadPos] = createSignal<number>(0);
+  const [isPlaying, setIsPlaying] = createSignal(false);
+
+  const finalPlayerHeadPos = () => playerBeatPos() * tactWidth();
+  const { updateTimer } = useUpperControlPanel();
+  createEffect(() => {
+    updateTimer(playerBeatPos());
+  });
 
   const addNewTrack = (title: string | undefined = undefined) => {
     if (tracks.length > 50) {
@@ -48,14 +60,35 @@ const useMainDawTrackPanel = () => {
     }));
   };
 
+  const { openMenu } = useContextMenu();
+  
+  const handleContextMenu = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+    
+    openMenu(e.clientX, e.clientY, [
+      { label: "Добавить паттерн", onClick: () => {} },
+      { label: "Удалить дорожку", onClick: () => setTracks(prev => prev.slice(0, -1)) }
+    ]);
+    
+    
+  };
+
   return {
     tracks,
     tactWidth,
-    tactElementsNumber,
     handleOnWheelAndCtrlChangeTactsWidth,
     addNewTrack,
     setTracks,
     onTrackVolumeChange,
+    playerHeadPos,
+    setPlayerHeadPos,
+    isPlaying,
+    setIsPlaying,
+    finalPlayerHeadPos,
+    playerBeatPos,
+    setPlayerBeatPos,
+    handleContextMenu,
   };
 };
 

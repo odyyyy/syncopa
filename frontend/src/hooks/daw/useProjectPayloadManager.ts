@@ -1,10 +1,10 @@
 import toast from "solid-toast";
 import useDawApi from "../../api/daw.api";
-import { useProjectData } from "./useProject";
+import { useProjectContext } from "./context/useProjectContext";
 
 const useProjectPayloadManager = () => {
   const { updateProjectPayload } = useDawApi();
-  const { tracks } = useProjectData();
+  const { tracks } = useProjectContext();
 
   const saveProjectChanges = async (projectId: string) => {
     const res = await updateProjectPayload(projectId, {

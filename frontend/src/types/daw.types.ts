@@ -1,4 +1,4 @@
-import { Resource } from "solid-js";
+import { Accessor, Resource } from "solid-js";
 import { SetStoreFunction } from "solid-js/store";
 
 type ProjectWithPayload = {
@@ -63,6 +63,32 @@ type ProjectContextType = {
   setTracks: SetStoreFunction<Track[]>;
 };
 
+type PlayerContextType = {
+  time: Accessor<string>;
+  setTime: (time: string) => void;
+  bpm: Accessor<number>;
+  setBpm: (bpm: number) => void;
+  playerBeatPos: Accessor<number>;
+  setPlayerBeatPos: (beatPos: number) => void;
+  isPlaying: Accessor<boolean>;
+  setIsPlaying: (isPlaying: boolean) => void;
+  startOrPausePlaying: () => void;
+  tactElementsNumber: Accessor<number>;
+  setTactElementsNumber: (tactElementsNumber: number) => void;
+};
+
+type ContextMenuItems = {
+  x: number;
+  y: number;
+  items: any[];
+};
+
+
+type ContextMenuProviderType = {
+  openMenu: (x: number, y: number, items: any[]) => void;
+  closeMenu: () => void;
+};
+
 export type {
   ProjectWithPayload,
   ProjectPayload,
@@ -75,4 +101,7 @@ export type {
   Note,
   AudioClipMetadata,
   ProjectContextType,
+  PlayerContextType,
+  ContextMenuItems,
+  ContextMenuProviderType,
 };

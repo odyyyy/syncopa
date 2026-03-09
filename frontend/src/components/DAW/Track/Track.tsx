@@ -1,12 +1,15 @@
-import { Component, Index } from "solid-js";
+import { Component, createSignal, Index, Show } from "solid-js";
 
 type TrackProps = {
   tactElementsNumber: number;
 };
 
 const Track: Component<TrackProps> = (props) => {
+ 
   return (
-    <div class="bg-base-200/90 grid grid-flow-col w-full ">
+    <div
+      class="bg-base-200/90 grid grid-flow-col w-full "
+    >
       <Index each={Array.from({ length: props.tactElementsNumber })}>
         {(_, index) => (
           <div class="tact ">
@@ -17,7 +20,10 @@ const Track: Component<TrackProps> = (props) => {
           </div>
         )}
       </Index>
+
     </div>
+
+      
   );
 };
 export default Track;

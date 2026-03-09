@@ -1,14 +1,14 @@
 import { Component } from "solid-js";
-import useMainDawTrackPanel from "../../hooks/daw/useTracksManagerPanel";
-import { Track } from "../../types/daw.types";
+import useMainDawTrackPanel from "../../../hooks/daw/useTracksManagerPanel";
+import { Track } from "../../../types/daw.types";
 
 interface TrackControllerProps {
-  track: Track
+  track: Track;
 }
 
 const TrackController: Component<TrackControllerProps> = ({ track }) => {
   const { onTrackVolumeChange } = useMainDawTrackPanel();
-  
+
   return (
     <div class="flex flex-col h-25 max-h-30 w-full bg-base-100/22  justify-between p-2 border-b border-b-base-300 ">
       <div class="flex justify-start ">
@@ -27,7 +27,7 @@ const TrackController: Component<TrackControllerProps> = ({ track }) => {
             class="text-base w-fit selection:bg-base-content/15 cursor-pointer focus-visible:border-none outline-none  border-none user-select-none"
             type="text"
             value={track.title}
-            onChange={(e) => track.title = e.target.value}
+            onChange={(e) => (track.title = e.target.value)}
           />
         </div>
       </div>
