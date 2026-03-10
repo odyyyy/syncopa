@@ -10,7 +10,7 @@
 /*  winter corporate cupcake+-  */
 
 @plugin "daisyui/theme" {
-    name: "light";
+    name: "corporate";
     default: true;
     color-scheme: "light";
     --color-base-100: oklch(100% 0 0);
@@ -125,6 +125,9 @@
     }
     .tact {
         @apply bg-base-300 border-b border-b-base-100/20 gap-0 grid grid-cols-4 grid-flow-col w-full h-25 max-h-25;
+    }
+    .track {
+        @apply bg-base-200/90 grid grid-flow-col w-full relative;
     }
     .pattern {
         @apply absolute top-0 h-25 border border-base-100/40 bg-base-content/42 rounded-sm cursor-pointer;

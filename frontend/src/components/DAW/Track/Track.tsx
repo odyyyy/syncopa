@@ -1,14 +1,16 @@
-import { Component, createSignal, Index, Show } from "solid-js";
+import { Accessor, Component,  Index, Show } from "solid-js";
 import Pattern from "../Pattern/Pattern";
+import { PatternType } from "../../../types/daw.types";
 
 type TrackProps = {
-  trackId: number;
+  trackId: string;
+  patterns: PatternType[];
   tactElementsNumber: number;
 };
 
 export const Track: Component<TrackProps> = (props) => {
   return (
-    <div class="bg-base-200/90 grid grid-flow-col w-full relative">
+    <div  data-track-id={`${props.trackId}`} class="track">
       <Index each={Array.from({ length: props.tactElementsNumber })}>
         {(_, index) => (
           <div class="tact">
@@ -19,10 +21,14 @@ export const Track: Component<TrackProps> = (props) => {
           </div>
         )}
       </Index>
+      
+      
+      <Index each={props.patterns}>
+        {(pattern: Accessor<PatternType>) => (
+          <Pattern pattern={pattern} trackId={props.trackId} />
+        )}
+      </Index>
 
-      <Show when={props.trackId === 1}>
-        <Pattern />
-      </Show>
     </div>
   );
 };

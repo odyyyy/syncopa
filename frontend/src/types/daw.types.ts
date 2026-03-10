@@ -14,26 +14,29 @@ type ProjectPayload = {
 };
 
 type PayloadMetadata = {
+  bpm: number;
   totalVolume: number;
 };
 
 type Track = {
-  trackId: number;
+  trackId: string;
   title: string;
   volume: number;
-  patterns: Pattern[] | null;
+  patterns: PatternType[] | null;
 };
 
 type BasePattern = {
-  patternId: number;
+  patternId: string;
+  title: string;
   pos: number;
+  width: number;
   type: "audio" | "vst";
   ref: string | null;
 };
 
 type PatternVST = BasePattern & {
   type: "vst";
-  instrumentId: string;
+  instrumentId: string | null;
   notes: Note[] | null;
 };
 
@@ -43,7 +46,7 @@ type PatternAudio = BasePattern & {
   audioMetadata: AudioClipMetadata;
 };
 
-type Pattern = PatternVST | PatternAudio;
+type PatternType = PatternVST | PatternAudio;
 
 type Note = {
   pos: number;
@@ -77,6 +80,8 @@ type PlayerContextType = {
   startOrPausePlaying: () => void;
   tactElementsNumber: Accessor<number>;
   setTactElementsNumber: (tactElementsNumber: number) => void;
+  totalVolume: Accessor<number>;
+  setTotalVolume: (totalVolume: number) => void;
 };
 
 type ContextMenuItems = {
@@ -107,7 +112,7 @@ export type {
   BasePattern,
   PatternVST,
   PatternAudio,
-  Pattern,
+  PatternType,
   Note,
   AudioClipMetadata,
   ProjectContextType,

@@ -1,22 +1,54 @@
 import { createSignal, createEffect } from "solid-js";
 import { useTracksContext } from "../context/useTracksContext";
+import { PatternType } from "../../../types/daw.types";
+import { useProjectContext } from "../context/useProjectContext";
 
-const usePatternTransform = () => {
+const usePatternTransform = (pattern: PatternType, trackId: string) => {
   const { tactWidth, tactElementsNumber, beatNumber } = useTracksContext();
-
+  const { setTracks } = useProjectContext();
   const [isGrabbing, setIsGrabbing] = createSignal(false);
   const [patternPos, setPatternPos] = createSignal(0);
-  const [patternWidthInTacts, setPatternWidthInTacts] = createSignal(1);
+  const [patternPosInTacts, setPatternPosInTacts] = createSignal(pattern.pos);
+
+  const [patternWidthInTacts, setPatternWidthInTacts] = createSignal(pattern.width);
   const [isResizeLeft, setIsResizeLeft] = createSignal(false);
   const [isResizeRight, setIsResizeRight] = createSignal(false);
-
-  const [patternPosInTacts, setPatternPosInTacts] = createSignal(0);
-
+  
+  const updatePatternField = <K extends keyof PatternType>(
+    trackId: string,
+    patternId: string,
+    field: K,
+    value: PatternType[K]
+  ) => {
+    setTracks((prev) => {
+      const updatedTracks = [...prev];
+      const track = updatedTracks.find((t) => t.trackId === trackId);
+      if (track) {
+        track.patterns! = track.patterns!.map((p) =>
+          p.patternId === patternId ? { ...p, [field]: value } : p
+        );
+      }
+      return updatedTracks;
+    });
+  };
+  
   createEffect(() => {
     setPatternPos(patternPosInTacts() * tactWidth());
+    updatePatternField(trackId, pattern.patternId, 'pos', patternPosInTacts());
+  });
+  
+  createEffect(() => {
+    updatePatternField(trackId, pattern.patternId, 'width', patternWidthInTacts());
+  });
+  
+  
+  const patternWidth = () => patternWidthInTacts() * tactWidth();
+  
+  createEffect(() => {
+    
+    
   });
 
-  const patternWidth = () => patternWidthInTacts() * tactWidth();
 
   const handleGlobalMouseMove = (e: MouseEvent) => {
     if (isGrabbing()) {

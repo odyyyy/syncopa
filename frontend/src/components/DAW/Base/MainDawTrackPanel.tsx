@@ -76,6 +76,7 @@ const MainDawTrackPanel: Component = () => {
             {(track) => (
               <Track
                 trackId={track().trackId}
+                patterns={track().patterns ?? []}
                 tactElementsNumber={tactElementsNumber()}
               />
             )}

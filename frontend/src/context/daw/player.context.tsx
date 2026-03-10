@@ -10,11 +10,11 @@ export const PlayerProvider: ParentComponent = (props) => {
   const [isPlaying, setIsPlaying] = createSignal<boolean>(false);
   const [tactElementsNumber, setTactElementsNumber] = createSignal(30);
   
+  const [totalVolume, setTotalVolume] = createSignal(50);
   
   const [intervalId, setIntervalId] = createSignal<number | undefined>(
     undefined,
   );
-  
   const startOrPausePlaying = () => {
     setIsPlaying(!isPlaying());
 
@@ -42,6 +42,8 @@ export const PlayerProvider: ParentComponent = (props) => {
         startOrPausePlaying,
         tactElementsNumber,
         setTactElementsNumber,
+        totalVolume,
+        setTotalVolume,
       }}
     >
       {props.children}

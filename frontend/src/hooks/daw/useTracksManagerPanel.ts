@@ -6,6 +6,7 @@ import useUpperControlPanel from "./useUpperControlPanel";
 import { usePlayerContext } from "./context/usePlayerContext";
 import { useContextMenu } from "../../context/daw/contextmenu.context";
 import { useTracksContext } from "./context/useTracksContext";
+import usePatternManage from "./pattern/usePatternManage";
 
 const useMainDawTrackPanel = () => {
   const { tracks, setTracks } = useProjectContext();
@@ -33,7 +34,7 @@ const useMainDawTrackPanel = () => {
 
     setTracks((prev: Track[]) => [
       ...prev,
-      { trackId: tracks.length + 1, title: title, patterns: [], volume: 50 },
+      { trackId: crypto.randomUUID(), title: title, patterns: [], volume: 50 },
     ]);
   };
 
@@ -63,7 +64,7 @@ const useMainDawTrackPanel = () => {
     e: Event & {
       currentTarget: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
     },
-    trackId: number,
+    trackId: string,
   ) => {
     const trackIndex = tracks.findIndex((t) => t.trackId === trackId);
 
@@ -74,13 +75,23 @@ const useMainDawTrackPanel = () => {
   };
 
   const { openMenu } = useContextMenu();
+  const { addPatternOnTrack } = usePatternManage();
 
   const handleContextMenu = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
 
     openMenu(e.clientX, e.clientY, [
-      { label: "Добавить паттерн", onClick: () => {} },
+      {
+        label: "Добавить паттерн",
+        onClick: () => {
+          const trackId = (
+            (e.target as HTMLElement).closest(".track") as HTMLElement
+          )?.dataset.trackId;
+          if (!trackId) return;
+          addPatternOnTrack(trackId);
+        },
+      },
       {
         label: "Удалить дорожку",
         onClick: () => setTracks((prev) => prev.slice(0, -1)),

@@ -1,8 +1,11 @@
 import { onCleanup } from "solid-js";
 import { useTracksContext } from "../../../hooks/daw/context/useTracksContext";
 import usePatternTransform from "../../../hooks/daw/pattern/usePatternTransform";
+import { PatternType } from "../../../types/daw.types";
+import { Accessor } from "solid-js";
 
-const Pattern = () => {
+
+const Pattern = (props: { pattern: Accessor<PatternType>, trackId: string }) => {
   const {
     isGrabbing,
     patternPos,
@@ -12,7 +15,7 @@ const Pattern = () => {
     startResizeLeft,
     startResizeRight,
     startGrab,
-  } = usePatternTransform();
+  } = usePatternTransform(props.pattern(), props.trackId);
 
   const { tactWidth } = useTracksContext();
 
