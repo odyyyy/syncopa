@@ -1,4 +1,4 @@
-from typing import Literal, Optional
+from typing import Literal, Optional, Union
 
 from pydantic import UUID4, Field
 
@@ -15,30 +15,33 @@ class ProjectWithPayload(BaseSchema):
 
 class ProjectPayload(BaseSchema):
     metadata: Optional["PayloadMetadata"]
-    tracks: list["Track"]  = []
+    tracks: list["Track"] = []
 
 
 class PayloadMetadata(BaseSchema):
+    bpm: int = 120
     total_volume: int = Field(..., ge=0, le=100)
 
 
 class Track(BaseSchema):
-    track_id: int
+    track_id: str
     title: str
     volume: int = Field(..., ge=0, le=100)
-    patterns: list["Pattern"] | None
+    patterns: list[Union["PatternVST", "PatternAudio"]] | None = None
 
 
 class Pattern(BaseSchema):
-    pattern_id: int
-    pos: int
+    pattern_id: str
+    title: str
+    pos: float
+    width: float
     type: Literal["audio", "vst"]
     ref: str | None
 
 
 class PatternVST(Pattern):
-    instrument_id: str
-    notes: list["Note"] | None
+    instrument_id: str | None = None
+    notes: list["Note"] = Field(default_factory=list)
 
 
 class Note(BaseSchema):
@@ -54,6 +57,7 @@ class PatternAudio(Pattern):
 
 
 class AudioClipMetadata(BaseSchema):
+    id: str
     title: str
     duration: float
 
@@ -65,16 +69,17 @@ class AudioClipMetadata(BaseSchema):
             "payload": {
                 "metadata": {
                     "total_volume": 50
+                    "bpm": 120
                 },
                 "tracks": [
                     {
-                        "track_id": 0,
+                        "track_id": "c6b4e3fd-f003-43e8-bc93-a90919a0ef65",
                         "title": "Track 1",
                         "volume": 33,
                         "patterns": [
                             # Pattern with VST instrument
                             {
-                                "pattern_id": 0,
+                                "pattern_id": "a88514cb-2bb3-4dcb-a5af-1499b79f7d8a",
                                 "pos": 0,
                                 "type": "vst",
                                 "instrument_id": "piano-grand",
@@ -89,7 +94,7 @@ class AudioClipMetadata(BaseSchema):
                             },
                             # Pattern with audio clip
                             {
-                                "pattern_id": 1,
+                                "pattern_id": "b88514cb-2bb3-4dcb-a5af-1499b79f7d8a",
                                 "pos": 0,
                                 "type": "audio",
                                 "source": "http://s3.syncopa.daw/....",
@@ -102,8 +107,8 @@ class AudioClipMetadata(BaseSchema):
                         ]
                     },
                     {
-                        "track_id": 1,
-                        "title": "",
+                        "track_id": "32b1c0d5-681e-41b1-b639-b45c601ba06a",
+                        "title": "Track N",
                         "volume": 34,
                         "patterns": []
                     }

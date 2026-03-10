@@ -1,5 +1,3 @@
-from uuid import UUID
-
 from fastapi import Depends, HTTPException, status
 from pydantic.types import UUID4
 from tortoise.expressions import Q

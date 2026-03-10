@@ -3,6 +3,7 @@ from fastapi import APIRouter, Depends, File, Form, UploadFile
 
 from auth.config import auth
 from core.settings import get_settings
+from projects_management.schemas import ProjectMember
 from shared.dependencies import AccessTokenRequiredPayload
 from users.schemas import (
     Invitation,
@@ -38,7 +39,7 @@ async def get_current_user_info(
     return user_data
 
 
-@users_router.get("/")
+@users_router.get("/", response_model=list[ProjectMember])
 async def search_users_by_username(username: str):
     users = await get_matched_users_by_username(username.strip())
     return users

@@ -12,6 +12,7 @@ from tortoise.expressions import Q
 from auth.utils import hash_password, verify_password
 from core.settings import get_settings
 from projects_management.models.invitations import Invitations, InvitationStatus
+from projects_management.schemas import ProjectMember
 from shared.dependencies import AccessTokenRequiredPayload
 from users.models import Users
 from users.schemas import UserUpdateIn
@@ -39,7 +40,11 @@ async def get_matched_users_by_username(username: str):
     from projects_management.services import gather_users_avatars
 
     users = await Users.filter(username__icontains=username).only("username", "avatar")
-    users = await gather_users_avatars(users)
+    users_avatars = await gather_users_avatars(users)
+    users = [
+        ProjectMember(username=user.username, avatar=avatar)
+        for user, avatar in zip(users, users_avatars, strict=False)
+    ]
     return users
 
 
