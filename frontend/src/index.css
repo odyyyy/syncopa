@@ -124,7 +124,10 @@
         @apply bg-base-300/70 border-r border-r-base-100/37;
     }
     .tact {
-        @apply bg-base-300 border-b border-b-base-100/20 gap-0 grid grid-cols-4 grid-flow-col w-full h-25 max-h-30;
+        @apply bg-base-300 border-b border-b-base-100/20 gap-0 grid grid-cols-4 grid-flow-col w-full h-25 max-h-25;
+    }
+    .pattern {
+        @apply absolute top-0 h-25 border border-base-100/40 bg-base-content/42 rounded-sm cursor-pointer;
     }
 }
 
@@ -148,20 +151,20 @@
     }
 }
 @keyframes smoothAppear {
-  0% {
-    opacity: 0;
-    backdrop-filter: blur(0px);
-    background: rgba(255, 255, 255, 0);
-  }
-  100% {
-    opacity: 1;
-    backdrop-filter: blur(10px);
-    background: rgba(255, 255, 255, 0.1);
-  }
+    0% {
+        opacity: 0;
+        backdrop-filter: blur(0px);
+        background: rgba(255, 255, 255, 0);
+    }
+    100% {
+        opacity: 1;
+        backdrop-filter: blur(10px);
+        background: rgba(255, 255, 255, 0.1);
+    }
 }
 
 .animate-fade-smooth {
-  animation: smoothAppear 0.5s ease-out forwards;
+    animation: smoothAppear 0.5s ease-out forwards;
 }
 
 .animate-fade-in-up {

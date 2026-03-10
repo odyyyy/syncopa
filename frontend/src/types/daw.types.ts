@@ -57,6 +57,8 @@ type AudioClipMetadata = {
   duration: number;
 };
 
+// Context Types
+
 type ProjectContextType = {
   project: Resource<ProjectWithPayload | null>;
   tracks: Track[];
@@ -83,10 +85,18 @@ type ContextMenuItems = {
   items: any[];
 };
 
-
 type ContextMenuProviderType = {
   openMenu: (x: number, y: number, items: any[]) => void;
   closeMenu: () => void;
+};
+
+type TracksContextType = {
+  tactElementsNumber: Accessor<number>;
+  setTactElementsNumber: (value: number | ((prev: number) => number)) => void;
+  tactWidth: Accessor<number>;
+  setTactWidth: (value: number | ((prev: number) => number)) => void;
+  beatNumber: Accessor<number>;
+  setBeatNumber: (value: number | ((prev: number) => number)) => void;
 };
 
 export type {
@@ -104,4 +114,5 @@ export type {
   PlayerContextType,
   ContextMenuItems,
   ContextMenuProviderType,
+  TracksContextType,
 };

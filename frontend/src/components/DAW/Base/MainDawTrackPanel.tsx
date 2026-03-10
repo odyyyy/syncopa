@@ -1,22 +1,22 @@
 import { Component, Index, onCleanup, onMount } from "solid-js";
 import TrackController from "../Track/TrackController";
-import Track from "../Track/Track";
 import BaseTactsGrid from "../Track/BaseTactsGrid";
 import useMainDawTrackPanel from "../../../hooks/daw/useTracksManagerPanel";
 import { useProjectContext } from "../../../hooks/daw/context/useProjectContext";
 import { usePlayerContext } from "../../../hooks/daw/context/usePlayerContext";
 import useHotkeysGlobalEvents from "../../../hooks/daw/hotkeys/useHotkeysGlobalEvents";
+import { Track } from "../Track/Track";
+import PlayerHead from "../Track/PlayerHead";
 
 const MainDawTrackPanel: Component = () => {
   const {
     tactWidth,
     handleOnWheelAndCtrlChangeTactsWidth,
     addNewTrack,
-    finalPlayerHeadPos,
-    setPlayerBeatPos,
+    handlePlayerHeadChangePos,
     handleContextMenu,
   } = useMainDawTrackPanel();
-  
+
   const { tracks, setTracks, project } = useProjectContext();
   const { tactElementsNumber } = usePlayerContext();
   const {
@@ -25,7 +25,6 @@ const MainDawTrackPanel: Component = () => {
     handlePlayerStartOrPause,
   } = useHotkeysGlobalEvents();
 
-  let playerHeadRef: HTMLSpanElement | undefined;
   let mainTracksPanelRef: HTMLDivElement | undefined;
 
   setTracks(project()?.payload?.tracks ?? []);
@@ -61,12 +60,9 @@ const MainDawTrackPanel: Component = () => {
           ref={mainTracksPanelRef}
           onWheel={handleOnWheelAndCtrlChangeTactsWidth}
           onContextMenu={handleContextMenu}
-          onClick={(e: MouseEvent) => {
-            const rect = mainTracksPanelRef!.getBoundingClientRect();
-            const x = e.clientX - rect.left + mainTracksPanelRef!.scrollLeft;
-            const beat = x / tactWidth();
-
-            setPlayerBeatPos(beat);
+          onClick={(e) => {
+            if ((e.target as HTMLElement).closest(".pattern")) return;
+            handlePlayerHeadChangePos(e, mainTracksPanelRef);
           }}
         >
           <BaseTactsGrid
@@ -74,14 +70,15 @@ const MainDawTrackPanel: Component = () => {
             width={tactWidth}
           />
 
-          <span
-            class="absolute top-0 bottom-0 w-1 bg-base-content/35 pointer-events-none"
-            ref={playerHeadRef}
-            style={{ left: `${finalPlayerHeadPos()}px` }}
-          ></span>
+          <PlayerHead />
 
           <Index each={tracks}>
-            {(track) => <Track tactElementsNumber={tactElementsNumber()} />}
+            {(track) => (
+              <Track
+                trackId={track().trackId}
+                tactElementsNumber={tactElementsNumber()}
+              />
+            )}
           </Index>
         </div>
       </div>

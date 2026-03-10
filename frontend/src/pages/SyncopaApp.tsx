@@ -5,6 +5,7 @@ import MainDawTrackPanel from "../components/DAW/Base/MainDawTrackPanel";
 import { ProjectProvider } from "../context/daw/project.context";
 import { PlayerProvider } from "../context/daw/player.context";
 import { ContextMenuProvider } from "../context/daw/contextmenu.context";
+import { TracksProvider } from "../context/daw/tracks.context";
 
 const SyncopaApp: Component = () => {
   const onBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -27,9 +28,12 @@ const SyncopaApp: Component = () => {
         <PlayerProvider>
           <UpperControlPanel />
           
-          <ContextMenuProvider>
-            <MainDawTrackPanel />
-          </ContextMenuProvider>
+          <TracksProvider>
+            <ContextMenuProvider>
+              <MainDawTrackPanel />
+            </ContextMenuProvider>
+          </TracksProvider>
+        
           
         </PlayerProvider>
         

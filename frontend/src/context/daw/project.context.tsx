@@ -8,7 +8,7 @@ import {
 import { createContext } from "solid-js";
 import toast from "solid-toast";
 import useDawApi from "../../api/daw.api";
-import { useParams } from "@solidjs/router";
+import { useNavigate, useParams } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 import SyncopaLoader from "../../components/utils/SyncopaLoading";
 import {
@@ -22,13 +22,22 @@ export const ProjectContext = createContext<ProjectContextType>();
 export const ProjectProvider: ParentComponent = (props) => {
   const { uuid } = useParams();
   const { getProjectWithPayload } = useDawApi();
+  const navigate = useNavigate();
 
   const [project] = createResource<ProjectWithPayload | null>(async () => {
     const res = await getProjectWithPayload(uuid!);
     if (res.type === "success") {
       return res.data;
+    } else if (res.type === "error") {
+      if (res.status === 404) {
+        toast.error("Проект не найден");
+      } else if (res.status === 403) {
+        toast.error("Проект не доступен");
+      } else {
+        toast.error("Ошибка загрзуки проекта");
+      }
+      navigate("/not-found");
     }
-    toast.error("Ошибка загрзуки проекта");
     return null;
   });
 

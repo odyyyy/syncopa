@@ -5,12 +5,13 @@ import { Track } from "../../types/daw.types";
 import useUpperControlPanel from "./useUpperControlPanel";
 import { usePlayerContext } from "./context/usePlayerContext";
 import { useContextMenu } from "../../context/daw/contextmenu.context";
+import { useTracksContext } from "./context/useTracksContext";
 
 const useMainDawTrackPanel = () => {
   const { tracks, setTracks } = useProjectContext();
   const { playerBeatPos, setPlayerBeatPos } = usePlayerContext();
+  const { tactWidth, setTactWidth } = useTracksContext();
 
-  const [tactWidth, setTactWidth] = createSignal(180);
   const [playerHeadPos, setPlayerHeadPos] = createSignal<number>(0);
   const [isPlaying, setIsPlaying] = createSignal(false);
 
@@ -38,12 +39,24 @@ const useMainDawTrackPanel = () => {
 
   const handleOnWheelAndCtrlChangeTactsWidth = (e: WheelEvent) => {
     if (e.ctrlKey) {
+      e.preventDefault();
+
       if (e.deltaY < 0) {
-        setTactWidth((prev) => Math.min(prev + 20, 400));
+        setTactWidth((prev: number) => Math.min(prev + 20, 400));
       } else {
-        setTactWidth((prev) => Math.max(prev - 20, 80));
+        setTactWidth((prev: number) => Math.max(prev - 20, 80));
       }
     }
+  };
+
+  const handlePlayerHeadChangePos = (
+    e: MouseEvent,
+    mainTracksPanelRef: HTMLDivElement | undefined,
+  ) => {
+    const rect = mainTracksPanelRef!.getBoundingClientRect();
+    const x = e.clientX - rect.left + mainTracksPanelRef!.scrollLeft;
+    const beat = x / tactWidth();
+    setPlayerBeatPos(beat);
   };
 
   const onTrackVolumeChange = (
@@ -61,17 +74,18 @@ const useMainDawTrackPanel = () => {
   };
 
   const { openMenu } = useContextMenu();
-  
+
   const handleContextMenu = (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     openMenu(e.clientX, e.clientY, [
       { label: "Добавить паттерн", onClick: () => {} },
-      { label: "Удалить дорожку", onClick: () => setTracks(prev => prev.slice(0, -1)) }
+      {
+        label: "Удалить дорожку",
+        onClick: () => setTracks((prev) => prev.slice(0, -1)),
+      },
     ]);
-    
-    
   };
 
   return {
@@ -89,6 +103,7 @@ const useMainDawTrackPanel = () => {
     playerBeatPos,
     setPlayerBeatPos,
     handleContextMenu,
+    handlePlayerHeadChangePos,
   };
 };
 

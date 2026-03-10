@@ -33,9 +33,10 @@ const ContextMenu: Component<{
         ))}
       </ul>
 
-      <div class="fixed inset-0 z-499" onClick={closeMenu} onContextMenu={(e) => {
+      <div class="absolute top-40 inset-0 z-499" onClick={closeMenu} onContextMenu={(e) => {
         e.preventDefault();
         e.stopPropagation();
+        
         setMenu({
           x: e.clientX,
           y: e.clientY,
