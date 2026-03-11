@@ -1,11 +1,11 @@
 import { Navigate } from "@solidjs/router";
 import { Component, Show } from "solid-js";
-import { useAuth } from "../../hooks/auth/useAuth";
 import SyncopaLoader from "./SyncopaLoading";
+import { useAuthContext } from "../../hooks/auth/useAuthContext";
 
 export function withAuth(ComponentToProtect: Component): Component {
   return () => {
-    const { accessToken, loading } = useAuth();
+    const { accessToken, loading } = useAuthContext();
 
     return (
       <Show when={!loading()} fallback={<SyncopaLoader />}>

@@ -6,20 +6,20 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import { useAuth } from "../../hooks/auth/useAuth";
 import { userData } from "../../store/user";
 import ThemeController from "../utils/ThemeController";
 import LogoutModal from "../utils/ConfirmActionModal";
 import UserAccountSettings from "./UserAccountSettings";
 import { useInvitationsApi } from "../../api/user.api";
 import InvitationsSubPanel from "./InvitationsSubPanel";
+import { useAuthContext } from "../../hooks/auth/useAuthContext";
 
 const UserPanel: Component = () => {
   const [openSidebar, setOpenSidebar] = createSignal(false);
   const [settingsOpen, setSettingsOpen] = createSignal(false);
   const [logoutOpen, setLogoutOpen] = createSignal(false);
 
-  const { logout } = useAuth();
+  const { logout } = useAuthContext();
 
   const { getInvitationsList } = useInvitationsApi();
   const [incomeInvitations, { mutate }] = createResource<Invitation[]>(async () => {

@@ -1,5 +1,5 @@
 import { BACKEND_URL } from "../config/config";
-import { useAuthFetch } from "../hooks/auth/useAuth";
+import { useAuthFetch } from "../hooks/auth/useAuthFetch";
 import { apiRequest } from "./base.api";
 
 export function useProjectsApi() {

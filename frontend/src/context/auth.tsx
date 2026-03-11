@@ -4,6 +4,7 @@ import {
   createSignal,
   onMount,
   ParentComponent,
+  useContext,
 } from "solid-js";
 import { BACKEND_URL } from "../config/config";
 import { accessToken, setAccessToken } from "../store/auth";

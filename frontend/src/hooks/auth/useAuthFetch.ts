@@ -1,14 +1,7 @@
-import { useContext } from "solid-js";
-import { AuthContext } from "../../context/auth";
-
-export const useAuth = () => {
-  const ctx = useContext(AuthContext);
-  if (!ctx) throw new Error("AuthContext не найден");
-  return ctx;
-};
+import { useAuthContext } from "./useAuthContext";
 
 export function useAuthFetch() {
-  const { accessToken, refresh, logout } = useAuth();
+  const { accessToken, refresh, logout } = useAuthContext();
 
   return async function authFetch(input: RequestInfo, init: RequestInit = {}) {
     const makeRequest = () =>
