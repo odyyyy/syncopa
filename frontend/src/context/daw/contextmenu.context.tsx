@@ -4,11 +4,10 @@ import {
   ParentComponent,
   Show,
   useContext,
-  onMount,
-  onCleanup,
 } from "solid-js";
 import ContextMenu from "../../components/DAW/ContextMenu";
 import {
+    ContextMenuItem,
   ContextMenuItems,
   ContextMenuProviderType,
 } from "../../types/daw.types";
@@ -18,7 +17,7 @@ const ContextMenuContext = createContext<ContextMenuProviderType>();
 export const ContextMenuProvider: ParentComponent = (props) => {
   const [menu, setMenu] = createSignal<ContextMenuItems | null>(null);
 
-  const openMenu = (x: number, y: number, items: any[]) => {
+  const openMenu = (x: number, y: number, items: ContextMenuItem[]) => {
     setMenu({ x, y, items });
   };
 

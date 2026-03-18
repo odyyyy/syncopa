@@ -1,4 +1,4 @@
-import { Component, Index, onCleanup, onMount } from "solid-js";
+import { Component, Index, onCleanup, onMount, Show } from "solid-js";
 import TrackController from "../Track/TrackController";
 import BaseTactsGrid from "../Track/BaseTactsGrid";
 import useMainDawTrackPanel from "../../../hooks/daw/useTracksManagerPanel";
@@ -7,6 +7,8 @@ import { usePlayerContext } from "../../../hooks/daw/context/usePlayerContext";
 import useHotkeysGlobalEvents from "../../../hooks/daw/hotkeys/useHotkeysGlobalEvents";
 import { Track } from "../Track/Track";
 import PlayerHead from "../Track/PlayerHead";
+import PianoRoll from "../PianoRoll/PianoRoll";
+import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
 
 const MainDawTrackPanel: Component = () => {
   const {
@@ -19,6 +21,10 @@ const MainDawTrackPanel: Component = () => {
 
   const { tracks, setTracks, project } = useProjectContext();
   const { tactElementsNumber } = usePlayerContext();
+  const { isPianoRollOpen } = usePianoRollContext();
+  
+  
+  
   const {
     handlePlayerForward,
     handlePlayerBackward,
@@ -83,6 +89,9 @@ const MainDawTrackPanel: Component = () => {
           </Index>
         </div>
       </div>
+      <Show when={isPianoRollOpen()}>
+        <PianoRoll patternWidth={() => 5} />
+      </Show>
     </div>
   );
 };

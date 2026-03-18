@@ -130,7 +130,10 @@
         @apply bg-base-200/90 grid grid-flow-col w-full relative;
     }
     .pattern {
-        @apply absolute top-0 h-25 border border-base-100/40 bg-base-content/42 rounded-sm cursor-pointer;
+        @apply absolute top-0 h-25 border border-base-100/40 light:bg-secondary/42 bg-base-content/42 rounded-sm cursor-pointer;
+    }
+    .piano {
+        @apply flex flex-col h-full w-30 max-w-40 z-10;
     }
 }
 

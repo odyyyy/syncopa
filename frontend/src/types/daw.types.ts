@@ -1,4 +1,4 @@
-import { Accessor, Resource } from "solid-js";
+import { Accessor, JSX, Resource } from "solid-js";
 import { SetStoreFunction } from "solid-js/store";
 
 type ProjectWithPayload = {
@@ -50,9 +50,9 @@ type PatternType = PatternVST | PatternAudio;
 
 type Note = {
   pos: number;
+  note: string;
   duration: number;
-  pitch: number;
-  velocity: number;
+  velocity?: number;
 };
 
 type AudioClipMetadata = {
@@ -84,10 +84,16 @@ type PlayerContextType = {
   setTotalVolume: (totalVolume: number) => void;
 };
 
+type ContextMenuItem = {
+  label: string;
+  icon?: JSX.Element;
+  onClick?: () => void;
+};
+
 type ContextMenuItems = {
   x: number;
   y: number;
-  items: any[];
+  items: ContextMenuItem[];
 };
 
 type ContextMenuProviderType = {
@@ -102,6 +108,19 @@ type TracksContextType = {
   setTactWidth: (value: number | ((prev: number) => number)) => void;
   beatNumber: Accessor<number>;
   setBeatNumber: (value: number | ((prev: number) => number)) => void;
+};
+
+type PatternAndTrack = {
+  trackId: string;
+  patternId: string;
+};
+
+type PianoRollContextType = {
+  isPianoRollOpen: Accessor<boolean>;
+  setCurrentPatternAndTrackId: SetStoreFunction<PatternAndTrack>;
+  currentPatternAndTrackId: PatternAndTrack;
+  openPianoRoll: () => boolean;
+  closePianoRoll: () => boolean;
 };
 
 export type {
@@ -120,4 +139,7 @@ export type {
   ContextMenuItems,
   ContextMenuProviderType,
   TracksContextType,
+  ContextMenuItem,
+  PianoRollContextType,
+  PatternAndTrack,
 };

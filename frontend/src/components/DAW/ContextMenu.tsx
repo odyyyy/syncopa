@@ -18,7 +18,7 @@ const ContextMenu: Component<{
           top: `${menu()?.y}px`,
         }}
         tabIndex={-1}
-        class="rounded-2xl menu bg-base-200 z-500 fixed w-40 p-2 shadow-sm"
+        class="rounded-2xl menu bg-base-100/80 z-500 fixed w-45 p-2 shadow-sm"
       >
         {menu()!.items.map((item) => (
           <li
@@ -28,7 +28,7 @@ const ContextMenu: Component<{
               closeMenu();
             }}
           >
-            <a>{item.label}</a>
+            <a><span>{item.icon} {item.label}</span></a>
           </li>
         ))}
       </ul>

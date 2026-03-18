@@ -1,4 +1,4 @@
-import { Accessor, Component,  Index, Show } from "solid-js";
+import { Accessor, Component, Index, Show } from "solid-js";
 import Pattern from "../Pattern/Pattern";
 import { PatternType } from "../../../types/daw.types";
 
@@ -10,7 +10,7 @@ type TrackProps = {
 
 export const Track: Component<TrackProps> = (props) => {
   return (
-    <div  data-track-id={`${props.trackId}`} class="track">
+    <div data-track-id={`${props.trackId}`} class="track">
       <Index each={Array.from({ length: props.tactElementsNumber })}>
         {(_, index) => (
           <div class="tact">
@@ -21,14 +21,12 @@ export const Track: Component<TrackProps> = (props) => {
           </div>
         )}
       </Index>
-      
-      
+
       <Index each={props.patterns}>
         {(pattern: Accessor<PatternType>) => (
           <Pattern pattern={pattern} trackId={props.trackId} />
         )}
       </Index>
-
     </div>
   );
 };

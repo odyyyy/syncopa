@@ -6,6 +6,7 @@ import { ProjectProvider } from "../context/daw/project.context";
 import { PlayerProvider } from "../context/daw/player.context";
 import { ContextMenuProvider } from "../context/daw/contextmenu.context";
 import { TracksProvider } from "../context/daw/tracks.context";
+import { PianoRollProvider } from "../context/daw/pianoroll.context";
 
 const SyncopaApp: Component = () => {
   const onBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -30,7 +31,11 @@ const SyncopaApp: Component = () => {
           
           <TracksProvider>
             <ContextMenuProvider>
-              <MainDawTrackPanel />
+              <PianoRollProvider>
+                
+                <MainDawTrackPanel />
+              </PianoRollProvider>
+                
             </ContextMenuProvider>
           </TracksProvider>
         

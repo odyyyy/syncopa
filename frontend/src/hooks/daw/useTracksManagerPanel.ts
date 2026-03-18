@@ -84,6 +84,7 @@ const useMainDawTrackPanel = () => {
     openMenu(e.clientX, e.clientY, [
       {
         label: "Добавить паттерн",
+        icon: "+",
         onClick: () => {
           const trackId = (
             (e.target as HTMLElement).closest(".track") as HTMLElement
@@ -94,7 +95,16 @@ const useMainDawTrackPanel = () => {
       },
       {
         label: "Удалить дорожку",
-        onClick: () => setTracks((prev) => prev.slice(0, -1)),
+        icon: "-",
+        onClick: () => {
+          const trackId = (
+            (e.target as HTMLElement).closest(".track") as HTMLElement
+          )?.dataset.trackId;
+          if (!trackId) return;
+          const trackIndex = tracks.findIndex((t) => t.trackId === trackId);
+          if (trackIndex === -1) return;
+          setTracks((prev) => prev.filter((_, i) => i !== trackIndex));
+        },
       },
     ]);
   };

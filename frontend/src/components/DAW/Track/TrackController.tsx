@@ -47,7 +47,7 @@ const TrackController: Component<TrackControllerProps> = ({ track }) => {
             <div class="mute btn-main p-1 rounded-full w-8">M</div>
           </div>
           <div class="tooltip tooltip-bottom" data-tip="Только эту дорожку">
-            <div class="solo btn-main p-1 rounded-full w-8">S</div>
+            <div class="solo btn-main p-1 rounded-full w-8 ">S</div>
           </div>
         </div>
       </div>
