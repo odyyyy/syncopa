@@ -79,9 +79,9 @@ export const setupUserData = async () => {
     headers: {
       ...(accessToken() && {
         Authorization: `Bearer ${accessToken()}`,
-        "X-CSRF-TOKEN": getCsrfToken(),
       }),
     },
+    credentials: 'omit'
   });
   
   if (!response.ok) {

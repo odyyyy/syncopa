@@ -11,6 +11,7 @@ export function useAuthFetch() {
           ...init.headers,
           ...(accessToken() && { Authorization: `Bearer ${accessToken()}` }),
         },
+        credentials: 'omit'
       });
 
     let response = await makeRequest();
