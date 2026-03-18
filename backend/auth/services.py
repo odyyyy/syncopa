@@ -1,4 +1,3 @@
-import hashlib
 from datetime import UTC, datetime
 
 from authx.exceptions import AuthXException
@@ -49,12 +48,9 @@ async def get_authenticated_user(user_data: LoginPayload) -> Users:
 async def get_new_access_token(request: Request, redis_auth: RedisAsync) -> str:
     try:
         refresh_token = await auth.get_refresh_token_from_request(request)
-        if await redis_auth.exists(
-            f"{BLACKLIST_TAG}:{hashlib.sha256(refresh_token.token.encode()).hexdigest()}"
-        ):
-            raise AuthException("Токен недействителен")
-
         payload = auth.verify_token(refresh_token)
+        if await redis_auth.exists(f"{BLACKLIST_TAG}:{payload.jti}"):
+            raise AuthException("Токен недействителен")
 
         new_access_token = auth.create_access_token(uid=payload.sub)
 
@@ -72,7 +68,7 @@ async def add_token_in_blacklist(
     exp_at = payload.expiry_datetime
     if refresh_token and exp_at > datetime.now(UTC):
         await redis_auth.set(
-            f"{BLACKLIST_TAG}:{hashlib.sha256(refresh_token.token.encode()).hexdigest()}",
+            f"{BLACKLIST_TAG}:{payload.jti}",
             "1",
             exat=exp_at,
         )

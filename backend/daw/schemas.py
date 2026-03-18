@@ -46,9 +46,9 @@ class PatternVST(Pattern):
 
 class Note(BaseSchema):
     pos: float
+    note: str
     duration: float
-    pitch: int
-    velocity: float
+    velocity: float = Field(default=1.0, ge=0, le=1.0)
 
 
 class PatternAudio(Pattern):
@@ -86,7 +86,8 @@ class AudioClipMetadata(BaseSchema):
                                 "notes": [
                                     {
                                         "pos": 0.0,
-                                        "note": 60,
+                                        "note": "C4",
+                                        "duration": 1.0,
                                         "velocity": 1.0
                                     }
                                 ],
