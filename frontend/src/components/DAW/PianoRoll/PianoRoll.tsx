@@ -1,4 +1,4 @@
-import { Accessor, Component, For, Index, Show } from "solid-js";
+import { Accessor, Component, createMemo, For, Index, Show } from "solid-js";
 import { useTracksContext } from "../../../hooks/daw/context/useTracksContext";
 import usePianoRoll from "../../../hooks/daw/usePianoRoll";
 import useMainDawTrackPanel from "../../../hooks/daw/useTracksManagerPanel";
@@ -10,10 +10,19 @@ const OCTAVES_NUMBER = 7;
 
 const PianoRoll: Component<{ patternWidth: Accessor<number> }> = (props) => {
   const { handleOnWheelAndCtrlChangeTactsWidth } = useMainDawTrackPanel();
-  const { addNote, notes, onPianoKeyPress, findPatternById, ROWS_NUMBER } =
-    usePianoRoll();
+  const {
+    addNote,
+    PIANOROLL_NOTES,
+    onPianoKeyPress,
+    findPatternById,
+    ROWS_NUMBER,
+  } = usePianoRoll();
 
-
+  const pattern = createMemo(() => findPatternById());
+  
+  const notes = createMemo(() =>
+    pattern()?.type === "vst" ? ((pattern() as PatternVST)?.notes ?? []) : [],
+  );
   const { tactWidth, beatNumber } = useTracksContext();
 
   let pianoRef: HTMLDivElement | undefined;
@@ -110,7 +119,7 @@ const PianoRoll: Component<{ patternWidth: Accessor<number> }> = (props) => {
       <div
         class="grid flex-1 min-w-0 will-change:min-width"
         onDblClick={(e) => {
-          addNote(e, pianoRef?.clientWidth!)
+          addNote(e, pianoRef?.clientWidth!);
         }}
       >
         <div class="flex flex-col">
@@ -118,7 +127,7 @@ const PianoRoll: Component<{ patternWidth: Accessor<number> }> = (props) => {
             {(_, rowIndex) => (
               <div
                 class="grid h-6 relative"
-                data-note={`${notes[rowIndex]}`}
+                data-note={`${PIANOROLL_NOTES[rowIndex]}`}
                 classList={{
                   "bg-base-200/50": [2, 4, 6, 9, 11].includes(rowIndex % 12),
                 }}
@@ -132,12 +141,12 @@ const PianoRoll: Component<{ patternWidth: Accessor<number> }> = (props) => {
                     <div class="border  border-primary/5 border-dashed" />
                   )}
                 </Index>
-                <For
-                  each={findPatternById()?.type === "vst" ? ((findPatternById() as PatternVST)?.notes! ?? []) : []}
-                >
-                  {(note, index) => (<Show when={note.note === notes[rowIndex]}>
-                    <Note patternWidth={() => 4} note={note} />
-                  </Show>)}
+                <For each={notes()}>
+                  {(note, index) => (
+                    <Show when={note.note === PIANOROLL_NOTES[rowIndex]}>
+                      <Note patternWidth={() => 4} note={note} />
+                    </Show>
+                  )}
                 </For>
               </div>
             )}

@@ -1,29 +1,44 @@
-import { Accessor, Component, createSignal } from "solid-js";
+import { Accessor, Component } from "solid-js";
+import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
 import { useTracksContext } from "../../../hooks/daw/context/useTracksContext";
+import useNoteTransform from "../../../hooks/daw/useNoteTransform";
 import { Note as NoteType } from "../../../types/daw.types";
 
-const Note: Component<{
-  patternWidth: Accessor<number>;
-  note: NoteType;
-}> = (props) => {
+const Note: Component<{ patternWidth: Accessor<number>; note: NoteType }> = (
+  props,
+) => {
   const { tactWidth, beatNumber } = useTracksContext();
-  const [notePos, setNotePos] = createSignal(props.note.pos > 0 ? props.note.pos - 1 : 0);
-  const [noteWidth, setNoteWidth] = createSignal(props.note.duration);
+  const { transformNote } = useNoteTransform();
+  const { currentPatternAndTrackId } = usePianoRollContext();
+
+  const pxPerBeat = () => (tactWidth() * 3) / beatNumber();
+
+  const style = () => ({
+    left: `${Math.max(props.note.pos - 1, 0) * pxPerBeat()}px`,
+    width: `${props.note.duration * pxPerBeat()}px`,
+  });
 
   return (
     <div
       class="bg-primary/88 h-6 border border-base-300/20 cursor-pointer z-20 absolute"
-      ondblclick={
-        (e) => {
-          e.preventDefault();
-          e.stopPropagation();
-        }
-      }
-      style={{
-        left: `${((notePos() * tactWidth()) / beatNumber()) * 3}px`,
-        width: `${((noteWidth() * tactWidth()) / beatNumber()) * 3}px`,
+      style={style()}
+      onMouseDown={(e) => {
+        transformNote(e, {
+          trackId: currentPatternAndTrackId.trackId,
+          patternId: currentPatternAndTrackId.patternId,
+          note: props.note,
+          patternWidth: props.patternWidth(),
+        });
       }}
-    ></div>
+      ondblclick={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+    >
+      <div class="absolute top-0 w-1 left-0 h-full cursor-ew-resize  bg-base-content/30 opacity-0 hover:opacity-100 transition-opacity" />
+
+      <div class="absolute top-0 w-1 right-0 h-full cursor-ew-resize bg-base-content/30 opacity-0 hover:opacity-100 transition-opacity" />
+    </div>
   );
 };
 

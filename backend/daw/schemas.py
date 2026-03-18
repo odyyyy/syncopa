@@ -45,6 +45,7 @@ class PatternVST(Pattern):
 
 
 class Note(BaseSchema):
+    note_id: str
     pos: float
     note: str
     duration: float

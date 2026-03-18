@@ -49,6 +49,7 @@ type PatternAudio = BasePattern & {
 type PatternType = PatternVST | PatternAudio;
 
 type Note = {
+  noteId: string;
   pos: number;
   note: string;
   duration: number;

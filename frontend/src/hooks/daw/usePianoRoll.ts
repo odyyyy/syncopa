@@ -22,8 +22,8 @@ const usePianoRoll = () => {
     "A#",
     "B",
   ];
-  
-  const notes = Array.from({ length: ROWS_NUMBER }, (_, i) => {
+
+  const PIANOROLL_NOTES = Array.from({ length: ROWS_NUMBER }, (_, i) => {
     const octave = Math.floor((i + 9) / 12);
     const noteIndex = (i + 9) % 12;
 
@@ -37,16 +37,14 @@ const usePianoRoll = () => {
     const noteBeatPos = Math.ceil(
       (e.clientX - pianoPanelWidth) / (e.target as HTMLElement).offsetWidth,
     );
-    
 
     const newNote: Note = {
+      noteId: crypto.randomUUID(),
       pos: noteBeatPos,
       note,
       duration: 1,
       velocity: 1,
     };
-    
-    
 
     setTracks(
       (track) => track.trackId === currentPatternAndTrackId.trackId,
@@ -67,7 +65,7 @@ const usePianoRoll = () => {
     );
   };
 
-  const findPatternById = () =>  {
+  const findPatternById = () => {
     const patternId = currentPatternAndTrackId.patternId;
     const trackId = currentPatternAndTrackId.trackId;
     if (!patternId || !trackId) return;
@@ -104,7 +102,14 @@ const usePianoRoll = () => {
     synth.triggerAttackRelease(note!, "8n");
   };
 
-  return { addNote, notes, ROWS_NUMBER, onPianoKeyPress, findPatternById,noteNames };
+  return {
+    addNote,
+    PIANOROLL_NOTES,
+    ROWS_NUMBER,
+    onPianoKeyPress,
+    findPatternById,
+    noteNames,
+  };
 };
 
 export default usePianoRoll;
