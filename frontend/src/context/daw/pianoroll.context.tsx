@@ -14,7 +14,7 @@ export const PianoRollContext = createContext<PianoRollContextType>();
 
 export const PianoRollProvider: ParentComponent = (props) => {
   const [currentPatternAndTrackId, setCurrentPatternAndTrackId] = createStore<PatternAndTrack>({ patternId: "", trackId: "" })
-
+  const [currentPatternWidthInTacts, setCurrentPatternWidthInTacts] = createSignal(0);
   const [isPianoRollOpen, setIsPianoRollOpen] = createSignal(false);
 
   const openPianoRoll = () => setIsPianoRollOpen(true);
@@ -28,6 +28,8 @@ export const PianoRollProvider: ParentComponent = (props) => {
         currentPatternAndTrackId,
         setCurrentPatternAndTrackId,
         closePianoRoll,
+        currentPatternWidthInTacts,
+        setCurrentPatternWidthInTacts,
       }}
     >
       {props.children}

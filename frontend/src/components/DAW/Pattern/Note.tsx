@@ -4,30 +4,29 @@ import { useTracksContext } from "../../../hooks/daw/context/useTracksContext";
 import useNoteTransform from "../../../hooks/daw/useNoteTransform";
 import { Note as NoteType } from "../../../types/daw.types";
 
-const Note: Component<{ patternWidth: Accessor<number>; note: NoteType }> = (
-  props,
-) => {
+const Note: Component<{
+  patternWidthInBeats: Accessor<number>;
+  note: NoteType;
+}> = (props) => {
   const { tactWidth, beatNumber } = useTracksContext();
   const { transformNote } = useNoteTransform();
   const { currentPatternAndTrackId } = usePianoRollContext();
 
   const pxPerBeat = () => (tactWidth() * 3) / beatNumber();
 
-  const style = () => ({
-    left: `${Math.max(props.note.pos - 1, 0) * pxPerBeat()}px`,
-    width: `${props.note.duration * pxPerBeat()}px`,
-  });
-
   return (
     <div
       class="bg-primary/88 h-6 border border-base-300/20 cursor-pointer z-20 absolute"
-      style={style()}
+      style={{
+        left: `${Math.max(props.note.pos - 1, 0) * pxPerBeat()}px`,
+        width: `${props.note.duration * pxPerBeat()}px`,
+      }}
       onMouseDown={(e) => {
         transformNote(e, {
           trackId: currentPatternAndTrackId.trackId,
           patternId: currentPatternAndTrackId.patternId,
           note: props.note,
-          patternWidth: props.patternWidth(),
+          patternWidth: props.patternWidthInBeats(),
         });
       }}
       ondblclick={(e) => {

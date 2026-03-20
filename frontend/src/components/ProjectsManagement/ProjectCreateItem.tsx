@@ -172,7 +172,7 @@ const ProjectCreatePopup: Component<{
                           class="bg-base-100 p-1.5 m-2 rounded-2xl flex justify-between items-center  w-fit cursor-pointer"
                           onclick={(e) => removeMember(username)}
                         >
-                          <span>{username}</span>
+                          <span class="m-1">{username}</span>
                           <svg
                             class="h-5 w-5"
                             fill="currentColor"

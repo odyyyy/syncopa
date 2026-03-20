@@ -1,4 +1,4 @@
-import { Accessor, JSX, Resource } from "solid-js";
+import { Accessor, JSX, Resource, Setter } from "solid-js";
 import { SetStoreFunction } from "solid-js/store";
 
 type ProjectWithPayload = {
@@ -119,6 +119,8 @@ type PatternAndTrack = {
 type PianoRollContextType = {
   isPianoRollOpen: Accessor<boolean>;
   setCurrentPatternAndTrackId: SetStoreFunction<PatternAndTrack>;
+  setCurrentPatternWidthInTacts: Setter<number>;
+  currentPatternWidthInTacts: Accessor<number>;
   currentPatternAndTrackId: PatternAndTrack;
   openPianoRoll: () => boolean;
   closePianoRoll: () => boolean;

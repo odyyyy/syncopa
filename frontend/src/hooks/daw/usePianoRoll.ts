@@ -2,10 +2,13 @@ import * as Tone from "tone";
 import { useProjectContext } from "./context/useProjectContext";
 import { Note } from "../../types/daw.types";
 import { usePianoRollContext } from "../../context/daw/pianoroll.context";
+import { useTracksContext } from "./context/useTracksContext";
 
 const usePianoRoll = () => {
   const { tracks, setTracks } = useProjectContext();
-  const { currentPatternAndTrackId } = usePianoRollContext();
+  const { currentPatternAndTrackId, currentPatternWidthInTacts } =
+    usePianoRollContext();
+  const { beatNumber } = useTracksContext();
 
   const ROWS_NUMBER = 88;
   const noteNames = [
@@ -34,15 +37,26 @@ const usePianoRoll = () => {
     const note = (e.target as HTMLElement).parentElement?.dataset.note;
     if (!note) return;
 
-    const noteBeatPos = Math.ceil(
+    let noteBeatPos = Math.ceil(
       (e.clientX - pianoPanelWidth) / (e.target as HTMLElement).offsetWidth,
     );
+
+    const patternBeatsWidth = currentPatternWidthInTacts() * beatNumber();
+
+    noteBeatPos =
+      noteBeatPos <= currentPatternWidthInTacts() * beatNumber()
+        ? noteBeatPos
+        : Math.ceil(patternBeatsWidth);
 
     const newNote: Note = {
       noteId: crypto.randomUUID(),
       pos: noteBeatPos,
       note,
-      duration: 1,
+      duration:
+        noteBeatPos === Math.ceil(patternBeatsWidth) &&
+        patternBeatsWidth % 1 > 0
+          ? patternBeatsWidth % 1
+          : 1,
       velocity: 1,
     };
 

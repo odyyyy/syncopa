@@ -90,7 +90,7 @@ const MainDawTrackPanel: Component = () => {
         </div>
       </div>
       <Show when={isPianoRollOpen()}>
-        <PianoRoll patternWidth={() => 5} />
+        <PianoRoll  />
       </Show>
     </div>
   );
