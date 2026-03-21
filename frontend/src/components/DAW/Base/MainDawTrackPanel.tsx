@@ -21,10 +21,8 @@ const MainDawTrackPanel: Component = () => {
 
   const { tracks, setTracks, project } = useProjectContext();
   const { tactElementsNumber } = usePlayerContext();
-  const { isPianoRollOpen } = usePianoRollContext();
-  
-  
-  
+  const { isPianoRollOpen, pianoRollHeight } = usePianoRollContext();
+
   const {
     handlePlayerForward,
     handlePlayerBackward,
@@ -47,8 +45,14 @@ const MainDawTrackPanel: Component = () => {
   });
 
   return (
-    <div class="grid grid-rows-auto grid-flow-row h-full w-full overflow-y-hidden animate-fade-smooth ">
-      <div class="grid  grid-cols-[1fr_4fr] w-full flex-1  min-h-0 overflow-y-auto overflow-x-hidden">
+    <div
+      class="grid grid-flow-row h-full w-full overflow-y-hidden animate-fade-smooth "
+      classList={{ "grid-flow-auto": !isPianoRollOpen() }}
+      style={{
+        "grid-template-rows": isPianoRollOpen() ? `1fr ${pianoRollHeight()}px` : "1fr",
+      }}
+    >
+      <div class="grid  grid-cols-[1fr_4fr] w-full overflow-y-auto overflow-x-hidden">
         <div class="bg-base-200 h-full min-w-70 border-r drop-shadow-xs border-r-base-300 ">
           <button
             class="btn-main sticky top-0 z-100 bg-base-300 hover:bg-base-200 text-base w-full h-10"
@@ -90,7 +94,7 @@ const MainDawTrackPanel: Component = () => {
         </div>
       </div>
       <Show when={isPianoRollOpen()}>
-        <PianoRoll  />
+        <PianoRoll />
       </Show>
     </div>
   );

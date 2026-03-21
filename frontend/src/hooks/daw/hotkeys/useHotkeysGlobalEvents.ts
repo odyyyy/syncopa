@@ -6,8 +6,9 @@ const useHotkeysGlobalEvents = () => {
 
   const { startOrPausePlaying } = usePlayerContext();
 
-  const handlePlayerForward = (event: KeyboardEvent) => {
-    if (event.code === "KeyW" || event.code === "ArrowRight") {
+  const handlePlayerForward = (e: KeyboardEvent) => {
+    e.preventDefault();
+    if (e.code === "KeyW" || e.code === "ArrowRight") {
       const delta = 60 / bpm();
       if (playerBeatPos() + delta <= tactElementsNumber()) {
         setPlayerBeatPos(playerBeatPos() + delta / 2);

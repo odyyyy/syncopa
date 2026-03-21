@@ -95,7 +95,7 @@ const useMainDawTrackPanel = () => {
       },
       {
         label: "Удалить дорожку",
-        icon: "-",
+        icon: "",
         onClick: () => {
           const trackId = (
             (e.target as HTMLElement).closest(".track") as HTMLElement

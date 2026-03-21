@@ -1,12 +1,4 @@
-import {
-  Accessor,
-  Component,
-  createMemo,
-  For,
-  Index,
-  onMount,
-  Show,
-} from "solid-js";
+import { Component, createMemo, For, Index, onMount, Show } from "solid-js";
 import { useTracksContext } from "../../../hooks/daw/context/useTracksContext";
 import usePianoRoll from "../../../hooks/daw/usePianoRoll";
 import useMainDawTrackPanel from "../../../hooks/daw/useTracksManagerPanel";
@@ -24,14 +16,12 @@ const PianoRoll: Component = () => {
     onPianoKeyPress,
     findPatternById,
     ROWS_NUMBER,
+    resizePianoRollPanel,
   } = usePianoRoll();
 
   const { tactWidth, beatNumber } = useTracksContext();
   const { currentPatternWidthInTacts } = usePianoRollContext();
 
-  const notes_per_row = createMemo(
-    () => currentPatternWidthInTacts() * beatNumber(),
-  );
   const totalBeats = createMemo(
     () => currentPatternWidthInTacts() * beatNumber(),
   );
@@ -46,24 +36,10 @@ const PianoRoll: Component = () => {
   );
 
   let pianoRef: HTMLDivElement | undefined;
-  let pianoRollRef: HTMLDivElement | undefined;
-
-  onMount(() => {
-    if (pianoRollRef) {
-      const { offsetHeight } = pianoRollRef;
-      const middlePosition = offsetHeight / 2;
-
-      window.scrollTo({
-        top: middlePosition,
-        behavior: "smooth",
-      });
-    }
-  });
 
   return (
     <div
-      class="flex w-full h-full overflow-auto bg-base-100/32"
-      ref={pianoRollRef}
+      class="flex w-full  overflow-auto bg-base-100/32"
       onWheel={handleOnWheelAndCtrlChangeTactsWidth}
     >
       <div class="piano" ref={pianoRef} onMouseDown={onPianoKeyPress}>
@@ -199,6 +175,11 @@ const PianoRoll: Component = () => {
           </Index>
         </div>
       </div>
+
+      <div
+        class="sticky top-0 w-full h-1  bg-base-content/10 cursor-s-resize"
+        onMouseDown={resizePianoRollPanel}
+      />
     </div>
   );
 };

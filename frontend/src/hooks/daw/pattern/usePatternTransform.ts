@@ -41,14 +41,7 @@ const usePatternTransform = (pattern: PatternType, trackId: string) => {
     updatePatternField(trackId, pattern.patternId, 'width', patternWidthInTacts());
   });
   
-  
   const patternWidth = () => patternWidthInTacts() * tactWidth();
-  
-  createEffect(() => {
-    
-    
-  });
-
 
   const handleGlobalMouseMove = (e: MouseEvent) => {
     if (isGrabbing()) {

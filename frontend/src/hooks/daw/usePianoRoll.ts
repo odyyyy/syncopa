@@ -116,6 +116,28 @@ const usePianoRoll = () => {
     synth.triggerAttackRelease(note!, "8n");
   };
 
+  const { pianoRollHeight, setPianoRollHeight } = usePianoRollContext();
+  const resizePianoRollPanel = (e: MouseEvent) => {
+    const [MIN_HEIGHT, MAX_HEIGHT] = [150, 500];
+
+    const startY = e.clientY;
+    const startHeight = pianoRollHeight();
+
+    const move = (e: MouseEvent) => {
+      const newHeight = startHeight - (e.clientY - startY);
+
+      setPianoRollHeight(Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, newHeight)));
+    };
+
+    const up = () => {
+      window.removeEventListener("mousemove", move);
+      window.removeEventListener("mouseup", up);
+    };
+
+    window.addEventListener("mousemove", move);
+    window.addEventListener("mouseup", up);
+  };
+
   return {
     addNote,
     PIANOROLL_NOTES,
@@ -123,6 +145,7 @@ const usePianoRoll = () => {
     onPianoKeyPress,
     findPatternById,
     noteNames,
+    resizePianoRollPanel,
   };
 };
 

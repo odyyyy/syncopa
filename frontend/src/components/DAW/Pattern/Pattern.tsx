@@ -21,7 +21,7 @@ const Pattern: Component<{
     startGrab,
     patternWidthInTacts,
   } = usePatternTransform(props.pattern(), props.trackId);
-  const { handlePatternContextMenu } = usePatternManage(patternWidthInTacts);
+  const { handlePatternContextMenu, editPattern } = usePatternManage(patternWidthInTacts);
   const { ROWS_NUMBER, PIANOROLL_NOTES } = usePianoRoll();
   const { setCurrentPatternWidthInTacts, currentPatternAndTrackId } =
     usePianoRollContext();
@@ -54,10 +54,11 @@ const Pattern: Component<{
       style={{
         left: `${patternPos()}px`,
         width: `${patternWidth()}px`,
-        cursor: isGrabbing() ? "grabbing" : "grab",
+        cursor: isGrabbing() ? "grabbing" : "pointer",
       }}
       onMouseDown={startGrab}
       onContextMenu={handlePatternContextMenu}
+      ondblclick={editPattern}
     >
       <div
         class="absolute top-0 w-2 left-0 z-1 h-full cursor-ew-resize rounded-sm bg-base-content/30 opacity-0 hover:opacity-100 transition-opacity"

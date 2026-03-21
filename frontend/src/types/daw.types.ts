@@ -124,6 +124,9 @@ type PianoRollContextType = {
   currentPatternAndTrackId: PatternAndTrack;
   openPianoRoll: () => boolean;
   closePianoRoll: () => boolean;
+  pianoRollHeight: Accessor<number>;
+  setPianoRollHeight: Setter<number>;
+  
 };
 
 export type {

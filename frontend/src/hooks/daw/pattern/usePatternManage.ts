@@ -6,7 +6,11 @@ import { useProjectContext } from "../context/useProjectContext";
 
 const usePatternManage = (patternWidthInTacts: Accessor<number>) => {
   const { tracks, setTracks } = useProjectContext();
-  const { setCurrentPatternAndTrackId, openPianoRoll,setCurrentPatternWidthInTacts } = usePianoRollContext();
+  const {
+    setCurrentPatternAndTrackId,
+    openPianoRoll,
+    setCurrentPatternWidthInTacts,
+  } = usePianoRollContext();
 
   const addPatternOnTrack = (trackId: string) => {
     const trackIndex = tracks.findIndex((t) => t.trackId === trackId);
@@ -28,6 +32,25 @@ const usePatternManage = (patternWidthInTacts: Accessor<number>) => {
     );
   };
 
+  const editPattern = (e: MouseEvent) => {
+    {
+      const patternId = (
+        (e.target as HTMLElement).closest(".pattern") as HTMLElement
+      )?.dataset.patternId;
+      const trackId = (
+        (e.target as HTMLElement).closest(".track") as HTMLElement
+      )?.dataset.trackId;
+      if (!patternId) return;
+      setCurrentPatternAndTrackId({
+        trackId,
+        patternId,
+      });
+      setCurrentPatternWidthInTacts(patternWidthInTacts);
+
+      openPianoRoll();
+    }
+  };
+
   const { openMenu } = useContextMenu();
   const handlePatternContextMenu = (e: MouseEvent) => {
     e.preventDefault();
@@ -37,26 +60,11 @@ const usePatternManage = (patternWidthInTacts: Accessor<number>) => {
       {
         label: "Изменить паттерн",
         icon: "",
-        onClick: () => {
-          const patternId = (
-            (e.target as HTMLElement).closest(".pattern") as HTMLElement
-          )?.dataset.patternId;
-          const trackId = (
-            (e.target as HTMLElement).closest(".track") as HTMLElement
-          )?.dataset.trackId;
-          if (!patternId) return;
-          setCurrentPatternAndTrackId({
-            trackId,
-            patternId,
-          });
-          setCurrentPatternWidthInTacts(patternWidthInTacts)
-          
-          openPianoRoll();
-        },
+        onClick: () => editPattern(e),
       },
       {
         label: "Удалить паттерн",
-        icon: "-",
+        icon: "",
         onClick: () => {
           const patternId = (e.currentTarget as HTMLElement)?.dataset.patternId;
           if (!patternId) return;
@@ -79,6 +87,7 @@ const usePatternManage = (patternWidthInTacts: Accessor<number>) => {
   return {
     addPatternOnTrack,
     handlePatternContextMenu,
+    editPattern,
   };
 };
 
