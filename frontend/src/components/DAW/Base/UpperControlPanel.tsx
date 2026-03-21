@@ -2,19 +2,25 @@ import { Component, Show } from "solid-js";
 import ThemeController from "../../utils/ThemeController";
 import useProjectPayloadManager from "../../../hooks/daw/useProjectPayloadManager";
 import { useProjectContext } from "../../../hooks/daw/context/useProjectContext";
-import useMainDawTrackPanel from "../../../hooks/daw/useTracksManagerPanel";
 import { usePlayerContext } from "../../../hooks/daw/context/usePlayerContext";
+import useUpperControlPanel from "../../../hooks/daw/useUpperControlPanel";
+import * as Tone from "tone";
 
 const UpperControlPanel: Component = () => {
   const { project } = useProjectContext();
-  const { time, isPlaying, startOrPausePlaying, setPlayerBeatPos } = usePlayerContext();
-
+  const {
+    time,
+    isPlaying,
+    startOrPausePlaying,
+    setPlayerBeatPos,
+    totalVolume,
+  } = usePlayerContext();
   const { saveProjectChanges } = useProjectPayloadManager();
+  const { changeMasterVolume,muteOrUnmuteMasterVolume } = useUpperControlPanel();
 
   return (
     <nav class="navbar bg-header p-2.5 shadow-sm relative z-40 shrink-0 ">
       <div class="navbar-start gap-1">
-        {/*<h2>Projectasdasdsd</h2>*/}
         <div class="dropdown dropdown-hover">
           <div tabindex="0" role="button" class="btn-main m-1 p-2">
             <svg
@@ -109,8 +115,11 @@ const UpperControlPanel: Component = () => {
       <div class="navbar-center">
         <ul class="menu menu-horizontal bg-base-200 rounded-box">
           {/* Backward */}
-          <li class="tooltip tooltip-bottom" data-tip="Воспроизвести с начала"
-            onclick={() => setPlayerBeatPos(0)}>
+          <li
+            class="tooltip tooltip-bottom"
+            data-tip="Воспроизвести с начала"
+            onclick={() => setPlayerBeatPos(0)}
+          >
             <a>
               <svg
                 fill="currentColor"
@@ -154,8 +163,8 @@ const UpperControlPanel: Component = () => {
                   stroke-linejoin="round"
                   stroke-miterlimit="1.414"
                 >
-                  <path d="M5.5 3.68A.684.684 0 0 0 4.822 3H3.466a.684.684 0 0 0-.678.68v8.631c0 .374.303.677.678.677h1.355a.68.68 0 0 0 .678-.677V3.68z"/>
-                  <path d="M11.5 3.68a.685.685 0 0 0-.68-.681H9.46a.683.683 0 0 0-.68.68v8.628c0 .376.304.68.68.68h1.36c.373 0 .68-.307.68-.68z"/>
+                  <path d="M5.5 3.68A.684.684 0 0 0 4.822 3H3.466a.684.684 0 0 0-.678.68v8.631c0 .374.303.677.678.677h1.355a.68.68 0 0 0 .678-.677V3.68z" />
+                  <path d="M11.5 3.68a.685.685 0 0 0-.68-.681H9.46a.683.683 0 0 0-.68.68v8.628c0 .376.304.68.68.68h1.36c.373 0 .68-.307.68-.68z" />
                 </svg>
               </Show>
             </a>
@@ -177,28 +186,39 @@ const UpperControlPanel: Component = () => {
           </li>
         </ul>
         <div class="flex items-center ml-3">
-          <button class="btn-main p-2 bg-base-200 mr-1">
+          <label class="swap mr-2 bg-base-content/5 rounded-lg p-0.5">
+            <input type="checkbox" checked onChange={muteOrUnmuteMasterVolume} />
+          
             <svg
-              viewBox="0 0 800 800"
-              class="w-5 h-5"
+              class="swap-on fill-current h-7 w-7"
               xmlns="http://www.w3.org/2000/svg"
-            >
+              width="48"
+              height="48"
+              viewBox="0 0 24 24">
               <path
-                d="M300 50h100v700H300L100 550l-73.038-30.676A44 44 0 0 1 0 478.757V324.938a44 44 0 0 1 25.284-39.822L100 250zm400 350c0-110.457-89.545-200-200-200V100c165.685 0 300 134.315 300 300S665.685 700 500 700V600c110.455 0 200-89.545 200-200"
-                fill="currentColor"
-              />
-              <path
-                d="M600 400c0 55.229-44.77 100-100 100V300c55.23 0 100 44.771 100 100"
-                fill="currentColor"
-              />
+                d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z" />
             </svg>
-          </button>
+          
+            <svg
+              class="swap-off fill-current h-7 w-7"
+              xmlns="http://www.w3.org/2000/svg"
+              width="48"
+              height="48"
+              viewBox="0 0 24 24">
+              <path
+                d="M3,9H7L12,4V20L7,15H3V9M16.59,12L14,9.41L15.41,8L18,10.59L20.59,8L22,9.41L19.41,12L22,14.59L20.59,16L18,13.41L15.41,16L14,14.59L16.59,12Z" />
+            </svg>
+          </label>
 
           <input
             type="range"
             min="0"
             max="100"
-            value="50"
+            value={totalVolume()}
+            step="1"
+            onChange={(e: Event) => {
+              changeMasterVolume(Number((e.target as HTMLInputElement).value));
+            }}
             class="range range-xs max-w-36 max-h-7"
           />
         </div>
