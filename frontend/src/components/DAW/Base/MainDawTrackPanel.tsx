@@ -9,6 +9,7 @@ import { Track } from "../Track/Track";
 import PlayerHead from "../Track/PlayerHead";
 import PianoRoll from "../PianoRoll/PianoRoll";
 import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
+import TrackInstrumentChooseModal from "../Track/TrackInstrumentChooseModal";
 
 const MainDawTrackPanel: Component = () => {
   const {
@@ -44,19 +45,23 @@ const MainDawTrackPanel: Component = () => {
     document.removeEventListener("keydown", handlePlayerStartOrPause);
   });
 
+  let chooseTrackInstrumentRef: HTMLDialogElement | undefined;
+
   return (
     <div
       class="grid grid-flow-row h-full w-full overflow-y-hidden animate-fade-smooth "
       classList={{ "grid-flow-auto": !isPianoRollOpen() }}
       style={{
-        "grid-template-rows": isPianoRollOpen() ? `1fr ${pianoRollHeight()}px` : "1fr",
+        "grid-template-rows": isPianoRollOpen()
+          ? `1fr ${pianoRollHeight()}px`
+          : "1fr",
       }}
     >
       <div class="grid  grid-cols-[1fr_4fr] w-full overflow-y-auto overflow-x-hidden">
         <div class="bg-base-200 h-full min-w-70 border-r drop-shadow-xs border-r-base-300 ">
           <button
             class="btn-main sticky top-0 z-100 bg-base-300 hover:bg-base-200 text-base w-full h-10"
-            onClick={() => addNewTrack()}
+            onClick={() => chooseTrackInstrumentRef?.showModal()}
           >
             + Добавить дорожку
           </button>
@@ -65,6 +70,14 @@ const MainDawTrackPanel: Component = () => {
           </Index>
         </div>
 
+        <TrackInstrumentChooseModal
+          dialogRef={(el) => (chooseTrackInstrumentRef = el)}
+          onSelect={(instrumentChoice) => {
+            console.log(instrumentChoice)
+            if (!instrumentChoice) return;
+            addNewTrack(undefined, instrumentChoice);
+          }}
+        />
         <div
           class="relative bg-base-200 h-full grid grid-flow-row place-content-start overflow-x-auto overflow-y-hidden"
           ref={mainTracksPanelRef}

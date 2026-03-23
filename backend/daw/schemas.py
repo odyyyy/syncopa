@@ -27,6 +27,7 @@ class Track(BaseSchema):
     track_id: str
     title: str
     volume: int = Field(..., ge=0, le=100)
+    instrument: str
     patterns: list[Union["PatternVST", "PatternAudio"]] | None = None
 
 
@@ -36,11 +37,9 @@ class Pattern(BaseSchema):
     pos: float
     width: float
     type: Literal["audio", "vst"]
-    ref: str | None
 
 
 class PatternVST(Pattern):
-    instrument_id: str | None = None
     notes: list["Note"] = Field(default_factory=list)
 
 

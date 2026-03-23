@@ -1,4 +1,3 @@
-import landingMainPic from "../assets/imgs/landing-picture.jpg";
 import { A } from "@solidjs/router";
 import { Component } from "solid-js";
 import logo from "../assets/imgs/logo.svg";
@@ -18,7 +17,7 @@ const Landing: Component = () => {
             href="/projects"
             class="text-primary font-bold hover:scale-105 duration-200"
           >
-            Launch App
+            {/*Launch App*/}
           </A>
         </div>
       </nav>
@@ -127,19 +126,29 @@ const Landing: Component = () => {
         <div class="relative z-10 flex flex-col items-center text-center px-4 max-w-5xl">
           <div class="mb-4 overflow-hidden">
             <h1
-              class="text-7xl md:text-[160px]  text-base-content  font-black  font-['SyncopaLogoFont']
-                       leading-normal drop-shadow-2xl opacity-0 animate-fade-in-up "
+              class="text-7xl md:text-[160px] p-4 duration-300 text-base-content  font-black  font-['SyncopaLogoFont']
+                       leading-normal drop-shadow-2xl opacity-0 animate-fade-in-up hover:scale-105"
             >
               Syncopa#
             </h1>
           </div>
-{/*
+          {/*
           <p
             class="text-lg md:text-2xl text-zinc-400 font-light max-w-2xl
                     font-['SyncopaFontNormal'] leading-relaxed opacity-0 animate-fade-in-up delay-200"
           >
             <span class="text-stone-300 font-light"> Fast. Minimalist. Real-time DAW</span>{" "}
           </p>*/}
+          {/*<span class="text-rotate text-7xl leading-[2]">
+            <span class="justify-items-center">
+              <span>📐 DESIGN</span>
+              <span>⌨️ DEVELOP</span>
+              <span>🌎 DEPLOY</span>
+              <span>🌱 SCALE</span>
+              <span>🔧 MAINTAIN</span>
+              <span>♻️ REPEAT</span>
+            </span>
+          </span>*/}
 
           <A href="projects/" class="opacity-0 animate-fade-in-up delay-500">
             <button
@@ -148,7 +157,7 @@ const Landing: Component = () => {
                            hover:scale-103 duration-250 active:scale-95 hover:shadow-[0_0_40px_rgba(var(--p),0.4)]"
             >
               <div class="flex items-center gap-3 relative z-10 font-bold  tracking-wider">
-                <span>Get Started</span>
+                <span>Начать работу</span>
               </div>
             </button>
           </A>
@@ -159,7 +168,7 @@ const Landing: Component = () => {
       <footer class="bg-base-100 border-t border-white/5 py-12 px-10">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-8">
           <aside class="text-center md:text-left">
-            <h2 class="text-xl font-bold  mb-2">Snycopa#</h2>
+            <h2 class="text-xl font-bold  mb-2">Syncopa#</h2>
             <p class="text-sm text-zinc-500 uppercase tracking-widest">
               Copyright © 2026 - All rights reserved
             </p>

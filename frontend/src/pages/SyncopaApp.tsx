@@ -7,6 +7,7 @@ import { PlayerProvider } from "../context/daw/player.context";
 import { ContextMenuProvider } from "../context/daw/contextmenu.context";
 import { TracksProvider } from "../context/daw/tracks.context";
 import { PianoRollProvider } from "../context/daw/pianoroll.context";
+import * as Tone from "tone";
 
 const SyncopaApp: Component = () => {
   const onBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -17,6 +18,13 @@ const SyncopaApp: Component = () => {
 
   onMount(() => {
     window.addEventListener("beforeunload", onBeforeUnload);
+    window.addEventListener(
+      "click",
+      async () => {
+        await Tone.start();
+      },
+      { once: true },
+    );
     onCleanup(() => {
       window.removeEventListener("beforeunload", onBeforeUnload);
     });

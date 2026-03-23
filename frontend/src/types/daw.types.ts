@@ -22,6 +22,7 @@ type Track = {
   trackId: string;
   title: string;
   volume: number;
+  instrument: string;
   patterns: PatternType[] | null;
 };
 
@@ -31,12 +32,10 @@ type BasePattern = {
   pos: number;
   width: number;
   type: "audio" | "vst";
-  ref: string | null;
 };
 
 type PatternVST = BasePattern & {
   type: "vst";
-  instrumentId: string | null;
   notes: Note[] | null;
 };
 
@@ -118,6 +117,7 @@ type PatternAndTrack = {
 
 type PianoRollContextType = {
   isPianoRollOpen: Accessor<boolean>;
+  setIsPianoRollOpen: Setter<boolean>;
   setCurrentPatternAndTrackId: SetStoreFunction<PatternAndTrack>;
   setCurrentPatternWidthInTacts: Setter<number>;
   currentPatternWidthInTacts: Accessor<number>;

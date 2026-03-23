@@ -22,7 +22,10 @@ const useMainDawTrackPanel = () => {
     updateTimer(playerBeatPos());
   });
 
-  const addNewTrack = (title: string | undefined = undefined) => {
+  const addNewTrack = (
+    title: string | undefined = undefined,
+    instrument: string,
+  ) => {
     if (tracks.length > 50) {
       toast.error("Максимальное количество дорожек достигнуто");
       return;
@@ -34,7 +37,13 @@ const useMainDawTrackPanel = () => {
 
     setTracks((prev: Track[]) => [
       ...prev,
-      { trackId: crypto.randomUUID(), title: title, patterns: [], volume: 50 },
+      {
+        trackId: crypto.randomUUID(),
+        instrument: instrument,
+        title: title,
+        patterns: [],
+        volume: 50,
+      },
     ]);
   };
 
@@ -95,7 +104,7 @@ const useMainDawTrackPanel = () => {
       },
       {
         label: "Удалить дорожку",
-        icon: "",
+        icon: "−",
         onClick: () => {
           const trackId = (
             (e.target as HTMLElement).closest(".track") as HTMLElement
