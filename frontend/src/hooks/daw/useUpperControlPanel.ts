@@ -1,9 +1,11 @@
+import { createSignal } from "solid-js";
 import { MIN_MASTER_VOLUME_DB } from "../../config/config";
 import { usePlayerContext } from "./context/usePlayerContext";
 import * as Tone from "tone";
 
 const useUpperControlPanel = () => {
   const { setTime, bpm, setTotalVolume } = usePlayerContext();
+  const [exitModalOpen, setExitModalOpen] = createSignal(false);
 
   const formatTime = (ms: number): string => {
     const minutes = Math.floor(ms / 60000);
@@ -21,19 +23,14 @@ const useUpperControlPanel = () => {
     setTime(formatTime(timeMs));
   };
 
-  const changeMasterVolume = (newVolume: number) => {
-    Tone.getDestination().volume.value =
-      (newVolume * -MIN_MASTER_VOLUME_DB) / 100 + MIN_MASTER_VOLUME_DB;
-    setTotalVolume(newVolume);
-  };
-
   const muteOrUnmuteMasterVolume = (e: Event) => {
-    console.log(Tone.getDestination().mute)
-    console.log((e.currentTarget as HTMLInputElement).checked)
-    if (!Tone.getDestination().mute && !(e.currentTarget as HTMLInputElement).checked) {
+    if (
+      !Tone.getDestination().mute &&
+      !(e.currentTarget as HTMLInputElement).checked
+    ) {
       Tone.getDestination().mute = true;
       setTotalVolume(0);
-    } else if (Tone.getDestination().mute && (e.currentTarget as HTMLInputElement).checked) {
+    } else {
       Tone.getDestination().mute = false;
       setTotalVolume(50);
     }
@@ -41,8 +38,9 @@ const useUpperControlPanel = () => {
 
   return {
     updateTimer,
-    changeMasterVolume,
     muteOrUnmuteMasterVolume,
+    exitModalOpen,
+    setExitModalOpen,
   };
 };
 

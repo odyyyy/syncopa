@@ -3,7 +3,7 @@ import usePatternTransform from "../../../hooks/daw/pattern/usePatternTransform"
 import { PatternType, PatternVST } from "../../../types/daw.types";
 import { Accessor } from "solid-js";
 import usePatternManage from "../../../hooks/daw/pattern/usePatternManage";
-import usePianoRoll from "../../../hooks/daw/usePianoRoll";
+import usePianoRoll from "../../../hooks/daw/pianoroll/usePianoRoll";
 import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
 
 const Pattern: Component<{
@@ -21,7 +21,8 @@ const Pattern: Component<{
     startGrab,
     patternWidthInTacts,
   } = usePatternTransform(props.pattern(), props.trackId);
-  const { handlePatternContextMenu, editPattern } = usePatternManage(patternWidthInTacts);
+  const { handlePatternContextMenu, editPattern } =
+    usePatternManage(patternWidthInTacts);
   const { ROWS_NUMBER, PIANOROLL_NOTES } = usePianoRoll();
   const { setCurrentPatternWidthInTacts, currentPatternAndTrackId } =
     usePianoRollContext();
@@ -90,7 +91,7 @@ const Pattern: Component<{
                   }}
                 >
                   <div
-                    class="absolute h-0.5 bg-primary/79"
+                    class="absolute h-1 bg-primary/54"
                     style={{
                       left: `${(Math.max(note.pos - 1, 0) * patternWidth()) / patternWidthInTacts() / 4}px`,
                       width: `${(note.duration * patternWidth()) / 4.2 / patternWidthInTacts()}px`,

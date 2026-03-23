@@ -1,8 +1,9 @@
-import { createContext, ParentComponent, createSignal } from "solid-js";
+import { createContext, ParentComponent, createSignal, createEffect } from "solid-js";
 import { PlayerContextType } from "../../types/daw.types";
 import * as Tone from "tone";
 import { useTracksContext } from "../../hooks/daw/context/useTracksContext";
 import { useProjectContext } from "../../hooks/daw/context/useProjectContext";
+import { MIN_MASTER_VOLUME_DB } from "../../config/config";
 
 export const PlayerContext = createContext<PlayerContextType>();
 
@@ -15,8 +16,12 @@ export const PlayerProvider: ParentComponent = (props) => {
 
   const { project } = useProjectContext();
   const [totalVolume, setTotalVolume] = createSignal(
-    project()?.payload.metadata?.totalVolume ?? 50,
+    project()?.payload?.metadata?.totalVolume ?? 50,
   );
+  createEffect(() => {
+    Tone.getDestination().volume.value =
+      (totalVolume() * -MIN_MASTER_VOLUME_DB) / 100 + MIN_MASTER_VOLUME_DB;
+  })
 
   const [intervalId, setIntervalId] = createSignal<number | undefined>(
     undefined,
@@ -35,7 +40,6 @@ export const PlayerProvider: ParentComponent = (props) => {
       parts().forEach((part) => part.dispose());
       setParts([]);
     } else {
-      await Tone.start();
       parts().forEach((part) => part.dispose());
 
       const synth = new Tone.FMSynth().toDestination();

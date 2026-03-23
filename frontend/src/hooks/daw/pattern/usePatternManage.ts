@@ -4,7 +4,7 @@ import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
 import { PatternType, PatternVST } from "../../../types/daw.types";
 import { useProjectContext } from "../context/useProjectContext";
 
-const usePatternManage = (patternWidthInTacts: Accessor<number>) => {
+const usePatternManage = (patternWidthInTacts: Accessor<number> = () => 4) => {
   const { tracks, setTracks } = useProjectContext();
   const {
     setCurrentPatternAndTrackId,
@@ -21,10 +21,8 @@ const usePatternManage = (patternWidthInTacts: Accessor<number>) => {
       type: "vst",
       pos: 0,
       width: 1,
-      instrumentId: null,
       title: "Pattern",
       notes: [],
-      ref: null,
     };
 
     setTracks(trackIndex, "patterns", (prev: PatternType[] | null) =>
@@ -59,12 +57,12 @@ const usePatternManage = (patternWidthInTacts: Accessor<number>) => {
     openMenu(e.clientX, e.clientY, [
       {
         label: "Изменить паттерн",
-        icon: "",
+        icon: "✎",
         onClick: () => editPattern(e),
       },
       {
         label: "Удалить паттерн",
-        icon: "",
+        icon: "✕",
         onClick: () => {
           const patternId = (e.currentTarget as HTMLElement)?.dataset.patternId;
           if (!patternId) return;

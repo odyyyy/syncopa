@@ -46,7 +46,6 @@ export default function useCreateProject(
     setMembers([]);
   };
 
-  // Add and remove member to project
   const addMember = (memberUsername: string) => {
     setMembers([...members(), memberUsername]);
   };
@@ -55,7 +54,6 @@ export default function useCreateProject(
     setMembers(members().filter((username) => username !== memberUsername));
   };
 
-  // Fetch potential members
   const debounced = debounce((value: string) => {
     setQuery(value);
   }, 400);

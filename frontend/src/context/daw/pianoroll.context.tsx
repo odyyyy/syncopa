@@ -23,7 +23,7 @@ export const PianoRollProvider: ParentComponent = (props) => {
   return (
     <PianoRollContext.Provider
       value={{
-        isPianoRollOpen,
+        isPianoRollOpen,setIsPianoRollOpen,
         openPianoRoll,
         currentPatternAndTrackId,
         setCurrentPatternAndTrackId,

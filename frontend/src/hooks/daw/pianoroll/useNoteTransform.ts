@@ -1,7 +1,8 @@
-import { useProjectContext } from "./context/useProjectContext";
-import { useTracksContext } from "./context/useTracksContext";
+import { useProjectContext } from "../context/useProjectContext";
+import { useTracksContext } from "../context/useTracksContext";
 import usePianoRoll from "./usePianoRoll";
-import { Note as NoteType, PatternVST } from "../../types/daw.types";
+import { Note as NoteType, PatternVST } from "../../../types/daw.types";
+import useNoteManage from "./useNoteManage";
 
 export default function useNoteTransform() {
   const { tactWidth, beatNumber } = useTracksContext();
@@ -36,23 +37,7 @@ export default function useNoteTransform() {
     return `${note}${octave}`;
   };
 
-  const findIndexes = () => {
-    const tIndex = tracks.findIndex((t) => t.trackId === trackId);
-    if (tIndex === -1) return null;
-    const track = tracks[tIndex];
-    if (!track?.patterns) return null;
-    const pIndex = track.patterns.findIndex((p) => p.patternId === patternId);
-    if (pIndex === -1) return null;
-    const pattern = track.patterns[pIndex];
-    if (!pattern || pattern.type !== "vst" || !(pattern as PatternVST).notes)
-      return null;
-    const nIndex = (pattern as PatternVST).notes
-      ? (pattern as PatternVST).notes!.findIndex((n) => n.noteId === noteId)
-      : -1;
-    if (nIndex === -1) return null;
-    return { tIndex, pIndex, nIndex };
-  };
-
+  
   const transformNote = (
     e: MouseEvent,
     ctx: {
@@ -88,9 +73,10 @@ export default function useNoteTransform() {
     window.addEventListener("mousemove", onMove);
     window.addEventListener("mouseup", onUp);
   };
-
+  
+  const { findIndexes } = useNoteManage();
   const onMove = (e: MouseEvent) => {
-    const indexes = findIndexes();
+    const indexes = findIndexes(trackId, patternId, noteId);
     if (!indexes) return;
     const { tIndex, pIndex, nIndex } = indexes;
 

@@ -4,7 +4,8 @@ import useProjectPayloadManager from "../../../hooks/daw/useProjectPayloadManage
 import { useProjectContext } from "../../../hooks/daw/context/useProjectContext";
 import { usePlayerContext } from "../../../hooks/daw/context/usePlayerContext";
 import useUpperControlPanel from "../../../hooks/daw/useUpperControlPanel";
-import * as Tone from "tone";
+import ExitProjectModal from "../../utils/ConfirmActionModal";
+import { useNavigate } from "@solidjs/router";
 
 const UpperControlPanel: Component = () => {
   const { project } = useProjectContext();
@@ -13,10 +14,12 @@ const UpperControlPanel: Component = () => {
     isPlaying,
     startOrPausePlaying,
     setPlayerBeatPos,
+    setTotalVolume,
     totalVolume,
   } = usePlayerContext();
   const { saveProjectChanges } = useProjectPayloadManager();
-  const { changeMasterVolume,muteOrUnmuteMasterVolume } = useUpperControlPanel();
+  const { muteOrUnmuteMasterVolume, setExitModalOpen, exitModalOpen } = useUpperControlPanel();
+  const navigate = useNavigate();
 
   return (
     <nav class="navbar bg-header p-2.5 shadow-sm relative z-40 shrink-0 ">
@@ -45,9 +48,6 @@ const UpperControlPanel: Component = () => {
                 <p class="text-base text-center">{project()?.title}</p>
               </div>
             </li>
-            <li>
-              <a>Новый проект</a>
-            </li>
             <li
               onclick={(e) => {
                 e.preventDefault();
@@ -56,17 +56,29 @@ const UpperControlPanel: Component = () => {
             >
               <a>Сохранить</a>
             </li>
-            <li>
+            {/*<li>
               <a>Импорт</a>
-            </li>
+            </li>*/}
             <li>
               <a>Экспорт</a>
             </li>
-            <li>
+            <li onClick={(e) => {
+              e.preventDefault();
+              setExitModalOpen(true);
+            }}>
               <a>Закрыть</a>
             </li>
           </ul>
         </div>
+        <ExitProjectModal
+          title="Закрыть проект? Несохраненные изменения будут потеряны!"
+          open={exitModalOpen()}
+          onClose={() => setExitModalOpen(false)}
+          onConfirm={() => {
+            setExitModalOpen(false);
+            navigate("../")
+          }}
+        />
 
         {/* Undo */}
         <button
@@ -187,26 +199,30 @@ const UpperControlPanel: Component = () => {
         </ul>
         <div class="flex items-center ml-3">
           <label class="swap mr-2 bg-base-content/5 rounded-lg p-0.5">
-            <input type="checkbox" checked onChange={muteOrUnmuteMasterVolume} />
-          
+            <input
+              type="checkbox"
+              checked
+              onChange={muteOrUnmuteMasterVolume}
+            />
+
             <svg
               class="swap-on fill-current h-7 w-7"
               xmlns="http://www.w3.org/2000/svg"
               width="48"
               height="48"
-              viewBox="0 0 24 24">
-              <path
-                d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z" />
+              viewBox="0 0 24 24"
+            >
+              <path d="M14,3.23V5.29C16.89,6.15 19,8.83 19,12C19,15.17 16.89,17.84 14,18.7V20.77C18,19.86 21,16.28 21,12C21,7.72 18,4.14 14,3.23M16.5,12C16.5,10.23 15.5,8.71 14,7.97V16C15.5,15.29 16.5,13.76 16.5,12M3,9V15H7L12,20V4L7,9H3Z" />
             </svg>
-          
+
             <svg
               class="swap-off fill-current h-7 w-7"
               xmlns="http://www.w3.org/2000/svg"
               width="48"
               height="48"
-              viewBox="0 0 24 24">
-              <path
-                d="M3,9H7L12,4V20L7,15H3V9M16.59,12L14,9.41L15.41,8L18,10.59L20.59,8L22,9.41L19.41,12L22,14.59L20.59,16L18,13.41L15.41,16L14,14.59L16.59,12Z" />
+              viewBox="0 0 24 24"
+            >
+              <path d="M3,9H7L12,4V20L7,15H3V9M16.59,12L14,9.41L15.41,8L18,10.59L20.59,8L22,9.41L19.41,12L22,14.59L20.59,16L18,13.41L15.41,16L14,14.59L16.59,12Z" />
             </svg>
           </label>
 
@@ -217,7 +233,7 @@ const UpperControlPanel: Component = () => {
             value={totalVolume()}
             step="1"
             onChange={(e: Event) => {
-              changeMasterVolume(Number((e.target as HTMLInputElement).value));
+              setTotalVolume(Number((e.target as HTMLInputElement).value));
             }}
             class="range range-xs max-w-36 max-h-7"
           />
@@ -225,39 +241,11 @@ const UpperControlPanel: Component = () => {
       </div>
 
       <div class="navbar-end gap-4">
-        {/* Volume Range */}
-
-        {/*<button class="btn p-2 bg-primary/80 text-neutral light:text-white">
-          <svg
-            viewBox="0 0 15 15"
-            fill="currentColor"
-            class="w-5 h-5"
-            xmlns="http://www.w3.org/2000/svg"
-          >
-            <path
-              d="M0 1.5C0 0.671573 0.671573 0 1.5 0H10.0858C10.4836 0 10.8651 0.158035 11.1464 0.43934L14.5607 3.85355C14.842 4.13486 15 4.51639 15 4.91421V13.5C15 14.3284 14.3284 15 13.5 15H11V11.5C11 10.6716 10.3284 10 9.5 10H5.5C4.67157 10 4 10.6716 4 11.5V15H1.5C0.671573 15 0 14.3284 0 13.5V1.5Z"
-              fill="currentColor"
-            />
-            <path
-              d="M5 15H10V11.5C10 11.2239 9.77614 11 9.5 11H5.5C5.22386 11 5 11.2239 5 11.5V15Z"
-              fill="currentColor"
-            />
-          </svg>
-          Сохранить
-        </button>
-        <button class="btn p-2 bg-base-content text-neutral light:text-white">
-          <svg
-            viewBox="0 0 24 24"
-            xmlns="http://www.w3.org/2000/svg"
-            class="w-5 h-5 icon flat-color fill-neutral"
-          >
-            <path d="M21 20a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2 6 6 0 0 1 6-6h6a6 6 0 0 1 6 6m-9-8a5 5 0 1 0-5-5 5 5 0 0 0 5 5" />
-          </svg>
-          Пригласить
-        </button>*/}
-
         <ThemeController />
       </div>
+      
+      
+      
     </nav>
   );
 };

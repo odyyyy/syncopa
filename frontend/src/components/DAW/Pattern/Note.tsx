@@ -1,8 +1,9 @@
 import { Accessor, Component } from "solid-js";
 import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
 import { useTracksContext } from "../../../hooks/daw/context/useTracksContext";
-import useNoteTransform from "../../../hooks/daw/useNoteTransform";
+import useNoteTransform from "../../../hooks/daw/pianoroll/useNoteTransform";
 import { Note as NoteType } from "../../../types/daw.types";
+import useNoteManage from "../../../hooks/daw/pianoroll/useNoteManage";
 
 const Note: Component<{
   patternWidthInBeats: Accessor<number>;
@@ -11,12 +12,15 @@ const Note: Component<{
   const { tactWidth, beatNumber } = useTracksContext();
   const { transformNote } = useNoteTransform();
   const { currentPatternAndTrackId } = usePianoRollContext();
+  const { handleNoteContextMenu } = useNoteManage();
 
   const pxPerBeat = () => (tactWidth() * 3) / beatNumber();
 
   return (
     <div
       class="bg-primary/88 h-6 border border-base-300/20 cursor-pointer z-20 absolute"
+      data-note-id={props.note.noteId}
+      oncontextmenu={handleNoteContextMenu}
       style={{
         left: `${Math.max(props.note.pos - 1, 0) * pxPerBeat()}px`,
         width: `${props.note.duration * pxPerBeat()}px`,

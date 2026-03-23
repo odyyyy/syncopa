@@ -1,14 +1,17 @@
 import * as Tone from "tone";
-import { useProjectContext } from "./context/useProjectContext";
-import { Note } from "../../types/daw.types";
-import { usePianoRollContext } from "../../context/daw/pianoroll.context";
-import { useTracksContext } from "./context/useTracksContext";
+import { useProjectContext } from "../context/useProjectContext";
+import { Note } from "../../../types/daw.types";
+import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
+import { useTracksContext } from "../context/useTracksContext";
 
 const usePianoRoll = () => {
   const { tracks, setTracks } = useProjectContext();
   const { currentPatternAndTrackId, currentPatternWidthInTacts } =
     usePianoRollContext();
   const { beatNumber } = useTracksContext();
+  
+  const synth = new Tone.PolySynth(Tone.Synth).toDestination();
+  
 
   const ROWS_NUMBER = 88;
   const noteNames = [
@@ -77,6 +80,11 @@ const usePianoRoll = () => {
           return pattern;
         }) ?? null,
     );
+    
+    // TODO: Use Exact Track Patterns Instrument
+    synth.triggerAttackRelease(note, "8n");
+    
+    
   };
 
   const findPatternById = () => {
@@ -97,9 +105,7 @@ const usePianoRoll = () => {
     return null;
   };
 
-  const synth = new Tone.PolySynth(Tone.Synth).toDestination();
-  let isToneStarted = false;
-  const onPianoKeyPress = async (e: MouseEvent) => {
+  const onPianoKeyPress = (e: MouseEvent) => {
     const key = (e.target as HTMLElement).closest(
       "[data-note]",
     ) as HTMLElement | null;
@@ -107,11 +113,6 @@ const usePianoRoll = () => {
     if (!key) return;
 
     const note = key.dataset.note;
-
-    if (!isToneStarted) {
-      await Tone.start();
-      isToneStarted = true;
-    }
 
     synth.triggerAttackRelease(note!, "8n");
   };
@@ -125,7 +126,6 @@ const usePianoRoll = () => {
 
     const move = (e: MouseEvent) => {
       const newHeight = startHeight - (e.clientY - startY);
-
       setPianoRollHeight(Math.max(MIN_HEIGHT, Math.min(MAX_HEIGHT, newHeight)));
     };
 

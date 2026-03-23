@@ -45,7 +45,7 @@ const ConfirmActionModal: Component<Props> = (props) => {
   return (
     <Portal>
       <dialog ref={modalRef} class="modal">
-        <div class="modal-box max-w-3xs flex flex-col items-center">
+        <div class="modal-box max-w-3xs flex flex-col items-center text-center">
           <h3 class="text-lg font-bold">{props.title}</h3>
 
           <div class="modal-action flex justify-between gap-8">
