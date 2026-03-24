@@ -10,6 +10,7 @@ import PlayerHead from "../Track/PlayerHead";
 import PianoRoll from "../PianoRoll/PianoRoll";
 import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
 import TrackInstrumentChooseModal from "../Track/TrackInstrumentChooseModal";
+import PresetChooseModal from "../PianoRoll/PresetChooseModal";
 
 const MainDawTrackPanel: Component = () => {
   const {
@@ -46,6 +47,7 @@ const MainDawTrackPanel: Component = () => {
   });
 
   let chooseTrackInstrumentRef: HTMLDialogElement | undefined;
+  let choosePresetRef: HTMLDialogElement | undefined;
 
   return (
     <div
@@ -66,16 +68,24 @@ const MainDawTrackPanel: Component = () => {
             + Добавить дорожку
           </button>
           <Index each={tracks}>
-            {(track) => <TrackController track={track()} />}
+            {(track) => <TrackController track={track()} openPresetsMenu={() => choosePresetRef?.showModal()} />}
           </Index>
         </div>
 
         <TrackInstrumentChooseModal
-          dialogRef={(el) => (chooseTrackInstrumentRef = el)}
+          modalRef={(el) => (chooseTrackInstrumentRef = el)}
           onSelect={(instrumentChoice) => {
-            console.log(instrumentChoice)
             if (!instrumentChoice) return;
             addNewTrack(undefined, instrumentChoice);
+          }}
+        />
+        
+        
+        <PresetChooseModal
+          modalRef={(el) => (choosePresetRef = el)}
+          onSelect={(presetChoice) => {
+            if (!presetChoice) return;
+            
           }}
         />
         <div

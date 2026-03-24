@@ -4,13 +4,15 @@ import { Track } from "../../../types/daw.types";
 
 interface TrackControllerProps {
   track: Track;
+  openPresetsMenu?: () => void;
 }
 
-const TrackController: Component<TrackControllerProps> = ({ track }) => {
+const TrackController: Component<TrackControllerProps> = ({ track,  openPresetsMenu}) => {
   const { onTrackVolumeChange } = useMainDawTrackPanel();
 
   return (
-    <div class="flex flex-col h-25 max-h-30 w-full bg-base-100/22  justify-between p-2 border-b border-b-base-300 ">
+    <div onDblClick={openPresetsMenu}
+      class="flex flex-col h-25 max-h-30 w-full bg-base-100/22  justify-between p-2 border-b border-b-base-300 ">
       <div class="flex justify-start ">
         <div class="flex items-center gap-2 justify-center stroke-black stroke-2 fill-current ">
           <svg
@@ -31,6 +33,7 @@ const TrackController: Component<TrackControllerProps> = ({ track }) => {
           />
         </div>
       </div>
+      <span class="text-xs  opacity-50 font-bold uppercase p-1.5 rounded-xl bg-base-200/90 w-fit">Preset NAME</span>
       <div class="flex-row flex justify-between ">
         <div class="volume ">
           <input

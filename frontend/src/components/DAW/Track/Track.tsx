@@ -5,12 +5,18 @@ import { PatternType } from "../../../types/daw.types";
 type TrackProps = {
   trackId: string;
   patterns: PatternType[];
+  onClick?: () => void;
   tactElementsNumber: number;
 };
 
 export const Track: Component<TrackProps> = (props) => {
+  const handleClick = () => {
+    props.onClick?.();
+  };
+
+  
   return (
-    <div data-track-id={`${props.trackId}`} class="track">
+    <div data-track-id={`${props.trackId}`} class="track" onClick={handleClick}>
       <Index each={Array.from({ length: props.tactElementsNumber })}>
         {(_, index) => (
           <div class="tact">
