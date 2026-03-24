@@ -1,9 +1,15 @@
-import { createContext, ParentComponent, createSignal, createEffect } from "solid-js";
+import {
+  createContext,
+  ParentComponent,
+  createSignal,
+  createEffect,
+} from "solid-js";
 import { PlayerContextType } from "../../types/daw.types";
 import * as Tone from "tone";
 import { useTracksContext } from "../../hooks/daw/context/useTracksContext";
 import { useProjectContext } from "../../hooks/daw/context/useProjectContext";
 import { MIN_MASTER_VOLUME_DB } from "../../config/config";
+import CustomSynth from "../../instruments/synths/CustomSynth";
 
 export const PlayerContext = createContext<PlayerContextType>();
 
@@ -21,79 +27,106 @@ export const PlayerProvider: ParentComponent = (props) => {
   createEffect(() => {
     Tone.getDestination().volume.value =
       (totalVolume() * -MIN_MASTER_VOLUME_DB) / 100 + MIN_MASTER_VOLUME_DB;
-  })
+  });
 
-  const [intervalId, setIntervalId] = createSignal<number | undefined>(
-    undefined,
-  );
   const { tracks } = useProjectContext();
   const { beatNumber } = useTracksContext();
 
   const [parts, setParts] = createSignal<Tone.Part[]>([]);
+  const synth = new CustomSynth();
+
+  let isInitialized = false;
+
   const startOrPausePlaying = async () => {
-    setIsPlaying(!isPlaying());
+    if (!isInitialized) {
+      await Tone.start();
+      isInitialized = true;
+    }
+    const transport = Tone.getTransport();
 
-    if (!isPlaying()) {
-      Tone.getTransport().stop();
-      clearInterval(intervalId());
-
-      parts().forEach((part) => part.dispose());
+    if (isPlaying()) {
+      transport.stop();
+      transport.cancel();
+      setIsPlaying(false);
+      parts().forEach((p) => p.dispose());
       setParts([]);
-    } else {
-      parts().forEach((part) => part.dispose());
+      return;
+    }
 
-      const synth = new Tone.FMSynth().toDestination();
-      const newParts: Tone.Part[] = [];
+    setIsPlaying(true);
 
-      const patternsToPlay = tracks.flatMap(track => 
-        track.patterns?.filter((pattern) => {
-          return (
-            (pattern.pos + 1) * pattern.width * beatNumber() >= playerBeatPos()
-          );
-        }) ?? []
-      );
-      
-      if (!patternsToPlay || patternsToPlay.length === 0) return;
+    parts().forEach((p) => p.dispose());
 
-      patternsToPlay.forEach((pattern) => {
-        if (pattern.type === "vst") {
-          const notesArray =
-            pattern.notes
-              ?.filter((note) => note.pos / beatNumber() > playerBeatPos())
-              .map((note) => ({
-                time: Math.max(
-                  0,
-                  ((note.pos - 1) * 60) / bpm() -
-                    ((playerBeatPos() * 60) / bpm()) * beatNumber(),
-                ),
-                note: note.note,
-                duration: (note.duration * 60) / bpm(),
-                velocity: note.velocity,
-              })) ?? [];
+    const currentBpm = bpm();
+    const currentBeatNumber = beatNumber();
+    const startPosInBars = playerBeatPos();
 
-          if (notesArray.length > 0) {
-            const part = new Tone.Part((time, value) => {
+    const newParts: Tone.Part[] = [];
+
+    tracks.forEach((track) => {
+      track.patterns?.forEach((pattern) => {
+        if (pattern.type !== "vst" || !pattern.notes) return;
+
+        const patternStartBar = pattern.pos;
+        const patternEndBar = pattern.pos + pattern.width;
+
+        if (patternEndBar < startPosInBars) return;
+
+        const events = pattern.notes
+          .map((n) => {
+            const absoluteNoteBar =
+              patternStartBar + (n.pos - 1) / currentBeatNumber;
+
+            return {
+              barPos: absoluteNoteBar,
+              note: n.note,
+              duration: n.duration * (60 / currentBpm),
+              velocity: n.velocity,
+            };
+          })
+          .filter((e) => e.barPos >= startPosInBars);
+
+        if (events.length > 0) {
+          const part = new Tone.Part(
+            (time, val) => {
               synth.triggerAttackRelease(
-                value.note,
-                value.duration,
+                val.note,
+                val.duration,
                 time,
-                value.velocity,
+                val.velocity,
               );
-            }, notesArray).start(0);
+            },
+            events.map((e) => ({
+              time:
+                (e.barPos - startPosInBars) *
+                currentBeatNumber *
+                (60 / currentBpm),
+              ...e,
+            })),
+          ).start(0);
 
-            newParts.push(part);
-          }
+          newParts.push(part);
         }
       });
+    });
 
-      setParts(newParts);
+    setParts(newParts);
+    transport.seconds = 0;
+    transport.start();
 
-      Tone.getTransport().start();
-      const interval = setInterval(() => {
-        setPlayerBeatPos(playerBeatPos() + 60 / bpm() / 100);
-      }, 10);
-      setIntervalId(interval);
-    }
+    const updateUI = () => {
+      if (transport.state === "started") {
+        const secondsElapsed = transport.seconds;
+
+        const totalBeatsElapsed = (secondsElapsed * currentBpm) / 60;
+        const barsElapsed = totalBeatsElapsed / currentBeatNumber;
+
+        setPlayerBeatPos(startPosInBars + barsElapsed);
+
+        requestAnimationFrame(updateUI);
+      }
+    };
+    requestAnimationFrame(updateUI);
   };
   return (
     <PlayerContext.Provider

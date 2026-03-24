@@ -58,11 +58,8 @@ const PianoRoll: Component<{ onClose?: () => void }> = (props) => {
           ref={pianoRef}
           onMouseDown={onPianoKeyPress}
         >
-          <div
-            data-note="C8"
-            class="bg-amber-50 relative w-full h-6 border border-slate-950/10 shrink-0"
-          >
-            <div class="absolute right-1 -top-1 text-lg font-bold text-[#d6d2c2]">
+          <div data-note="C8" class=" h-6 whitekey">
+            <div class="absolute right-1 -top-1 text-lg font-bold text-[#d6d2c2] ">
               C8
             </div>
           </div>
@@ -73,7 +70,7 @@ const PianoRoll: Component<{ onClose?: () => void }> = (props) => {
                 <div class="whitekeys absolute left-0 top-0 w-full flex flex-col-reverse">
                   <div
                     data-note={`C${OCTAVES_NUMBER - index}`}
-                    class="relative bg-amber-50 w-full h-9 border border-slate-950/10"
+                    class="relative  h-9 whitekey"
                   >
                     <div class="absolute right-1 top-0.5 text-lg font-bold text-[#d6d2c2]">
                       {`C${OCTAVES_NUMBER - index}`}
@@ -81,52 +78,52 @@ const PianoRoll: Component<{ onClose?: () => void }> = (props) => {
                   </div>
                   <div
                     data-note={`D${OCTAVES_NUMBER - index}`}
-                    class="bg-amber-50 w-full h-12 border border-slate-950/10"
+                    class="h-12 whitekey"
                   />
                   <div
                     data-note={`E${OCTAVES_NUMBER - index}`}
-                    class="bg-amber-50 w-full h-9 border border-slate-950/10"
+                    class="h-9 whitekey"
                   />
                   <div
                     data-note={`F${OCTAVES_NUMBER - index}`}
-                    class="bg-amber-50 w-full h-9 border border-slate-950/10"
+                    class="h-9 whitekey"
                   />
                   <div
                     data-note={`G${OCTAVES_NUMBER - index}`}
-                    class="bg-amber-50 w-full h-12 border border-slate-950/10"
+                    class="h-12 whitekey"
                   />
                   <div
                     data-note={`A${OCTAVES_NUMBER - index}`}
-                    class="bg-amber-50 w-full h-12 border border-slate-950/10"
+                    class="h-12 whitekey"
                   />
                   <div
                     data-note={`B${OCTAVES_NUMBER - index}`}
-                    class="bg-amber-50 w-full h-9 border border-slate-950/10"
+                    class="h-9 whitekey"
                   />
                 </div>
                 <div class="blackkeys flex flex-col absolute left-0 w-[50%] gap-7 mt-6">
                   <div class="gap-7 mt-0.5 flex flex-col">
                     <div
                       data-note={`A#${OCTAVES_NUMBER - index}`}
-                      class="bg-stone-800 h-5 drop-shadow-xs drop-shadow-stone-800"
+                      class="blackkey"
                     />
                     <div
                       data-note={`G#${OCTAVES_NUMBER - index}`}
-                      class="bg-stone-800 h-5 drop-shadow-xs drop-shadow-stone-800"
+                      class="blackkey"
                     />
                     <div
                       data-note={`F#${OCTAVES_NUMBER - index}`}
-                      class="bg-stone-800 h-5 drop-shadow-xs drop-shadow-stone-800"
+                      class="blackkey"
                     />
                   </div>
                   <div class="gap-7 mt-6 flex flex-col">
                     <div
                       data-note={`D#${OCTAVES_NUMBER - index}`}
-                      class="bg-stone-800 h-5 drop-shadow-xs drop-shadow-stone-800"
+                      class="blackkey"
                     />
                     <div
                       data-note={`C#${OCTAVES_NUMBER - index}`}
-                      class="bg-stone-800 h-5 drop-shadow-xs drop-shadow-stone-800"
+                      class="blackkey"
                     />
                   </div>
                 </div>
@@ -134,17 +131,11 @@ const PianoRoll: Component<{ onClose?: () => void }> = (props) => {
             )}
           </Index>
           <div class="mt-72 relative h-full">
-            <div
-              data-note="B0"
-              class="bg-amber-50 w-full h-9 border border-slate-950/10 shrink-0"
-            />
-            <div
-              data-note="A0"
-              class="bg-amber-50 w-full h-9 border border-slate-950/10 shrink-0"
-            />
+            <div data-note="B0" class=" h-9 whitekey shrink-0" />
+            <div data-note="A0" class=" h-9 whitekey shrink-0" />
             <div
               data-note="A#0"
-              class="bg-stone-800 absolute left-0 top-7 w-1/2 h-5 drop-shadow-xs drop-shadow-stone-800"
+              class="blackkey absolute left-0 top-7 w-1/2 "
             />
           </div>
         </div>

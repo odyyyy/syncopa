@@ -52,7 +52,7 @@ type Note = {
   pos: number;
   note: string;
   duration: number;
-  velocity?: number;
+  velocity: number;
 };
 
 type AudioClipMetadata = {

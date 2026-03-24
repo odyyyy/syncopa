@@ -135,6 +135,12 @@
     .piano {
         @apply flex flex-col h-full w-30 max-w-40 z-10;
     }
+    .whitekey {
+        @apply bg-amber-50 relative w-full border border-slate-950/10 shrink-0 active:bg-amber-50/96 duration-300 active:scale-105 transition-all;
+    }
+    .blackkey {
+        @apply bg-stone-800 h-5 drop-shadow-xs drop-shadow-stone-800 active:bg-stone-700 duration-300 active:scale-105 transition-all;
+    }
 }
 
 /* Animations */
