@@ -20,25 +20,22 @@ const usePatternTransform = (pattern: PatternType, trackId: string) => {
     field: K,
     value: PatternType[K]
   ) => {
-    setTracks((prev) => {
-      const updatedTracks = [...prev];
-      const track = updatedTracks.find((t) => t.trackId === trackId);
-      if (track) {
-        track.patterns! = track.patterns!.map((p) =>
-          p.patternId === patternId ? { ...p, [field]: value } : p
-        );
-      }
-      return updatedTracks;
-    });
+    setTracks((prev) =>
+      prev.map((track) => {
+        if (track.trackId !== trackId) return track;
+  
+        return {
+          ...track,
+          patterns: track.patterns?.map((p) =>
+            p.patternId === patternId ? { ...p, [field]: value } : p
+          ) ?? null,
+        };
+      })
+    );
   };
   
   createEffect(() => {
     setPatternPos(patternPosInTacts() * tactWidth());
-    updatePatternField(trackId, pattern.patternId, 'pos', patternPosInTacts());
-  });
-  
-  createEffect(() => {
-    updatePatternField(trackId, pattern.patternId, 'width', patternWidthInTacts());
   });
   
   const patternWidth = () => patternWidthInTacts() * tactWidth();
@@ -90,6 +87,9 @@ const usePatternTransform = (pattern: PatternType, trackId: string) => {
   const handleGlobalMouseUp = () => {
     const wasGrabbing = isGrabbing();
     const wasResizing = isResizeLeft() || isResizeRight();
+    
+    updatePatternField(trackId, pattern.patternId, 'pos', patternPosInTacts());
+    updatePatternField(trackId, pattern.patternId, 'width', patternWidthInTacts());
 
     setIsGrabbing(false);
     setIsResizeLeft(false);

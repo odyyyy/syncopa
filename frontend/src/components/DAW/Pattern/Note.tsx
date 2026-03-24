@@ -12,7 +12,7 @@ const Note: Component<{
   const { tactWidth, beatNumber } = useTracksContext();
   const { transformNote } = useNoteTransform();
   const { currentPatternAndTrackId } = usePianoRollContext();
-  const { handleNoteContextMenu } = useNoteManage();
+  const { handleNoteContextMenu, removeNote } = useNoteManage();
 
   const pxPerBeat = () => (tactWidth() * 3) / beatNumber();
 
@@ -33,10 +33,7 @@ const Note: Component<{
           patternWidth: props.patternWidthInBeats(),
         });
       }}
-      ondblclick={(e) => {
-        e.preventDefault();
-        e.stopPropagation();
-      }}
+      ondblclick={removeNote}
     >
       <div class="absolute top-0 w-1 left-0 h-full cursor-ew-resize  bg-base-content/30 opacity-0 hover:opacity-100 transition-opacity" />
 

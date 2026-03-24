@@ -70,7 +70,7 @@ const useNoteManage = () => {
   };
   
   return {
-    handleNoteContextMenu,findIndexes
+    handleNoteContextMenu,findIndexes,removeNote
   }
 }
 export default useNoteManage;

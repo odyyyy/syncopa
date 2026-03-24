@@ -22,6 +22,7 @@ const SyncopaApp: Component = () => {
       "click",
       async () => {
         await Tone.start();
+        Tone.getTransport().start();
       },
       { once: true },
     );
