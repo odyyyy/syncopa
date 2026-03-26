@@ -27,7 +27,7 @@ class Track(BaseSchema):
     track_id: str
     title: str
     volume: int = Field(..., ge=0, le=100)
-    instrument: str
+    preset_id: int
     patterns: list[Union["PatternVST", "PatternAudio"]] | None = None
 
 
@@ -82,7 +82,7 @@ class AudioClipMetadata(BaseSchema):
                                 "pattern_id": "a88514cb-2bb3-4dcb-a5af-1499b79f7d8a",
                                 "pos": 0,
                                 "type": "vst",
-                                "instrument_id": "piano-grand",
+                                "preset_id": 3,
                                 "notes": [
                                     {
                                         "pos": 0.0,

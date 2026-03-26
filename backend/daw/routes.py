@@ -1,8 +1,13 @@
-from fastapi import APIRouter, Depends
+from typing import Annotated
+
+from fastapi import APIRouter, Depends, Query
+from tortoise.exceptions import DoesNotExist
 
 from auth.config import auth
-from daw.models import ProjectsPayloads
+from daw.models import Presets, ProjectsPayloads
+from daw.models.presets import PresetsConfigs
 from daw.schemas import ProjectPayload, ProjectWithPayload
+from daw.schemas.preset import PresetConfig, PresetOut
 from daw.services import update_project_payload
 from projects_management.models.projects import Projects
 from projects_management.permissions import require_project_member_or_owner_permission
@@ -44,3 +49,26 @@ async def update_daw_project_payload(
         project_with_payload, new_project_payload
     )
     return project_payload
+
+
+@daw_router.get("/presets", response_model=list[PresetOut])
+async def get_presets_catalog():
+    return await Presets.all()
+
+
+@daw_router.get("/presets")
+async def get_presets_with_config_used_in_project(
+    presets: Annotated[list[str], Query(pattern=r"^[a-z0-9-]{3,40}$")],
+):
+    presets_with_config_used_in_project = await get_presets_with_config_used_in_project(
+        presets
+    )
+    return presets_with_config_used_in_project
+
+
+@daw_router.get("/presets/{preset_id}", response_model=PresetConfig)
+async def get_preset_config_by_id(preset_id: int):
+    preset_config = await PresetsConfigs.get_or_none(preset_id=preset_id)
+    if not preset_config:
+        raise DoesNotExist("Пресет не найден")
+    return preset_config.preset_config

@@ -78,6 +78,7 @@ TORTOISE_ORM: dict = {
                 "users.models",
                 "projects_management.models",
                 "projects_management.signals",
+                "daw.models",
             ],
             "default_connection": "default",
             "migrations": "migrations",
@@ -90,6 +91,10 @@ TORTOISE_ORM: dict = {
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     # Redis
+    from time import sleep
+
+    sleep(3)
+
     redis_client = await setup_redis_client()
     await redis_client.ping()
     app.state.redis_client = redis_client

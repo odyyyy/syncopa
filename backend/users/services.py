@@ -91,9 +91,10 @@ async def change_invitation_status(
 async def update_user_data(user_id: str, user_data: UserUpdateIn):
     user_updated_data: dict = user_data.model_dump(exclude_none=True)
     user = await get_user_by_id(user_id)
-
-    if (timezone.now() - user.modified_at) < timedelta(minutes=60):
-        raise ValueError("Данные можно обновить только раз в час")
+    if (timezone.now() - user.modified_at) < timedelta(minutes=60) and (
+        user.modified_at - user.created_at
+    ) > timedelta(seconds=1):
+        raise ValueError("Данные можно обновить раз в час")
 
     old_password = user_updated_data.get("old_password", None)
     if old_password is not None and not verify_password(
