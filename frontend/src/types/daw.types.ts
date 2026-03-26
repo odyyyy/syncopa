@@ -22,7 +22,7 @@ type Track = {
   trackId: string;
   title: string;
   volume: number;
-  instrument: string;
+  presetId: number;
   patterns: PatternType[] | null;
 };
 

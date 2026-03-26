@@ -11,6 +11,7 @@ import PianoRoll from "../PianoRoll/PianoRoll";
 import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
 import TrackInstrumentChooseModal from "../Track/TrackInstrumentChooseModal";
 import PresetChooseModal from "../PianoRoll/PresetChooseModal";
+import { usePresetsContext } from "../../../context/daw/presets.context";
 
 const MainDawTrackPanel: Component = () => {
   const {
@@ -21,6 +22,7 @@ const MainDawTrackPanel: Component = () => {
     handleContextMenu,
   } = useMainDawTrackPanel();
 
+  const { setAndLoadSelectedPreset, setPresetModalState } = usePresetsContext();
   const { tracks, setTracks, project } = useProjectContext();
   const { tactElementsNumber } = usePlayerContext();
   const { isPianoRollOpen, pianoRollHeight } = usePianoRollContext();
@@ -68,7 +70,15 @@ const MainDawTrackPanel: Component = () => {
             + Добавить дорожку
           </button>
           <Index each={tracks}>
-            {(track) => <TrackController track={track()} openPresetsMenu={() => choosePresetRef?.showModal()} />}
+            {(track) => (
+              <TrackController
+                track={track}
+                openPresetsMenu={() => {
+                  choosePresetRef?.showModal();
+                  setPresetModalState({ trackId: track().trackId, presetId: track().presetId });
+                }}
+              />
+            )}
           </Index>
         </div>
 
@@ -77,16 +87,13 @@ const MainDawTrackPanel: Component = () => {
           onSelect={(instrumentChoice) => {
             if (!instrumentChoice) return;
             addNewTrack(undefined, instrumentChoice);
+
           }}
         />
-        
-        
+
         <PresetChooseModal
           modalRef={(el) => (choosePresetRef = el)}
-          onSelect={(presetChoice) => {
-            if (!presetChoice) return;
-            
-          }}
+          onSelect={(presetId) => setAndLoadSelectedPreset(presetId)}
         />
         <div
           class="relative bg-base-200 h-full grid grid-flow-row place-content-start overflow-x-auto overflow-y-hidden"

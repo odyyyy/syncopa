@@ -16,12 +16,8 @@ const TrackInstrumentChooseModal: Component<{
 }> = (props) => {
   let modal!: HTMLDialogElement;
 
-  const handleClose = (value: string) => {
-    props.onSelect(value ? (value as InstrumentType) : null);
-  };
-
   const selectInstrument = (type: InstrumentType) => {
-    modal.returnValue = type;
+    props.onSelect(type);
     modal.close();
   };
 
@@ -31,7 +27,6 @@ const TrackInstrumentChooseModal: Component<{
         modal = el;
         props.modalRef(el);
       }}
-      onClose={handleClose}
     >
       <div class="flex flex-wrap gap-5 justify-center bg-base-200 p-12 rounded-xl max-w-110">
         <button
@@ -40,17 +35,19 @@ const TrackInstrumentChooseModal: Component<{
         >
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 24 24"
+            viewBox="1.5 3 21 18"
             fill="none"
             width="24"
             height="24"
             stroke-width="0.75"
-            class="stroke-current h-17 w-17 mb-1"
+            class="stroke-current mb-1 w-17 h-17"
           >
             <path stroke="none" d="M0 0h24v24H0z" fill="none" />
             <path d="M3 7a2 2 0 0 1 2 -2h14a2 2 0 0 1 2 2v10a2 2 0 0 1 -2 2h-14a2 2 0 0 1 -2 -2v-10" />
-            <path d="M9 19v-6" /> <path d="M8 5v8h2v-8" />
-            <path d="M15 19v-6" /> <path d="M14 5v8h2v-8" />
+            <path d="M9 19v-6" />
+            <path d="M8 5v8h2v-8" />
+            <path d="M15 19v-6" />
+            <path d="M14 5v8h2v-8" />
           </svg>
           <p class="text-lg">Synth</p>
         </button>

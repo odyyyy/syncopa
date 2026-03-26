@@ -1,23 +1,36 @@
-import { Component } from "solid-js";
+import { Accessor, Component } from "solid-js";
 import useMainDawTrackPanel from "../../../hooks/daw/useTracksManagerPanel";
 import { Track } from "../../../types/daw.types";
+import { usePresetsContext } from "../../../context/daw/presets.context";
 
 interface TrackControllerProps {
-  track: Track;
+  track: Accessor<Track>;
   openPresetsMenu?: () => void;
 }
 
-const TrackController: Component<TrackControllerProps> = ({ track,  openPresetsMenu}) => {
+const TrackController: Component<TrackControllerProps> = ({
+  track,
+  openPresetsMenu,
+}) => {
   const { onTrackVolumeChange } = useMainDawTrackPanel();
+  const { presets } = usePresetsContext();
+  const trackPresetName = () => {
+    return track().presetId
+      ? presets?.find((p) => p.id === track().presetId)?.title
+      : "???";
+  };
 
   return (
-    <div onDblClick={openPresetsMenu}
-      class="flex flex-col h-25 max-h-30 w-full bg-base-100/22  justify-between p-2 border-b border-b-base-300 ">
+    <div
+      onDblClick={openPresetsMenu}
+      class="flex flex-col h-25 max-h-30 w-full bg-base-100/22  justify-between p-2 border-b border-b-base-300 "
+    >
       <div class="flex justify-start ">
         <div class="flex items-center gap-2 justify-center stroke-black stroke-2 fill-current ">
           <svg
             viewBox="0 0 48 48"
-            class="h-6 w-6 stroke-base-content"
+            onClick={openPresetsMenu}
+            class="h-6 w-6 stroke-base-content cursor-pointer"
             xmlns="http://www.w3.org/2000/svg"
             enable-background="new 0 0 48 48"
           >
@@ -28,20 +41,25 @@ const TrackController: Component<TrackControllerProps> = ({ track,  openPresetsM
           <input
             class="text-base w-fit selection:bg-base-content/15 cursor-pointer focus-visible:border-none outline-none  border-none user-select-none"
             type="text"
-            value={track.title}
-            onChange={(e) => (track.title = e.target.value)}
+            value={track().title}
+            onChange={(e) => (track().title = e.target.value)}
           />
         </div>
       </div>
-      <span class="text-xs  opacity-50 font-bold uppercase p-1.5 rounded-xl bg-base-200/90 w-fit">Preset NAME</span>
+      <span
+        class="text-xs  opacity-50 font-bold uppercase p-1.5 rounded-xl bg-base-200/90 w-fit cursor-pointer"
+        onClick={openPresetsMenu}
+      >
+        {trackPresetName()}
+      </span>
       <div class="flex-row flex justify-between ">
         <div class="volume ">
           <input
             type="range"
             min="0"
             max="100"
-            value={track.volume ?? 50}
-            oninput={(e) => onTrackVolumeChange(e, track.trackId)}
+            value={track().volume ?? 50}
+            oninput={(e) => onTrackVolumeChange(e, track().trackId)}
             class="range range-xs max-w-50 w-50 max-h-4"
           />
         </div>

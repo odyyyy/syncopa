@@ -39,7 +39,7 @@ const useMainDawTrackPanel = () => {
       ...prev,
       {
         trackId: crypto.randomUUID(),
-        instrument: instrument,
+        presetId: 6,
         title: title,
         patterns: [],
         volume: 50,

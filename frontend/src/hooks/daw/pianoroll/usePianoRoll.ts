@@ -3,6 +3,8 @@ import { useProjectContext } from "../context/useProjectContext";
 import { Note } from "../../../types/daw.types";
 import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
 import { useTracksContext } from "../context/useTracksContext";
+import { audioEngine } from "../../../instruments/audioEngine";
+import { PolySynthInstance } from "../../../types/presets.types";
 
 const usePianoRoll = () => {
   const { tracks, setTracks } = useProjectContext();
@@ -10,8 +12,9 @@ const usePianoRoll = () => {
     usePianoRollContext();
   const { beatNumber } = useTracksContext();
   
-  const synth = new Tone.PolySynth(Tone.Synth).toDestination();
-  
+  const { getInstrument } = audioEngine;
+
+  const synth = getInstrument(currentPatternAndTrackId.trackId);
 
   const ROWS_NUMBER = 88;
   const noteNames = [
@@ -80,10 +83,7 @@ const usePianoRoll = () => {
           return pattern;
         }) ?? null,
     );
-    
-    // TODO: Use Exact Track Patterns Instrument
-    synth.triggerAttackRelease(note, "8n");
-    
+    (synth as PolySynthInstance).triggerAttackRelease(note, 0.5);
     
   };
 
@@ -114,7 +114,7 @@ const usePianoRoll = () => {
 
     const note = key.dataset.note;
 
-    synth.triggerAttackRelease(note!, "8n");
+    (synth as PolySynthInstance).triggerAttackRelease(note!, 0.5);
   };
 
   const { pianoRollHeight, setPianoRollHeight } = usePianoRollContext();

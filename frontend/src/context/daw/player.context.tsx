@@ -10,6 +10,8 @@ import { useTracksContext } from "../../hooks/daw/context/useTracksContext";
 import { useProjectContext } from "../../hooks/daw/context/useProjectContext";
 import { MIN_MASTER_VOLUME_DB } from "../../config/config";
 import CustomSynth from "../../instruments/synths/CustomSynth";
+import { audioEngine } from "../../instruments/audioEngine";
+import { PolySynthInstance } from "../../types/presets.types";
 
 export const PlayerContext = createContext<PlayerContextType>();
 
@@ -33,7 +35,7 @@ export const PlayerProvider: ParentComponent = (props) => {
   const { beatNumber } = useTracksContext();
 
   const [parts, setParts] = createSignal<Tone.Part[]>([]);
-  const synth = new CustomSynth();
+  const { getInstrument } = audioEngine;
 
   let isInitialized = false;
 
@@ -86,10 +88,12 @@ export const PlayerProvider: ParentComponent = (props) => {
           })
           .filter((e) => e.barPos >= startPosInBars);
 
+        const synth = getInstrument(track.trackId);
+
         if (events.length > 0) {
           const part = new Tone.Part(
             (time, val) => {
-              synth.triggerAttackRelease(
+              (synth as PolySynthInstance).triggerAttackRelease(
                 val.note,
                 val.duration,
                 time,

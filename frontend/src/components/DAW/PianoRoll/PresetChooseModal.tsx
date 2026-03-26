@@ -1,5 +1,6 @@
-import { Component, createSignal, For, JSX } from "solid-js";
+import { Component, createMemo, createSignal, For } from "solid-js";
 import ModalMenu from "../ModalMenu";
+import { usePresetsContext } from "../../../context/daw/presets.context";
 
 interface Category {
   id: string;
@@ -9,20 +10,35 @@ interface Category {
 }
 
 const CATEGORIES: Category[] = [
-  { id: "leads", name: "Leads", icon: "⚡", color: "from-yellow-400/20" },
-  { id: "pads", name: "Pads", icon: "☁️", color: "from-blue-400/20" },
-  { id: "bass", name: "Bass", icon: "🎸", color: "from-red-400/20" },
-  { id: "drums", name: "Drums", icon: "🥁", color: "from-green-400/20" },
-  { id: "keys", name: "Keys", icon: "🎹", color: "from-purple-400/20" },
-  { id: "fx", name: "FX", icon: "✨", color: "from-pink-400/20" },
+  { id: "lead", name: "Leads", icon: "⚡", color: "from-yellow-400/20" },
+  { id: "pad", name: "Pads", icon: "☁️", color: "from-blue-400/20" },
+  { id: "guitar", name: "Guitars", icon: "🎸", color: "from-red-400/20" },
+  { id: "drum", name: "Drums", icon: "🥁", color: "from-green-400/20" },
+  { id: "key", name: "Keys", icon: "🎹", color: "from-purple-400/20" },
 ];
 
 const PresetChooseModal: Component<{
   modalRef: (el: HTMLDialogElement) => void;
-  onSelect: (preset: string) => void;
+  onSelect: (presetId: number) => void;
 }> = (props) => {
   let modal!: HTMLDialogElement;
-  const [activeTab, setActiveTab] = createSignal("leads");
+  const [activeTab, setActiveTab] = createSignal("lead");
+  const { presets, presetModalState } = usePresetsContext();
+
+  const [searchQuery, setSearchQuery] = createSignal("");
+  const currentTrackPresetName = () =>
+  {
+    const pres = presets.find((p) => p.id === presetModalState().presetId)?.title ?? "???";
+    return pres;
+  }
+
+  const filteredPresets = createMemo(() => {
+    return presets.filter(
+      (p) =>
+        p.category === activeTab() &&
+        p.title.toLowerCase().includes(searchQuery().toLowerCase()),
+    );
+  });
 
   return (
     <ModalMenu
@@ -30,19 +46,22 @@ const PresetChooseModal: Component<{
         modal = el;
         props.modalRef(el);
       }}
-      onClose={() => {}}
+      onClose={() => {
+        modal.close();
+      }}
     >
-      <div class="w-130 bg-base-200 dark:bg-neutral-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-black/5 dark:border-white/10">
+      <div class="w-130 bg-base-200 dark:bg-neutral-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-black/5 dark:border-white/10 select-none">
         <div class="p-6 pb-2">
           <div class="flex items-center justify-center mb-4">
-            <h3 class="text-xl font-black tracking-tight opacity-80 uppercase text-center">
-              Библиотека пресетов инструментов
+            <h3 class="text-xl font-black tracking-tight opacity-90 uppercase text-center">
+              Каталог пресетов
             </h3>
           </div>
 
           <div class="relative group">
             <input
               type="text"
+              onInput={(e) => setSearchQuery(e.currentTarget.value)}
               placeholder="Название пресета"
               class="w-full bg-base-300 dark:bg-white/5 border-none rounded-xl py-3 pl-11 pr-4 text-sm focus:ring-2 focus:ring-primary/20 transition-all outline-none"
             />
@@ -62,7 +81,7 @@ const PresetChooseModal: Component<{
           </div>
         </div>
 
-        <div class="flex gap-2 px-6 py-3 overflow-x-auto no-scrollbar">
+        <div class="flex gap-3 px-6 py-3 overflow-x-auto no-scrollbar justify-center">
           <For each={CATEGORIES}>
             {(cat) => (
               <button
@@ -83,17 +102,21 @@ const PresetChooseModal: Component<{
           </For>
         </div>
 
-        <div class="flex-1 max-h-85 overflow-y-auto px-6 py-2 outline-none">
+        <div class="flex-1 max-h-85 min-h-85 overflow-y-auto px-6 py-2 outline-none">
           <div class="grid grid-cols-2 gap-3 mb-6">
-            <For each={[1, 2, 3, 4, 5, 6, 7, 8]}>
-              {(i) => (
+            <For each={filteredPresets()}>
+              {(preset, i) => (
                 <div
-                  onClick={() => props.onSelect(`Preset ${i}`)}
-                  class="group relative flex flex-col p-4 rounded-2xl bg-base-300 dark:bg-white/5 hover:bg-base-content/5 dark:hover:bg-white/10 cursor-pointer transition-all border border-transparent hover:border-black/5 dark:hover:border-white/10 hover:shadow-md"
+                  classList={{
+                    "bg-base-content/20":
+                      preset.title === currentTrackPresetName(),
+                  }}
+                  onClick={() => props.onSelect(preset.id)}
+                  class="group relative flex flex-col p-4 rounded-2xl bg-base-300  dark:bg-white/5 hover:bg-base-content/5 dark:hover:bg-white/10 cursor-pointer transition-all duration-300 active:scale-102 t border border-transparent hover:border-black/5 dark:hover:border-white/10 hover:shadow-md"
                 >
                   <div class="flex justify-between items-start mb-2">
-                    <span class="text-[9px] font-black text-primary py-0.5 px-1.5 bg-black/5 dark:bg-white/10 rounded uppercase tracking-widest opacity-60">
-                      {activeTab()}
+                    <span class="text-[9px] font-black text-center text-primary py-0.5 px-1.5 bg-black/44 dark:bg-white/10 rounded-xl uppercase tracking-widest opacity-60">
+                      {preset.category}
                     </span>
                     <button class="size-5 flex items-center justify-center rounded-full bg-base-content/10 dark:bg-neutral-800 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
                       <svg
@@ -105,11 +128,11 @@ const PresetChooseModal: Component<{
                       </svg>
                     </button>
                   </div>
-                  <h4 class="text-sm font-semibold tracking-tight truncate">
-                    Crystal Waves 0{i}
+                  <h4 class="text-[1.1rem] font-semibold tracking-tight truncate">
+                    {preset.title}
                   </h4>
-                  <p class="text-[10px] opacity-40 mt-1 truncate italic">
-                    Smooth, evolving texture
+                  <p class="text-[12px] opacity-40 mt-1 truncate italic">
+                    {preset.description ?? "???"}
                   </p>
                 </div>
               )}
@@ -123,16 +146,18 @@ const PresetChooseModal: Component<{
               <span class="text-[8px] opacity-40 font-bold uppercase">
                 Всего
               </span>
-              <span class="text-xs font-mono">1,240</span>
+              <span class="text-xs font-mono">{presets.length}</span>
             </div>
             <div class="flex flex-col border-l border-black/10 dark:border-white/10 pl-4">
               <span class="text-[8px] opacity-40 font-bold uppercase">
                 Текущий пресет
               </span>
-              <span class="text-xs font-mono">Preset Name</span>
+              <span class="text-xs font-mono text-primary truncate max-w-16">
+                {currentTrackPresetName() || "—"}
+              </span>
             </div>
           </div>
-          <button class="btn btn-primary btn-sm rounded-xl px-6 font-bold shadow-lg shadow-primary/5">
+          <button class="btn btn-dash duration-300 transition-all border-base-content/55 btn-sm rounded-xl px-6 font-bold hover:bg-base-content/10 hover:border-base-content/55">
             Создать пресет
           </button>
         </div>
