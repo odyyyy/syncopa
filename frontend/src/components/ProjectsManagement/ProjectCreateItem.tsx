@@ -1,5 +1,5 @@
 import { Component, For, Show, Suspense } from "solid-js";
-import ComponentLoading from "../utils/ComponentLoading";
+import ComponentLoading from "../utils/Loaders/ComponentLoading";
 import useCreateProject from "../../hooks/projects_management/useCreateProject";
 import { userData } from "../../store/user";
 

@@ -1,6 +1,6 @@
 import { Component, Show } from "solid-js";
 import { Navigate } from "@solidjs/router";
-import SyncopaLoader from "./SyncopaLoading";
+import SyncopaLoader from "./Loaders/SyncopaLoading";
 import { useAuthContext } from "../../hooks/auth/useAuthContext";
 
 export function withGuest(ComponentToWrap: Component): Component {

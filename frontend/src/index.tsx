@@ -6,7 +6,7 @@ import "./index.css";
 import { Toaster } from "solid-toast";
 import { AuthProvider } from "./context/auth";
 import AppRouter from "./router/AppRouter";
-import SyncopaLoader from "./components/utils/SyncopaLoading";
+import SyncopaLoader from "./components/utils/Loaders/SyncopaLoading";
 const root = document.getElementById("root");
 
 if (import.meta.env.DEV && !(root instanceof HTMLElement)) {

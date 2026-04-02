@@ -5,16 +5,29 @@ import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
 import { useTracksContext } from "../context/useTracksContext";
 import { audioEngine } from "../../../instruments/audioEngine";
 import { PolySynthInstance } from "../../../types/presets.types";
+import { createEffect, createSignal } from "solid-js";
 
 const usePianoRoll = () => {
   const { tracks, setTracks } = useProjectContext();
   const { currentPatternAndTrackId, currentPatternWidthInTacts } =
     usePianoRollContext();
   const { beatNumber } = useTracksContext();
-  
-  const { getInstrument } = audioEngine;
 
-  const synth = getInstrument(currentPatternAndTrackId.trackId);
+  const { isPianoRollOpen } = usePianoRollContext();
+  const [synth, setSynth] = createSignal<PolySynthInstance | undefined>();
+
+  createEffect(() => {
+    const { trackId, patternId } = currentPatternAndTrackId;
+    const isOpen = isPianoRollOpen();
+
+    if (!trackId || !patternId || !isOpen) return;
+
+    const instrument = audioEngine.getInstrument(trackId);
+
+    if (!instrument) return;
+
+    setSynth(instrument as PolySynthInstance);
+  });
 
   const ROWS_NUMBER = 88;
   const noteNames = [
@@ -83,8 +96,7 @@ const usePianoRoll = () => {
           return pattern;
         }) ?? null,
     );
-    (synth as PolySynthInstance).triggerAttackRelease(note, 0.5);
-    
+    (synth() as PolySynthInstance)?.triggerAttackRelease(note, 0.5);
   };
 
   const findPatternById = () => {
@@ -114,7 +126,7 @@ const usePianoRoll = () => {
 
     const note = key.dataset.note;
 
-    (synth as PolySynthInstance).triggerAttackRelease(note!, 0.5);
+    (synth() as PolySynthInstance)?.triggerAttackRelease(note!, 0.5);
   };
 
   const { pianoRollHeight, setPianoRollHeight } = usePianoRollContext();

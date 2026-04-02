@@ -3,6 +3,7 @@ import {
   ParentComponent,
   createSignal,
   useContext,
+  createEffect,
 } from "solid-js";
 import { PatternAndTrack, PianoRollContextType } from "../../types/daw.types";
 import { createStore } from "solid-js/store";
@@ -19,7 +20,7 @@ export const PianoRollProvider: ParentComponent = (props) => {
 
   const openPianoRoll = () => setIsPianoRollOpen(true);
   const closePianoRoll = () => setIsPianoRollOpen(false);
-
+  
   return (
     <PianoRollContext.Provider
       value={{

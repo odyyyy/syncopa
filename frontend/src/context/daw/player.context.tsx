@@ -9,7 +9,6 @@ import * as Tone from "tone";
 import { useTracksContext } from "../../hooks/daw/context/useTracksContext";
 import { useProjectContext } from "../../hooks/daw/context/useProjectContext";
 import { MIN_MASTER_VOLUME_DB } from "../../config/config";
-import CustomSynth from "../../instruments/synths/CustomSynth";
 import { audioEngine } from "../../instruments/audioEngine";
 import { PolySynthInstance } from "../../types/presets.types";
 
@@ -35,7 +34,6 @@ export const PlayerProvider: ParentComponent = (props) => {
   const { beatNumber } = useTracksContext();
 
   const [parts, setParts] = createSignal<Tone.Part[]>([]);
-  const { getInstrument } = audioEngine;
 
   let isInitialized = false;
 
@@ -88,7 +86,7 @@ export const PlayerProvider: ParentComponent = (props) => {
           })
           .filter((e) => e.barPos >= startPosInBars);
 
-        const synth = getInstrument(track.trackId);
+        const synth = audioEngine.getInstrument(track.trackId);
 
         if (events.length > 0) {
           const part = new Tone.Part(

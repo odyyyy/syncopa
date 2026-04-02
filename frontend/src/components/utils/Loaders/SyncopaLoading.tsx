@@ -1,5 +1,4 @@
 import { Component } from "solid-js";
-import LogoImg from "../../assets/imgs/logo.svg";
 
 const SyncopaLoader: Component = () => {
   return (

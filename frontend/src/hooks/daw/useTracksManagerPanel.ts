@@ -1,4 +1,4 @@
-import { createEffect, createSignal, useContext } from "solid-js";
+import { createEffect, createSignal } from "solid-js";
 import toast from "solid-toast";
 import { useProjectContext } from "./context/useProjectContext";
 import { Track } from "../../types/daw.types";
@@ -7,6 +7,8 @@ import { usePlayerContext } from "./context/usePlayerContext";
 import { useContextMenu } from "../../context/daw/contextmenu.context";
 import { useTracksContext } from "./context/useTracksContext";
 import usePatternManage from "./pattern/usePatternManage";
+import { PRESETS_CATEGORIES_ENUM } from "../../components/DAW/PianoRoll/PresetChooseModal";
+import { usePresetsContext } from "../../context/daw/presets.context";
 
 const useMainDawTrackPanel = () => {
   const { tracks, setTracks } = useProjectContext();
@@ -22,9 +24,10 @@ const useMainDawTrackPanel = () => {
     updateTimer(playerBeatPos());
   });
 
+  const { setAndLoadSelectedPreset } = usePresetsContext();
   const addNewTrack = (
     title: string | undefined = undefined,
-    instrument: string,
+    presetCategory: string,
   ) => {
     if (tracks.length > 50) {
       toast.error("Максимальное количество дорожек достигнуто");
@@ -35,16 +38,37 @@ const useMainDawTrackPanel = () => {
       title = `Дорожка ${tracks.length + 1}`;
     }
 
+    const trackId = crypto.randomUUID();
+    const presetId = getDefaultPresetIdByCategory(presetCategory);
+
     setTracks((prev: Track[]) => [
       ...prev,
       {
-        trackId: crypto.randomUUID(),
-        presetId: 6,
+        trackId: trackId,
+        presetId: presetId,
         title: title,
         patterns: [],
         volume: 50,
       },
     ]);
+    setAndLoadSelectedPreset(presetId, trackId);
+  };
+
+  const getDefaultPresetIdByCategory = (category: string): number => {
+    switch (category) {
+      case PRESETS_CATEGORIES_ENUM.LEAD:
+        return 6;
+      case PRESETS_CATEGORIES_ENUM.PAD:
+        return 7;
+      case PRESETS_CATEGORIES_ENUM.GUITAR:
+        return 8;
+      case PRESETS_CATEGORIES_ENUM.DRUM:
+        return 9;
+      case PRESETS_CATEGORIES_ENUM.KEY:
+        return 10;
+      default:
+        return 6;
+    }
   };
 
   const handleOnWheelAndCtrlChangeTactsWidth = (e: WheelEvent) => {

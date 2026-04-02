@@ -1,4 +1,4 @@
-import { PolySynthInstance, Synth, Voice } from "../../types/presets.types";
+import { PolySynthInstance, Synth, Voice } from "../types/presets.types";
 import * as Tone from "tone";
 
 type AnyOsc = Tone.Oscillator | Tone.FatOscillator;

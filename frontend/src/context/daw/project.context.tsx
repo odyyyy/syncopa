@@ -4,7 +4,7 @@ import toast from "solid-toast";
 import useDawApi from "../../api/daw.api";
 import { useNavigate, useParams } from "@solidjs/router";
 import { createStore } from "solid-js/store";
-import SyncopaLoader from "../../components/utils/SyncopaLoading";
+import SyncopaLoader from "../../components/utils/Loaders/SyncopaLoading";
 import {
   ProjectContextType,
   ProjectWithPayload,
@@ -44,9 +44,17 @@ export const ProjectProvider: ParentComponent = (props) => {
       </Match>
 
       <Match when={project()}>
-        <ProjectContext.Provider value={{ project, tracks, setTracks }}>
-          {props.children}
-        </ProjectContext.Provider>
+        {(projectValue) => {
+          if (tracks.length === 0 && projectValue().payload?.tracks) {
+            setTracks(projectValue().payload.tracks ?? []);
+          }
+
+          return (
+            <ProjectContext.Provider value={{ project, tracks, setTracks }}>
+              {props.children}
+            </ProjectContext.Provider>
+          );
+        }}
       </Match>
     </Switch>
   );

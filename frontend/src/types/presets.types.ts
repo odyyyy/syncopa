@@ -33,7 +33,8 @@ type PresetConfigOut = {
 };
 
 type Sampler = {
-  samples_urls: Sample;
+  samplesUrls: Sample;
+  samplesDir: string;
   volume?: number;
   release?: number;
   attack?: number;
@@ -122,7 +123,10 @@ type PresetsContextType = {
   presets: Preset[];
   presetModalState: Accessor<PresetModalState>;
   setPresetModalState: Setter<PresetModalState>;
-  setAndLoadSelectedPreset: (presetId: number) => void;
+  setAndLoadSelectedPreset: (presetId: number, trackId: string) => void;
+  setAndLoadSelectedPresetInModal: (presetId: number) => void;
+  isPresetLoading: Accessor<boolean>;
+  setIsPresetLoading: Setter<boolean>;
 };
 
 type Voice = {
@@ -139,7 +143,7 @@ interface PolySynthInstance {
     note: string,
     duration: number,
     time?: number,
-    velocity?: number
+    velocity?: number,
   ) => void;
   dispose: () => void;
 }
@@ -165,5 +169,6 @@ export type {
   PresetsContextType,
   Voice,
   PresetModalState,
-  Sampler,PolySynthInstance
+  Sampler,
+  PolySynthInstance,
 };

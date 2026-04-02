@@ -22,8 +22,9 @@ const MainDawTrackPanel: Component = () => {
     handleContextMenu,
   } = useMainDawTrackPanel();
 
-  const { setAndLoadSelectedPreset, setPresetModalState } = usePresetsContext();
-  const { tracks, setTracks, project } = useProjectContext();
+  const { setAndLoadSelectedPresetInModal, setPresetModalState } =
+    usePresetsContext();
+  const { tracks } = useProjectContext();
   const { tactElementsNumber } = usePlayerContext();
   const { isPianoRollOpen, pianoRollHeight } = usePianoRollContext();
 
@@ -34,8 +35,6 @@ const MainDawTrackPanel: Component = () => {
   } = useHotkeysGlobalEvents();
 
   let mainTracksPanelRef: HTMLDivElement | undefined;
-
-  setTracks(project()?.payload?.tracks ?? []);
 
   onMount(() => {
     document.addEventListener("keydown", handlePlayerForward);
@@ -75,7 +74,10 @@ const MainDawTrackPanel: Component = () => {
                 track={track}
                 openPresetsMenu={() => {
                   choosePresetRef?.showModal();
-                  setPresetModalState({ trackId: track().trackId, presetId: track().presetId });
+                  setPresetModalState({
+                    trackId: track().trackId,
+                    presetId: track().presetId,
+                  });
                 }}
               />
             )}
@@ -87,13 +89,14 @@ const MainDawTrackPanel: Component = () => {
           onSelect={(instrumentChoice) => {
             if (!instrumentChoice) return;
             addNewTrack(undefined, instrumentChoice);
-
           }}
         />
 
         <PresetChooseModal
           modalRef={(el) => (choosePresetRef = el)}
-          onSelect={(presetId) => setAndLoadSelectedPreset(presetId)}
+          onSelect={(presetId) => {
+            setAndLoadSelectedPresetInModal(presetId)
+          }}
         />
         <div
           class="relative bg-base-200 h-full grid grid-flow-row place-content-start overflow-x-auto overflow-y-hidden"

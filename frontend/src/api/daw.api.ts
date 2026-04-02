@@ -43,6 +43,23 @@ const useDawApi = () => {
       protectedRequest,
     );
 
+  const getUsedInProjectPresetsConfigs = (
+    usedPresetsIds: number[],
+  ): ApiResponse<PresetConfig[]> => {
+    const params = new URLSearchParams();
+    usedPresetsIds.forEach((presetId) =>
+      params.append("presets", presetId.toString()),
+    );
+
+    return apiRequest(
+      `${BACKEND_URL}/daw/presets?${params.toString()}`,
+      {
+        method: "GET",
+      },
+      protectedRequest,
+    );
+  };
+
   const getPresetConfigById = (preset_id: number): ApiResponse<PresetConfig> =>
     apiRequest(
       `${BACKEND_URL}/daw/presets/${preset_id}`,
@@ -57,6 +74,7 @@ const useDawApi = () => {
     updateProjectPayload,
     getPresetsCatalog,
     getPresetConfigById,
+    getUsedInProjectPresetsConfigs,
   };
 };
 

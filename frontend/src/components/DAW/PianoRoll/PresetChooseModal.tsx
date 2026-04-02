@@ -1,6 +1,7 @@
-import { Component, createMemo, createSignal, For } from "solid-js";
+import { Component, createMemo, createSignal, For, Show } from "solid-js";
 import ModalMenu from "../ModalMenu";
 import { usePresetsContext } from "../../../context/daw/presets.context";
+import LoadingOverlay from "../../utils/Loaders/LoadingOverlay";
 
 interface Category {
   id: string;
@@ -9,12 +10,20 @@ interface Category {
   color: string;
 }
 
-const CATEGORIES: Category[] = [
-  { id: "lead", name: "Leads", icon: "⚡", color: "from-yellow-400/20" },
-  { id: "pad", name: "Pads", icon: "☁️", color: "from-blue-400/20" },
-  { id: "guitar", name: "Guitars", icon: "🎸", color: "from-red-400/20" },
-  { id: "drum", name: "Drums", icon: "🥁", color: "from-green-400/20" },
-  { id: "key", name: "Keys", icon: "🎹", color: "from-purple-400/20" },
+export enum PRESETS_CATEGORIES_ENUM {
+  LEAD = "lead",
+  PAD = "pads",
+  GUITAR = "guitar",
+  DRUM = "drum",
+  KEY = "keys",
+}
+
+const PRESETS_CATEGORIES: Category[] = [
+  { id: PRESETS_CATEGORIES_ENUM.LEAD, name: "Leads", icon: "⚡", color: "from-yellow-400/20" },
+  { id: PRESETS_CATEGORIES_ENUM.PAD, name: "Pads", icon: "☁️", color: "from-blue-400/20" },
+  { id: PRESETS_CATEGORIES_ENUM.GUITAR, name: "Guitars", icon: "🎸", color: "from-red-400/20" },
+  { id: PRESETS_CATEGORIES_ENUM.DRUM, name: "Drums", icon: "🥁", color: "from-green-400/20" },
+  { id: PRESETS_CATEGORIES_ENUM.KEY, name: "Keys", icon: "🎹", color: "from-purple-400/20" },
 ];
 
 const PresetChooseModal: Component<{
@@ -39,6 +48,9 @@ const PresetChooseModal: Component<{
         p.title.toLowerCase().includes(searchQuery().toLowerCase()),
     );
   });
+  
+  const { isPresetLoading , setIsPresetLoading} = usePresetsContext();
+  
 
   return (
     <ModalMenu
@@ -50,6 +62,9 @@ const PresetChooseModal: Component<{
         modal.close();
       }}
     >
+      <Show when={isPresetLoading()}>
+        <LoadingOverlay loadingMessage="Загрузка пресета..." />
+      </Show>
       <div class="w-130 bg-base-200 dark:bg-neutral-900 rounded-3xl shadow-2xl overflow-hidden flex flex-col border border-black/5 dark:border-white/10 select-none">
         <div class="p-6 pb-2">
           <div class="flex items-center justify-center mb-4">
@@ -82,7 +97,7 @@ const PresetChooseModal: Component<{
         </div>
 
         <div class="flex gap-3 px-6 py-3 overflow-x-auto no-scrollbar justify-center">
-          <For each={CATEGORIES}>
+          <For each={PRESETS_CATEGORIES}>
             {(cat) => (
               <button
                 onClick={() => setActiveTab(cat.id)}
@@ -111,7 +126,10 @@ const PresetChooseModal: Component<{
                     "bg-base-content/20":
                       preset.title === currentTrackPresetName(),
                   }}
-                  onClick={() => props.onSelect(preset.id)}
+                  onClick={() => {
+                    setIsPresetLoading(true);
+                    props.onSelect(preset.id);
+                  }}
                   class="group relative flex flex-col p-4 rounded-2xl bg-base-300  dark:bg-white/5 hover:bg-base-content/5 dark:hover:bg-white/10 cursor-pointer transition-all duration-300 active:scale-102 t border border-transparent hover:border-black/5 dark:hover:border-white/10 hover:shadow-md"
                 >
                   <div class="flex justify-between items-start mb-2">

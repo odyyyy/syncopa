@@ -1,27 +1,41 @@
 import * as Tone from "tone";
+import { createStore } from "solid-js/store";
 import { PolySynthInstance } from "../types/presets.types";
 
-const activeInstruments = new Map<
-  string,
-  Tone.ToneAudioNode | PolySynthInstance
->();
+type Instrument = Tone.ToneAudioNode | PolySynthInstance;
+
+const [instruments, setInstruments] = createStore<Record<string, Instrument | undefined>>({});
 
 export const audioEngine = {
-  setInstrument(
-    trackId: string,
-    instrument: Tone.ToneAudioNode | PolySynthInstance,
-  ) {
-    const old = activeInstruments.get(trackId);
+  setInstrument(trackId: string, instrument: Instrument) {
+    const old = instruments[trackId];
     if (old) {
-      "dispose" in old && old.dispose();
-      old instanceof Tone.ToneAudioNode && old.dispose();
+      if ("dispose" in old) old.dispose();
+      if (old instanceof Tone.ToneAudioNode) old.dispose();
     }
 
-    if ("toDestination" in instrument) instrument.toDestination();
-    activeInstruments.set(trackId, instrument);
+    if ("toDestination" in instrument) {
+      instrument.toDestination();
+    }
+    setInstruments(trackId, instrument);
+  },
+  getInstrument(trackId: string) {
+    return instruments[trackId];
   },
 
-  getInstrument(trackId: string) {
-    return activeInstruments.get(trackId);
+  removeInstrument(trackId: string) {
+    const inst = instruments[trackId];
+    if (inst) {
+      if ("dispose" in inst) inst.dispose();
+      if (inst instanceof Tone.ToneAudioNode) inst.dispose();
+    }
+    setInstruments(trackId, undefined!);
   },
+  
+  isLoaded(trackId: string) {
+    const inst = instruments[trackId];
+    if (!inst) return false;
+    return !(inst instanceof Tone.Sampler) || (inst as Tone.Sampler).loaded;
+  },
+  
 };
