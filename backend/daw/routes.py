@@ -1,4 +1,3 @@
-from typing import Annotated
 
 from fastapi import APIRouter, Depends, Query
 from tortoise.exceptions import DoesNotExist
@@ -7,8 +6,8 @@ from auth.config import auth
 from daw.models import Presets, ProjectsPayloads
 from daw.models.presets import PresetsConfigs
 from daw.schemas import ProjectPayload, ProjectWithPayload
-from daw.schemas.preset import PresetConfig, PresetOut
-from daw.services import update_project_payload
+from daw.schemas.preset import PresetConfig
+from daw.services import get_used_presets_with_config, update_project_payload
 from projects_management.models.projects import Projects
 from projects_management.permissions import require_project_member_or_owner_permission
 from projects_management.schemas import ProjectMember
@@ -51,19 +50,12 @@ async def update_daw_project_payload(
     return project_payload
 
 
-@daw_router.get("/presets", response_model=list[PresetOut])
-async def get_presets_catalog():
-    return await Presets.all()
-
-
 @daw_router.get("/presets")
-async def get_presets_with_config_used_in_project(
-    presets: Annotated[list[str], Query(pattern=r"^[a-z0-9-]{3,40}$")],
-):
-    presets_with_config_used_in_project = await get_presets_with_config_used_in_project(
-        presets
-    )
-    return presets_with_config_used_in_project
+async def get_presets(presets: list[int] | None = Query(None)):
+    if presets:
+        return await get_used_presets_with_config(presets)
+    else:
+        return await Presets.all()
 
 
 @daw_router.get("/presets/{preset_id}", response_model=PresetConfig)

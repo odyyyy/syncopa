@@ -1,5 +1,3 @@
-from tortoise.exceptions import DoesNotExist
-
 from daw.models.presets import PresetsConfigs
 from daw.schemas import ProjectPayload
 from projects_management.models.projects import Projects
@@ -12,11 +10,11 @@ async def update_project_payload(
     await project_with_payload.save()
 
 
-async def get_presets_with_config_used_in_project(used_presets: list[str]):
+async def get_used_presets_with_config(used_presets_ids: list[int]):
     presets = await PresetsConfigs.filter(
-        preset__title__in=used_presets
-    ).select_related("project")
-    if not presets:
-        raise DoesNotExist("Использованные в проекте пресеты не найдены")
+        preset__id__in=used_presets_ids
+    ).select_related("preset")
 
-    return presets
+    presets_map = {p.preset.id: p.preset_config for p in presets}
+
+    return presets_map

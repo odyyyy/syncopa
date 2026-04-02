@@ -30,10 +30,11 @@ SamplePath = Annotated[str, constr(pattern=r".+\.(mp3|wav|ogg)$")]
 
 class Sampler(BaseSchema):
     samples_urls: dict[Note, SamplePath]
-    volume: float | None
-    release: float | None
-    attack: float | None
-    curve: Literal["linear", "exponential"] | None
+    samples_dir: str
+    volume: float | None = None
+    release: float | None = None
+    attack: float | None = None
+    curve: Literal["linear", "exponential"] | None = None
 
 
 class Synth(BaseModel):
