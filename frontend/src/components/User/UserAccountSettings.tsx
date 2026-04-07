@@ -8,6 +8,8 @@ import useUserDataUpdate from "../../hooks/users/useUserDataUpdate";
 import { userData } from "../../store/user";
 import PasswordVisibilityBtn from "../utils/PasswordVisibilityBtn";
 import LoadingOverlay from "../utils/Loaders/LoadingOverlay";
+import AvatarPicture from "./Avatars/AvatarPicture";
+import AvatarDefault from "./Avatars/AvatarDefault";
 
 type UserSettingsProps = {
   open: boolean;
@@ -64,27 +66,15 @@ const UserAccountSettings: Component<UserSettingsProps> = (
           onClick={() => fileInputRef?.click()}
         >
           <Show when={!avatarPreview() && !userData.avatar}>
-            <div class="avatar avatar-placeholder">
-              <div class="bg-neutral text-neutral-content w-25 text-4xl rounded-full">
-                <span>{userData.username.charAt(0).toUpperCase()}</span>
-              </div>
-            </div>
+            <AvatarDefault username={userData.username} size={25} />
           </Show>
 
           <Show when={!avatarPreview() && userData.avatar}>
-            <div class="avatar">
-              <div class="w-25 rounded-full">
-                <img src={userData.avatar} />
-              </div>
-            </div>
+            <AvatarPicture src={userData.avatar} username={userData.username} size={25} />
           </Show>
 
           <Show when={avatarPreview()}>
-            <div class="avatar">
-              <div class="w-25 rounded-full">
-                <img src={avatarPreview()!} />
-              </div>
-            </div>
+            <AvatarPicture src={avatarPreview()!} username={userData.username} size={25} />
           </Show>
 
           <div

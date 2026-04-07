@@ -148,9 +148,17 @@ interface PolySynthInstance {
   dispose: () => void;
 }
 
+interface PresetCategory {
+  id: string;
+  name: string;
+  icon: string;
+  color: string;
+}
+
 export type {
   PresetWithConfig,
   Preset,
+  PresetCategory,
   Note,
   SamplePath,
   Sample,

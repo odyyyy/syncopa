@@ -1,6 +1,8 @@
 import { Component, For, Show } from "solid-js";
+import AvatarPicture from "../User/Avatars/AvatarPicture";
+import AvatarDefault from "../User/Avatars/AvatarDefault";
 
-const ProjectMembersAvatars: Component<{ members: MemberAvatarProps[] }> = (
+const ProjectMembersAvatars: Component<{ members: ProjectMember[] }> = (
   props,
 ) => {
   const membersToShow = 3;
@@ -17,24 +19,14 @@ const ProjectMembersAvatars: Component<{ members: MemberAvatarProps[] }> = (
         {(member, index) => (
           <>
             <Show when={member.avatar && index() < membersToShow}>
-              <div
-                class="avatar  hover:scale-105 hover:z-50 transition-all duration-150"
-                title={member.username}
-              >
-                <div class="w-12">
-                  <img src={member.avatar} />
-                </div>
-              </div>
+              <AvatarPicture
+                src={member.avatar!}
+                username={member.username}
+                size={12}
+              />
             </Show>
             <Show when={!member.avatar && index() < membersToShow}>
-              <div
-                class="avatar avatar-placeholder hover:scale-105 hover:z-50 transition-all duration-150"
-                title={member.username}
-              >
-                <div class="bg-neutral text-neutral-content w-12 rounded-full">
-                  <span>{member.username.charAt(0).toUpperCase()}</span>
-                </div>
-              </div>
+              <AvatarDefault username={member.username} size={12} />
             </Show>
           </>
         )}

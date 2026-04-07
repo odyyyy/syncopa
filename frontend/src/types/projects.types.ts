@@ -10,11 +10,6 @@ type ProjectMember = {
   avatar?: string;
 };
 
-type MemberAvatarProps = {
-  username: string;
-  avatar?: string;
-};
-
 interface ProjectCreate {
   title: string;
   invitedMembers: string[];

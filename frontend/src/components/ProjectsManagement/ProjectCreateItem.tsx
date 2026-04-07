@@ -2,6 +2,8 @@ import { Component, For, Show, Suspense } from "solid-js";
 import ComponentLoading from "../utils/Loaders/ComponentLoading";
 import useCreateProject from "../../hooks/projects_management/useCreateProject";
 import { userData } from "../../store/user";
+import AvatarPicture from "../User/Avatars/AvatarPicture";
+import AvatarDefault from "../User/Avatars/AvatarDefault";
 
 const ProjectCreatePopup: Component<{
   onCreate: (project: ProjectItemProps) => void;
@@ -125,7 +127,7 @@ const ProjectCreatePopup: Component<{
                 />
               </label>
 
-              <p class="validator-hint text-base">
+              <p class="validator-hint text-base ">
                 Длина названия должна быть от 3 до 64 символов
               </p>
             </fieldset>
@@ -217,21 +219,12 @@ const ProjectCreatePopup: Component<{
                             <Show
                               when={user.avatar}
                             >
-                              <img
-                                class="size-5  rounded-box"
-                                src={user.avatar}
-                              />
+                              <AvatarPicture src={user.avatar} username={user.username} size={6} />
                             </Show>
                             <Show
                               when={!user.avatar}
                             >
-                              <div
-                                class="avatar avatar-placeholder hover:scale-105 hover:z-50 transition-all duration-150"
-                              >
-                                <div class="bg-neutral text-neutral-content size-5 rounded-full">
-                                  <span>{user.username.charAt(0).toUpperCase()}</span>
-                                </div>
-                              </div>
+                              <AvatarDefault username={user.username} size={6} />
                             </Show>
                             <div>
                               <div>{user.username}</div>

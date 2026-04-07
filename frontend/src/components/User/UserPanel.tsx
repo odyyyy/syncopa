@@ -13,6 +13,8 @@ import UserAccountSettings from "./UserAccountSettings";
 import { useInvitationsApi } from "../../api/user.api";
 import InvitationsSubPanel from "./InvitationsSubPanel";
 import { useAuthContext } from "../../hooks/auth/useAuthContext";
+import AvatarDefault from "./Avatars/AvatarDefault";
+import AvatarPicture from "./Avatars/AvatarPicture";
 
 const UserPanel: Component = () => {
   const [openSidebar, setOpenSidebar] = createSignal(false);
@@ -110,19 +112,12 @@ const UserPanel: Component = () => {
               }}
             >
               <Show when={!userData.avatar}>
-                <div class="avatar avatar-placeholder">
-                  <div class="bg-neutral text-neutral-content w-12 rounded-full">
-                    <span>{userData.username.charAt(0).toUpperCase()}</span>
-                  </div>
-                </div>
+                <AvatarDefault username={userData.username} size={12} />
+               
               </Show>
 
               <Show when={userData.avatar}>
-                <div class="avatar">
-                  <div class="w-12 rounded-full">
-                    <img src={userData.avatar} />
-                  </div>
-                </div>
+                <AvatarPicture src={userData.avatar} username={userData.username} size={12} />
               </Show>
 
               <div
