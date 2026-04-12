@@ -1,12 +1,17 @@
 import { Component } from "solid-js";
 import CoopModal from "../Coop/CoopModal";
+import EffectsModal from "../Effects/EffectsChooseModal";
+import VCSModal from "../VCS/VCSModal";
+import PresetChooseModal from "../PianoRoll/PresetChooseModal";
+import { usePresetsContext } from "../../../context/daw/presets.context";
 
 const LowerControlPanel: Component = () => {
-  let coopModalRef!: HTMLDialogElement;
-
-  const openCoopModal = () => {
-    coopModalRef.showModal();
-  };
+  let coopDialogRef!: HTMLDialogElement;
+  let effectsDialogRef!: HTMLDialogElement;
+  let vcsDialogRef!: HTMLDialogElement;
+  let choosePresetRef!: HTMLDialogElement;
+  
+  const { setAndLoadSelectedPresetInModal } = usePresetsContext();
 
   return (
     <div>
@@ -33,27 +38,39 @@ const LowerControlPanel: Component = () => {
           </div>
 
           <button class="btn btn-circle btn-lg">X</button>
-          
-          {/* FX */}
-          <button class="btn btn-lg btn-circle">
-            <a class="tooltip" data-tip="Эффекты">
+
+          {/* Coop */}
+          <button
+            class="btn btn-lg btn-circle"
+            onClick={() => coopDialogRef.showModal()}
+          >
+            <a class="tooltip" data-tip="Коллаборация">
               <svg
-                class="icon-size"
-                viewBox="0 0 24 24"
-                fill="none"
+                viewBox="0 0 16 16"
+                xmlns="http://www.w3.org/2000/svg"
+                class="icon-size stroke-current"
+              >
+                <circle cx="5" cy="9" r="2.25" />
+                <circle cx="11" cy="4" r="2.25" />
+                <path d="M7.75 9.25c0-1 .75-3 3.25-3s3.25 2 3.25 3m-12.5 5c0-1 .75-3 3.25-3s3.25 2 3.25 3" />
+              </svg>
+            </a>
+          </button>
+          {/* VCS */}
+          <button
+            class="btn btn-lg btn-circle"
+            onClick={() => vcsDialogRef.showModal()}
+          >
+            <a class="tooltip" data-tip="История изменений">
+              <svg
+                class="icon-size fill-current"
+                viewBox="0 0 16 16"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  d="M2 15V9a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v6a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6Z"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                />
-                <path
-                  d="M6 15V9h5m-5 3h3.571M13 15l2.5-3m0 0L18 9m-2.5 3L13 9m2.5 3 2.5 3"
-                  stroke="currentColor"
-                  stroke-width="1.5"
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
+                  fill-rule="evenodd"
+                  clip-rule="evenodd"
+                  d="M13.507 12.324a7 7 0 0 0 .065-8.56A7 7 0 0 0 2 4.393V2H1v3.5l.5.5H5V5H2.811a6.008 6.008 0 1 1-.135 5.77l-.887.462a7 7 0 0 0 11.718 1.092m-3.361-.97.708-.707L8 7.792V4H7v4l.146.354z"
                 />
               </svg>
             </a>
@@ -77,39 +94,45 @@ const LowerControlPanel: Component = () => {
             </a>
           </button>
 
-          {/* Coop */}
-          <button class="btn btn-lg btn-circle" onClick={openCoopModal}>
-            <a class="tooltip" data-tip="Коллаборация">
+          {/* FX */}
+          <button
+            class="btn btn-lg btn-circle"
+            onClick={() => effectsDialogRef.showModal()}
+          >
+            <a class="tooltip" data-tip="Эффекты">
               <svg
-                viewBox="0 0 16 16"
-                xmlns="http://www.w3.org/2000/svg"
-                class="icon-size stroke-current"
-              >
-                <circle cx="5" cy="9" r="2.25" />
-                <circle cx="11" cy="4" r="2.25" />
-                <path d="M7.75 9.25c0-1 .75-3 3.25-3s3.25 2 3.25 3m-12.5 5c0-1 .75-3 3.25-3s3.25 2 3.25 3" />
-              </svg>
-            </a>
-          </button>
-          {/* CVS */}
-          <button class="btn btn-lg btn-circle">
-            <a class="tooltip" data-tip="История изменений">
-              <svg
-                class="icon-size fill-current"
-                viewBox="0 0 16 16"
+                class="icon-size"
+                viewBox="0 0 24 24"
+                fill="none"
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                  fill-rule="evenodd"
-                  clip-rule="evenodd"
-                  d="M13.507 12.324a7 7 0 0 0 .065-8.56A7 7 0 0 0 2 4.393V2H1v3.5l.5.5H5V5H2.811a6.008 6.008 0 1 1-.135 5.77l-.887.462a7 7 0 0 0 11.718 1.092m-3.361-.97.708-.707L8 7.792V4H7v4l.146.354z"
+                  d="M2 15V9a6 6 0 0 1 6-6h8a6 6 0 0 1 6 6v6a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6Z"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                />
+                <path
+                  d="M6 15V9h5m-5 3h3.571M13 15l2.5-3m0 0L18 9m-2.5 3L13 9m2.5 3 2.5 3"
+                  stroke="currentColor"
+                  stroke-width="1.5"
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
                 />
               </svg>
             </a>
           </button>
         </div>
       </nav>
-      <CoopModal dialogRef={(el) => (coopModalRef = el)}  />
+      <CoopModal dialogRef={(el) => (coopDialogRef = el)} />
+      <EffectsModal dialogRef={(el) => (effectsDialogRef = el)} />
+      <VCSModal dialogRef={(el) => (vcsDialogRef = el)} />
+      <PresetChooseModal
+        dialogRef={(el) => (choosePresetRef = el)}
+        onSelect={(presetId) => {
+          setAndLoadSelectedPresetInModal(presetId)
+        }}
+      />
+      
     </div>
   );
 };
