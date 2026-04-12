@@ -146,6 +146,8 @@ interface PolySynthInstance {
     velocity?: number,
   ) => void;
   dispose: () => void;
+  config: Synth;
+  type: "polySynth",
 }
 
 interface PresetCategory {
@@ -153,6 +155,10 @@ interface PresetCategory {
   name: string;
   icon: string;
   color: string;
+}
+
+type SamplerWithUrls= Tone.Sampler & {
+  samplesUrls: Record<string, string>;
 }
 
 export type {
@@ -179,4 +185,5 @@ export type {
   PresetModalState,
   Sampler,
   PolySynthInstance,
+  SamplerWithUrls,
 };

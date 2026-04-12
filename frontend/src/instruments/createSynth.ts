@@ -170,6 +170,8 @@ export function createPolySynth(config: Synth): PolySynthInstance {
   }
 
   return {
+    type: "polySynth",
+    config,
     triggerAttackRelease,
     dispose,
   };

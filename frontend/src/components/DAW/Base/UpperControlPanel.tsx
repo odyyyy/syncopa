@@ -6,6 +6,8 @@ import { usePlayerContext } from "../../../hooks/daw/context/usePlayerContext";
 import useUpperControlPanel from "../../../hooks/daw/useUpperControlPanel";
 import ExitProjectModal from "../../utils/ConfirmActionModal";
 import { useNavigate } from "@solidjs/router";
+import ExportProgressLoading from "../Export/ExportProgressLoading";
+import useExportProject from "../../../hooks/daw/export/useExport";
 
 const UpperControlPanel: Component = () => {
   const { project } = useProjectContext();
@@ -18,7 +20,10 @@ const UpperControlPanel: Component = () => {
     totalVolume,
   } = usePlayerContext();
   const { saveProjectChanges } = useProjectPayloadManager();
-  const { muteOrUnmuteMasterVolume, setExitModalOpen, exitModalOpen } = useUpperControlPanel();
+  const { muteOrUnmuteMasterVolume, setExitModalOpen, exitModalOpen } =
+    useUpperControlPanel();
+  const { exportOpen, setExportOpen } = useExportProject();
+
   const navigate = useNavigate();
 
   return (
@@ -43,9 +48,14 @@ const UpperControlPanel: Component = () => {
             tabindex="-1"
             class="dropdown-content rounded-2xl menu bg-base-200 z-1 w-40 p-2 shadow-sm"
           >
-            <li class="hover:bg-base-200 border-b border-b-base-300 w-full">
-              <div class="hover:bg-base-200 cursor-default ">
-                <p class="text-base text-center">{project()?.title}</p>
+            <li class="hover:bg-base-200 border-b border-b-base-300 w-full text-center place-items-center flex ">
+              <div class="hover:bg-base-200 cursor-default text-center place-items-center">
+                <p
+                  class="text-base text-center truncate"
+                  title={project()?.title}
+                >
+                  {project()?.title}
+                </p>
               </div>
             </li>
             <li
@@ -54,29 +64,72 @@ const UpperControlPanel: Component = () => {
                 saveProjectChanges(project()?.projectId ?? "");
               }}
             >
-              <a>Сохранить</a>
+              <div class="flex flex-row">
+                <svg
+                  class="w-4 h-4 fill-current ml-0.5"
+                  viewBox="0 0 24 24"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M23.681 6.158 17.843.32a1.1 1.1 0 0 0-.771-.32H1.092C.489 0 .001.489.001 1.091v21.817c0 .603.489 1.091 1.091 1.091h21.817c.603 0 1.091-.489 1.091-1.091V6.928c0-.301-.122-.574-.32-.771zM6.549 2.182h6.546v5.819H6.546zm0 19.635v-5.818h10.905v5.818zm15.273 0h-2.185v-6.908c0-.603-.489-1.091-1.091-1.091H5.455c-.603 0-1.091.489-1.091 1.091v6.909H2.182V2.181h2.182V9.09c0 .603.489 1.091 1.091 1.091h8.728c.603 0 1.091-.489 1.091-1.091V2.181h1.344l5.199 5.199z" />
+                </svg>
+                <a>Сохранить</a>
+              </div>
             </li>
             {/*<li>
               <a>Импорт</a>
             </li>*/}
-            <li>
-              <a>Экспорт</a>
+            <li
+              onClick={(e) => {
+                e.preventDefault();
+                setExportOpen(true);
+              }}
+            >
+              <div class="flex flex-row">
+                <svg
+                  viewBox="0 0 24 24"
+                  class="w-5 h-5 fill-current"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M8.71 7.71 11 5.41V15a1 1 0 0 0 2 0V5.41l2.29 2.3a1 1 0 0 0 1.42 0 1 1 0 0 0 0-1.42l-4-4a1 1 0 0 0-.33-.21 1 1 0 0 0-.76 0 1 1 0 0 0-.33.21l-4 4a1 1 0 1 0 1.42 1.42M21 14a1 1 0 0 0-1 1v4a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1v-4a1 1 0 0 0-2 0v4a3 3 0 0 0 3 3h14a3 3 0 0 0 3-3v-4a1 1 0 0 0-1-1" />
+                </svg>
+                <a>Экспорт</a>
+              </div>
             </li>
-            <li onClick={(e) => {
-              e.preventDefault();
-              setExitModalOpen(true);
-            }}>
-              <a>Закрыть</a>
+            <li
+              class="hover:bg-error/20 rounded-lg"
+              onClick={(e) => {
+                e.preventDefault();
+                setExitModalOpen(true);
+              }}
+            >
+              <div class="flex flex-row hover:bg-error/20 rounded-lg">
+                <svg
+                  viewBox="0 0 16 16"
+                  class="w-5 h-5 fill-error"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M11.293 3.293a1 1 0 1 1 1.414 1.414L9.414 8l3.293 3.293a1 1 0 0 1-1.414 1.414L8 9.414l-3.293 3.293a1 1 0 0 1-1.414-1.414L6.586 8 3.293 4.707a1 1 0 0 1 1.414-1.414L8 6.586z" />
+                </svg>
+                <a class="text-error">Закрыть</a>
+              </div>
             </li>
           </ul>
         </div>
+
+        <Show when={exportOpen()}>
+          <ExportProgressLoading
+            open={exportOpen()}
+            onClose={() => setExportOpen(false)}
+          />
+        </Show>
+
         <ExitProjectModal
           title="Закрыть проект? Несохраненные изменения будут потеряны!"
           open={exitModalOpen()}
           onClose={() => setExitModalOpen(false)}
           onConfirm={() => {
             setExitModalOpen(false);
-            navigate("../")
+            navigate("../");
           }}
         />
 
@@ -243,9 +296,6 @@ const UpperControlPanel: Component = () => {
       <div class="navbar-end gap-4">
         <ThemeController />
       </div>
-      
-      
-      
     </nav>
   );
 };

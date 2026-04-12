@@ -10,9 +10,11 @@ import {
 } from "solid-js";
 import {
   Preset,
+  PresetConfig,
   PresetModalState,
   PresetsContextType,
   Sampler,
+  SamplerWithUrls,
   Synth,
 } from "../../types/presets.types";
 import toast from "solid-toast";
@@ -28,6 +30,8 @@ export const PresetsContext = createContext<PresetsContextType>();
 
 export const PresetsProvider: ParentComponent = (props) => {
   const [isPresetLoading, setIsPresetLoading] = createSignal(false);
+  const [presetModalState, setPresetModalState] =
+    createSignal<PresetModalState>({ trackId: undefined, presetId: undefined });
 
   const { getPresetsCatalog } = useDawApi();
   const [presets] = createResource<Preset[] | null>(async () => {
@@ -58,15 +62,9 @@ export const PresetsProvider: ParentComponent = (props) => {
     if (res.type === "success") {
       tracks.forEach((track) => {
         const preset = res.data[track.presetId];
-        if (preset && preset.type === "synth") {
-          const synth = createPolySynth(preset.config as Synth);
-          audioEngine.setInstrument(track.trackId, synth);
-        } else if (preset && preset.type === "sampler") {
-          audioEngine.setInstrument(
-            track.trackId,
-            new Tone.Sampler(preset.config as Sampler),
-          );
-        }
+        
+        if (!preset) return;
+        setPresets(preset, track.trackId);
       });
     } else if (res.type === "error") {
       toast.error("Ошибка загрузки пресетов.\nПерезагрузите страницу");
@@ -74,10 +72,36 @@ export const PresetsProvider: ParentComponent = (props) => {
   });
 
   const { setTracks } = useProjectContext();
-  const [presetModalState, setPresetModalState] =
-    createSignal<PresetModalState>({ trackId: undefined, presetId: undefined });
 
   const { getPresetConfigById } = useDawApi();
+
+  const setPresets = (presetConfig: PresetConfig, targetTrackId: string) => {
+    if (presetConfig.type === "synth") {
+      const synth = createPolySynth(presetConfig.config as Synth);
+      synth.config = presetConfig.config as Synth;
+
+      audioEngine.setInstrument(targetTrackId, synth);
+    } else if (presetConfig.type === "sampler") {
+      const samplesUrls = (presetConfig.config as Sampler).samplesUrls;
+      const samplesDir = (presetConfig.config as Sampler).samplesDir;
+      const urls = Object.fromEntries(
+        Object.entries(samplesUrls).map(([note, path]) => [
+          note,
+          `${getSamplesBasePath()}/${samplesDir}/${path}`,
+        ]),
+      );
+      const sampler = new Tone.Sampler({
+        urls: urls,
+        onload: () => {
+          sampler.samplesUrls = urls;
+          audioEngine.setInstrument(targetTrackId, sampler);
+        },
+        onerror: () => {
+          toast.error("Не удалось загрузить пресет");
+        },
+      }) as SamplerWithUrls;
+    }
+  };
 
   const setAndLoadSelectedPreset = async (
     presetId: number,
@@ -86,36 +110,11 @@ export const PresetsProvider: ParentComponent = (props) => {
     const presetConfig = await getPresetConfigById(presetId);
     if (presetConfig.type === "error") {
       toast.error("Ошибка загрузки пресета");
+      setIsPresetLoading(false);
       throw new Error("Ошибка загрузки пресета");
     }
-
-    if (presetConfig.data.type === "synth") {
-      const synth = createPolySynth(presetConfig.data.config as Synth);
-
-      audioEngine.setInstrument(targetTrackId, synth);
-      setIsPresetLoading(false);
-    } else if (presetConfig.data.type === "sampler") {
-      const samplesUrls = (presetConfig.data.config as Sampler).samplesUrls;
-      const samplesDir = (presetConfig.data.config as Sampler).samplesDir;
-
-      const sampler = new Tone.Sampler({
-        urls: Object.fromEntries(
-          Object.entries(samplesUrls).map(([note, path]) => [
-            note,
-            `${getSamplesBasePath()}/${samplesDir}/${path}`,
-          ]),
-        ),
-        onload: () => {
-          audioEngine.setInstrument(targetTrackId, sampler);
-          setIsPresetLoading(false);
-        },
-        onerror: () => {
-          toast.error("Не удалось загрузить пресет");
-          setIsPresetLoading(false);
-          return;
-        },
-      });
-    }
+    setPresets(presetConfig.data, targetTrackId);
+    setIsPresetLoading(false);
   };
 
   const setAndLoadSelectedPresetInModal = async (presetId: number) => {
