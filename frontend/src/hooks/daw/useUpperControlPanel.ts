@@ -1,7 +1,6 @@
 import { createSignal } from "solid-js";
-import { MIN_MASTER_VOLUME_DB } from "../../config/config";
-import { usePlayerContext } from "./context/usePlayerContext";
 import * as Tone from "tone";
+import { usePlayerContext } from "./context/usePlayerContext";
 
 const useUpperControlPanel = () => {
   const { setTime, bpm, setTotalVolume } = usePlayerContext();

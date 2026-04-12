@@ -7,35 +7,35 @@ type Props = {
 };
 
 const LogoutModal: Component<Props> = (props) => {
-  let modalRef: HTMLDialogElement | undefined;
+  let dialogRef: HTMLDialogElement | undefined;
 
   const handleClickOutside = (e: MouseEvent) => {
-    if (modalRef && e.target === modalRef) {
+    if (dialogRef && e.target === dialogRef) {
       props.onClose();
-      modalRef.close();
+      dialogRef.close();
     }
   };
 
   onMount(() => {
-    modalRef?.addEventListener("click", handleClickOutside);
+    dialogRef?.addEventListener("click", handleClickOutside);
   });
 
   onCleanup(() => {
-    modalRef?.removeEventListener("click", handleClickOutside);
+    dialogRef?.removeEventListener("click", handleClickOutside);
   });
 
   createEffect(() => {
-    if (!modalRef) return;
+    if (!dialogRef) return;
 
     if (props.open) {
-      modalRef.showModal();
+      dialogRef.showModal();
     } else {
-      if (modalRef.open) modalRef.close();
+      if (dialogRef.open) dialogRef.close();
     }
   });
 
   return (
-    <dialog class="modal p-3" ref={modalRef}>
+    <dialog class="modal p-3" ref={dialogRef}>
       <div class="modal-box max-w-3xs flex flex-col items-center">
         <h3 class="text-lg font-bold">Выйти из аккаунта?</h3>
 
@@ -44,7 +44,7 @@ const LogoutModal: Component<Props> = (props) => {
             class="btn btn-neutral"
             onClick={() => {
               props.onConfirm();
-              modalRef?.close();
+              dialogRef?.close();
             }}
           >
             Да
@@ -54,7 +54,7 @@ const LogoutModal: Component<Props> = (props) => {
             class="btn"
             onClick={() => {
               props.onClose();
-              modalRef?.close();
+              dialogRef?.close();
             }}
           >
             Нет

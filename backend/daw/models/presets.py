@@ -7,10 +7,11 @@ from users.models import Users
 
 class PresetsCategories(str, Enum):
     LEAD = "lead"
-    PADS = "pads"
+    TUBE = "tube"
     GUITAR = "guitar"
     DRUM = "drum"
     KEYS = "keys"
+    OTHER = "other"
 
 
 class Presets(Model):

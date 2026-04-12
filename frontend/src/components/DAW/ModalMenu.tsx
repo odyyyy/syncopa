@@ -65,7 +65,7 @@ const ModalMenu: Component<ModalProps> = (props) => {
           dialog = el;
           props.dialogRef?.(el);
         }}
-        class={`modal backdrop:bg-black/70 backdrop:backdrop-blur-sm transition-all duration-200 ease-out ${
+        class={`modal backdrop:bg-black/70 backdrop:backdrop-blur-sm transition-all duration-300 ease-out ${
           isClosing()
             ? "opacity-0 scale-95 pointer-events-none"
             : "opacity-100 scale-100"

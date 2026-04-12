@@ -9,7 +9,7 @@ type Props = {
 };
 
 const ConfirmActionModal: Component<Props> = (props) => {
-  let modalRef!: HTMLDialogElement;
+  let dialogRef!: HTMLDialogElement;
 
   const handleCancel = (e: Event) => {
     e.preventDefault();
@@ -17,34 +17,34 @@ const ConfirmActionModal: Component<Props> = (props) => {
   };
 
   const handleBackdropClick = (e: MouseEvent) => {
-    if (e.target === modalRef) {
+    if (e.target === dialogRef) {
       props.onClose();
     }
   };
 
   onMount(() => {
-    modalRef.addEventListener("cancel", handleCancel);
-    modalRef.addEventListener("click", handleBackdropClick);
+    dialogRef.addEventListener("cancel", handleCancel);
+    dialogRef.addEventListener("click", handleBackdropClick);
   });
 
   onCleanup(() => {
-    modalRef.removeEventListener("cancel", handleCancel);
-    modalRef.removeEventListener("click", handleBackdropClick);
+    dialogRef.removeEventListener("cancel", handleCancel);
+    dialogRef.removeEventListener("click", handleBackdropClick);
   });
 
   createEffect(() => {
-    if (props.open && !modalRef.open) {
-      modalRef.showModal();
+    if (props.open && !dialogRef.open) {
+      dialogRef.showModal();
     }
 
-    if (!props.open && modalRef.open) {
-      modalRef.close();
+    if (!props.open && dialogRef.open) {
+      dialogRef.close();
     }
   });
 
   return (
     <Portal>
-      <dialog ref={modalRef} class="modal">
+      <dialog ref={dialogRef} class="modal">
         <div class="modal-box max-w-3xs flex flex-col items-center text-center">
           <h3 class="text-lg font-bold">{props.title}</h3>
 

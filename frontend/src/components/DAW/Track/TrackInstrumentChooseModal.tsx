@@ -11,7 +11,7 @@ export enum InstrumentTypeEnum {
 type InstrumentType = `${InstrumentTypeEnum}`;
 
 const TrackInstrumentChooseModal: Component<{
-  modalRef: (el: HTMLDialogElement) => void;
+  dialogRef: (el: HTMLDialogElement) => void;
   onSelect: (instrument: InstrumentType | null) => void;
 }> = (props) => {
   let modal!: HTMLDialogElement;
@@ -25,7 +25,7 @@ const TrackInstrumentChooseModal: Component<{
     <ModalMenu
       dialogRef={(el) => {
         modal = el;
-        props.modalRef(el);
+        props.dialogRef(el);
       }}
     >
       <div class="flex flex-wrap gap-5 justify-center bg-base-200 p-12 rounded-xl max-w-110">

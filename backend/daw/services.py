@@ -1,5 +1,6 @@
 from daw.models.presets import PresetsConfigs
 from daw.schemas import ProjectPayload
+from daw.schemas.preset import PresetConfig
 from projects_management.models.projects import Projects
 
 
@@ -15,6 +16,6 @@ async def get_used_presets_with_config(used_presets_ids: list[int]):
         preset__id__in=used_presets_ids
     ).select_related("preset")
 
-    presets_map = {p.preset.id: p.preset_config for p in presets}
+    presets_map = {p.preset.id: PresetConfig.model_validate(p.preset_config) for p in presets}
 
     return presets_map

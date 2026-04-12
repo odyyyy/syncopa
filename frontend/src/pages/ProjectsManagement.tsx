@@ -4,7 +4,6 @@ import ProjectCreatePopup from "../components/ProjectsManagement/ProjectCreateIt
 import UserPanel from "../components/User/UserPanel";
 import { useProjectsApi } from "../api/projects-management.api";
 import { userData } from "../store/user";
-import { A } from "@solidjs/router";
 
 const ProjectsManagement: Component = () => {
   const { getProjectsList } = useProjectsApi();
@@ -27,7 +26,6 @@ const ProjectsManagement: Component = () => {
   return (
     <div class="bg-bg">
       <UserPanel />
-
       <div class="p-4">
         <main class="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6 max-w-8xl mx-auto">
           <For each={projects()}>
@@ -41,21 +39,19 @@ const ProjectsManagement: Component = () => {
                           .toLocaleString()
                           .replace(/,/g, "\u00A0\u00A0")
                           .slice(0, -3)
-                      : "Не известно"
+                      : "Неизвестно"
                   }
                   invitedMembers={[
                     {
                       username: userData.username,
                       avatar: userData.avatar,
                     },
-
                     ...project.invitedMembers,
                   ]}
                   onRemove={handleRemoveProject}
                 />
             )}
           </For>
-
           <ProjectCreatePopup onCreate={handleAddNewProject} />
         </main>
       </div>

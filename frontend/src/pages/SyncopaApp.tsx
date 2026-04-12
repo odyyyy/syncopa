@@ -43,13 +43,13 @@ const SyncopaApp: Component = () => {
               <PianoRollProvider>
                 <PresetsProvider>
                   <MainDawTrackPanel />
+                  <LowerControlPanel />
                 </PresetsProvider>
               </PianoRollProvider>
             </ContextMenuProvider>
           </PlayerProvider>
         </TracksProvider>
 
-        <LowerControlPanel />
       </ProjectProvider>
     </div>
   );

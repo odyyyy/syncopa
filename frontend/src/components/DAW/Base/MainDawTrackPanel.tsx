@@ -85,7 +85,7 @@ const MainDawTrackPanel: Component = () => {
         </div>
 
         <TrackInstrumentChooseModal
-          modalRef={(el) => (chooseTrackInstrumentRef = el)}
+          dialogRef={(el) => (chooseTrackInstrumentRef = el)}
           onSelect={(instrumentChoice) => {
             if (!instrumentChoice) return;
             addNewTrack(undefined, instrumentChoice);
@@ -93,7 +93,7 @@ const MainDawTrackPanel: Component = () => {
         />
 
         <PresetChooseModal
-          modalRef={(el) => (choosePresetRef = el)}
+          dialogRef={(el) => (choosePresetRef = el)}
           onSelect={(presetId) => {
             setAndLoadSelectedPresetInModal(presetId)
           }}

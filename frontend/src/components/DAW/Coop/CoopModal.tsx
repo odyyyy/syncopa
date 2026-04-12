@@ -6,13 +6,16 @@ import AvatarDefault from "../../User/Avatars/AvatarDefault";
 import AvatarPicture from "../../User/Avatars/AvatarPicture";
 
 type CoopModalProps = {
-  dialogRef?: (el: HTMLDialogElement) => void;
+  dialogRef: (el: HTMLDialogElement) => void;
 
   onClose?: (returnValue: string) => void;
 };
 
 const CoopModal: Component<CoopModalProps> = (props) => {
+  let modal!: HTMLDialogElement;
+  
   const [isSessionRunning, setIsSessionRunning] = createSignal(false);
+  
 
   const projectMembers: CoopMember[] = [
     { id: "1", username: "Алексей", isOwner: true },
@@ -71,14 +74,16 @@ const CoopModal: Component<CoopModalProps> = (props) => {
 
   return (
     <ModalMenu
-      dialogRef={props.dialogRef}
+      dialogRef={(el) => {
+        modal = el;
+        props.dialogRef(el);
+      }}
       onClose={props.onClose}
-      class="fixed top-1/2 left-1/2 -translate-x-1/2 transition-all duration-100 -translate-y-1/2 m-0 p-0 w-full border-none bg-transparent overflow-visible"
     >
       <div class="card bg-base-200 rounded-2xl shadow-2xl overflow-hidden border border-base-300 ring-1 ring-black/5">
-        <div class="bg-base-200 py-8 border-b border-base-300">
-          <h2 class="text-2xl font-black uppercase tracking-widest text-center text-base-content">
-            Совместная работа
+        <div class="bg-base-200 py-5 border-b border-base-300">
+          <h2 class="text-2xl font-black uppercase tracking-wider text-center text-base-content">
+            Коллаборация
           </h2>
         </div>
 
@@ -140,14 +145,9 @@ const CoopModal: Component<CoopModalProps> = (props) => {
               </div>
             </div>
 
-            <div class="mt-3 p-6 bg-inherit ">
-              <button class="btn btn-neutral btn-block shadow-md group">
-                <span class="text-lg group-hover:scale-125 transition-transform">
-                  +
-                </span>
-                Пригласить участника
-              </button>
-            </div>
+              <div class="tooltip tooltip-bottom flex items-center justify-center mt-2" data-tip="Добавить участника">
+                <button class="btn text-3xl btn-lg text-bold bg-base-100/25 border-base-200 text-center border-2 rounded-lg">+</button>
+              </div>
           </div>
 
           <div class="flex-1 bg-base-300 flex flex-col relative w-135">
@@ -282,7 +282,6 @@ const CoopModal: Component<CoopModalProps> = (props) => {
           </div>
         </div>
 
-        {/* Подвал */}
       </div>
     </ModalMenu>
   );

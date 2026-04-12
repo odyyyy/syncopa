@@ -96,7 +96,7 @@ const usePianoRoll = () => {
           return pattern;
         }) ?? null,
     );
-    (synth() as PolySynthInstance)?.triggerAttackRelease(note, 0.5);
+    (synth() as PolySynthInstance)?.triggerAttackRelease(note, 1);
   };
 
   const findPatternById = () => {
@@ -126,7 +126,7 @@ const usePianoRoll = () => {
 
     const note = key.dataset.note;
 
-    (synth() as PolySynthInstance)?.triggerAttackRelease(note!, 0.5);
+    (synth() as PolySynthInstance)?.triggerAttackRelease(note!, 1);
   };
 
   const { pianoRollHeight, setPianoRollHeight } = usePianoRollContext();

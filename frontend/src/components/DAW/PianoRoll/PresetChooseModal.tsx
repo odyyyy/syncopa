@@ -1,16 +1,24 @@
-import { Component, createMemo, createSignal, For, Show } from "solid-js";
+import {
+  Component,
+  createEffect,
+  createMemo,
+  createSignal,
+  For,
+  Show,
+} from "solid-js";
 import ModalMenu from "../ModalMenu";
 import { usePresetsContext } from "../../../context/daw/presets.context";
 import LoadingOverlay from "../../utils/Loaders/LoadingOverlay";
 import { PresetCategory } from "../../../types/presets.types";
-
+import { useProjectContext } from "../../../hooks/daw/context/useProjectContext";
 
 export enum PRESETS_CATEGORIES_ENUM {
   LEAD = "lead",
-  PAD = "pads",
+  TUBE = "tube",
   GUITAR = "guitar",
   DRUM = "drum",
   KEY = "keys",
+  OTHER = "other",
 }
 
 const PRESETS_CATEGORIES: PresetCategory[] = [
@@ -18,13 +26,13 @@ const PRESETS_CATEGORIES: PresetCategory[] = [
     id: PRESETS_CATEGORIES_ENUM.LEAD,
     name: "Leads",
     icon: "⚡",
-    color: "from-yellow-400/20",
+    color: "from-orange-400/20",
   },
   {
-    id: PRESETS_CATEGORIES_ENUM.PAD,
-    name: "Pads",
-    icon: "☁️",
-    color: "from-blue-400/20",
+    id: PRESETS_CATEGORIES_ENUM.TUBE,
+    name: "Tubes",
+    icon: "🎺",
+    color: "from-yellow-400/20",
   },
   {
     id: PRESETS_CATEGORIES_ENUM.GUITAR,
@@ -44,23 +52,47 @@ const PRESETS_CATEGORIES: PresetCategory[] = [
     icon: "🎹",
     color: "from-purple-400/20",
   },
+  {
+    id: PRESETS_CATEGORIES_ENUM.OTHER,
+    name: "Другие",
+    icon: "♯",
+    color: "from-white-400/20",
+  },
 ];
 
 const PresetChooseModal: Component<{
-  modalRef: (el: HTMLDialogElement) => void;
+  dialogRef: (el: HTMLDialogElement) => void;
   onSelect: (presetId: number) => void;
 }> = (props) => {
   let modal!: HTMLDialogElement;
   const [activeTab, setActiveTab] = createSignal("lead");
-  const { presets, presetModalState } = usePresetsContext();
+  const { tracks } = useProjectContext();
+
+  const [avaliableTracks, setAvaliableTracks] =
+    createSignal<{ trackId: string; trackTitle: string; presetId: number }[]>();
+  createEffect(() => {
+    setAvaliableTracks(
+      tracks.map((track) => ({
+        trackId: track.trackId,
+        trackTitle: track.title,
+        presetId: track.presetId,
+      })),
+    );
+  }, [tracks]);
+
+  const { presets, presetModalState, setPresetModalState } =
+    usePresetsContext();
 
   const [searchQuery, setSearchQuery] = createSignal("");
-  const currentTrackPresetName = () => {
-    const pres =
-      presets.find((p) => p.id === presetModalState().presetId)?.title ?? "???";
-    return pres;
-  };
-
+  
+  const currentTrackPreset = createMemo(() => {
+    // TODO: change presets in list buttom preset choose modal
+    return presets.find((p) => p.id === presetModalState().presetId) ?? {
+      title: "???",
+      id: undefined,
+    };
+  });
+  
   const filteredPresets = createMemo(() => {
     return presets.filter(
       (p) =>
@@ -75,12 +107,9 @@ const PresetChooseModal: Component<{
     <ModalMenu
       dialogRef={(el) => {
         modal = el;
-        props.modalRef(el);
+        props.dialogRef(el);
       }}
-      onClose={() => {
-        console.log("Модалка пресетов закрыта"); 
-      }}
-      class="transition-all duration-300"
+      onClose={() => {}}
     >
       <Show when={isPresetLoading()}>
         <LoadingOverlay loadingMessage="Загрузка пресета..." />
@@ -116,7 +145,7 @@ const PresetChooseModal: Component<{
           </div>
         </div>
 
-        <div class="flex gap-3 px-6 py-3 overflow-x-auto no-scrollbar justify-center">
+        <div class="flex gap-2 px-6 py-3 overflow-x-auto no-scrollbar justify-center">
           <For each={PRESETS_CATEGORIES}>
             {(cat) => (
               <button
@@ -144,7 +173,7 @@ const PresetChooseModal: Component<{
                 <div
                   classList={{
                     "bg-base-content/20":
-                      preset.title === currentTrackPresetName(),
+                      preset.title === currentTrackPreset().title,
                   }}
                   onClick={() => {
                     setIsPresetLoading(true);
@@ -190,17 +219,43 @@ const PresetChooseModal: Component<{
               <span class="text-[8px] opacity-40 font-bold uppercase">
                 Текущий пресет
               </span>
-              <span class="text-xs font-mono text-primary truncate max-w-16">
-                {currentTrackPresetName() || "—"}
+              <span
+                title={currentTrackPreset().title}
+                class="text-xs font-mono text-primary truncate max-w-20"
+              >
+                {currentTrackPreset().title}
               </span>
             </div>
-            <div class="flex flex-col border-l border-black/10 dark:border-white/10 pl-4">
+            <div class="flex flex-col justify-center items-center border-l border-black/10 dark:border-white/10 pl-4">
               <span class="text-[8px] opacity-40 font-bold uppercase">
                 Дорожка
               </span>
-              <span class="text-xs font-mono text-primary truncate max-w-16">
-                {currentTrackPresetName() || "—"}
-              </span>
+              <select
+                class="select select-xs bg-inherit border-none outline-none truncate max-w-35"
+                onChange={(e) => {
+                  const trackId = e.currentTarget.value;
+              
+                  const track = avaliableTracks()?.find(
+                    (t) => t.trackId === trackId
+                  );
+              
+                  setPresetModalState({
+                    trackId,
+                    presetId: track?.presetId,
+                  });
+                }}
+              >
+                <For each={avaliableTracks()}>
+                  {(track) => (
+                    <option
+                      value={track.trackId}
+                      selected={track.trackId === presetModalState().trackId}
+                    >
+                      {track.trackTitle}
+                    </option>
+                  )}
+                </For>
+              </select>
             </div>
           </div>
           <button class="btn btn-dash duration-300 transition-all border-base-content/55 btn-sm rounded-xl px-6 font-bold hover:bg-base-content/10 hover:border-base-content/55">
