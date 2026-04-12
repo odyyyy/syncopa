@@ -4,6 +4,7 @@ import useCreateProject from "../../hooks/projects_management/useCreateProject";
 import { userData } from "../../store/user";
 import AvatarPicture from "../User/Avatars/AvatarPicture";
 import AvatarDefault from "../User/Avatars/AvatarDefault";
+import useSearchMembers from "../../hooks/projects_management/useInviteMembers";
 
 const ProjectCreatePopup: Component<{
   onCreate: (project: ProjectItemProps) => void;
@@ -15,12 +16,14 @@ const ProjectCreatePopup: Component<{
     addMember,
     removeMember,
     members,
-    handleFieldInput,
-    handleCreateProject,
-    setProjectData,
-    projectData,
-  } = useCreateProject(props.onCreate);
+    rawQuery,
+    setMembers,
+    clearSearch,
+  } = useSearchMembers();
   let dialogRef: HTMLDialogElement | undefined;
+
+  const { handleFieldInput, handleCreateProject, setProjectData, projectData } =
+    useCreateProject(props.onCreate, setMembers);
 
   const openModal = () => {
     dialogRef?.showModal();
@@ -64,9 +67,10 @@ const ProjectCreatePopup: Component<{
             onsubmit={(e) => {
               e.preventDefault();
               setProjectData("invitedMembers", members());
-              handleCreateProject().then(() => {
+              handleCreateProject(members()).then(() => {
                 dialogRef?.close();
               });
+              clearSearch();
             }}
           >
             <fieldset class="fieldset">
@@ -115,7 +119,7 @@ const ProjectCreatePopup: Component<{
 
                 <input
                   type="text"
-                  class="grow text-base"
+                  class="h-auto leading-normal grow text-base"
                   placeholder="Название проекта"
                   value={projectData.title}
                   pattern="[A-Za-zА-Яа-я0-9]{3,64}"
@@ -158,6 +162,7 @@ const ProjectCreatePopup: Component<{
                     type="text text-base"
                     placeholder="Никнейм участника"
                     maxlength="64"
+                    value={rawQuery()}
                     form="create-project"
                     onInput={(e) => {
                       const value = e.currentTarget.value;
@@ -216,15 +221,18 @@ const ProjectCreatePopup: Component<{
                             class="list-row cursor-pointer hover:bg-base-200"
                             onclick={() => addMember(user.username)}
                           >
-                            <Show
-                              when={user.avatar}
-                            >
-                              <AvatarPicture src={user.avatar} username={user.username} size={6} />
+                            <Show when={user.avatar}>
+                              <AvatarPicture
+                                src={user.avatar}
+                                username={user.username}
+                                size={6}
+                              />
                             </Show>
-                            <Show
-                              when={!user.avatar}
-                            >
-                              <AvatarDefault username={user.username} size={6} />
+                            <Show when={!user.avatar}>
+                              <AvatarDefault
+                                username={user.username}
+                                size={6}
+                              />
                             </Show>
                             <div>
                               <div>{user.username}</div>
