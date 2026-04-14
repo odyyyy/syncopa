@@ -148,6 +148,7 @@ interface PolySynthInstance {
   dispose: () => void;
   config: Synth;
   type: "polySynth",
+  setVolume: (v: number) => void;
 }
 
 interface PresetCategory {

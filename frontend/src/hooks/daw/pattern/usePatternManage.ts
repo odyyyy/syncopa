@@ -61,9 +61,11 @@ const usePatternManage = (patternWidthInTacts: Accessor<number> = () => 4) => {
         onClick: () => editPattern(e),
       },
       {
-        label: "Изменить инструмент",
+        label: "Изменить пресет",
         icon: "♬",
-        onClick: () => {},
+        onClick: () => {
+          
+        },
       },
       {
         label: "Удалить паттерн",

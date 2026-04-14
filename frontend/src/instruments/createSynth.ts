@@ -77,7 +77,7 @@ export function createPolySynth(config: Synth): PolySynthInstance {
   const voices: Voice[] = [];
   const poolSize = 8;
 
-  const master = new Tone.Gain(config.gain ?? 1);
+  const master = new Tone.Gain(config.gain ?? 0.5);
 
   let current: Tone.ToneAudioNode = master;
 
@@ -174,5 +174,6 @@ export function createPolySynth(config: Synth): PolySynthInstance {
     config,
     triggerAttackRelease,
     dispose,
+    setVolume: (v: number) => master.gain.rampTo(v, 0.05)
   };
 }

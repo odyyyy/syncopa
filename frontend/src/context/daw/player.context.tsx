@@ -14,6 +14,14 @@ import { PolySynthInstance } from "../../types/presets.types";
 
 export const PlayerContext = createContext<PlayerContextType>();
 
+export const volumeToDb = (value: number) => {
+  const linear = value / 100;
+
+  if (linear <= 0) return -Infinity;
+
+  return 20 * Math.log10(linear);
+}
+
 export const PlayerProvider: ParentComponent = (props) => {
   const [time, setTime] = createSignal<string>("00:00.0");
   const [bpm, setBpm] = createSignal<number>(120);
@@ -25,9 +33,10 @@ export const PlayerProvider: ParentComponent = (props) => {
   const [totalVolume, setTotalVolume] = createSignal(
     project()?.payload?.metadata?.totalVolume ?? 50,
   );
+    
   createEffect(() => {
     Tone.getDestination().volume.value =
-      (totalVolume() * -MIN_MASTER_VOLUME_DB) / 100 + MIN_MASTER_VOLUME_DB;
+      volumeToDb(totalVolume());
   });
 
   const { tracks } = useProjectContext();

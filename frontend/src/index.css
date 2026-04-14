@@ -7,8 +7,6 @@
         light --light;
 }
 
-/*  winter corporate cupcake+-  */
-
 @plugin "daisyui/theme" {
     name: "corporate";
     default: true;
@@ -50,7 +48,7 @@
 
 @custom-variant light (&:where([data-theme=light], [data-theme=light] *));
 
-/* ШРИФТЫ */
+/* Fonts */
 
 @font-face {
     font-family: "SyncopaLogoFont";
@@ -76,7 +74,7 @@
     font-display: swap;
 }
 
-/* Переопределение стилей input-полей */
+/*  Input fields */
 :root {
     --input-border: 1px solid #d1d5db;
     --input-border-radius: 0.5rem;
@@ -118,7 +116,7 @@
     }
 }
 
-/* Tracks */
+/* DAW base elements */
 @layer components {
     .tact-el {
         @apply bg-base-300/70 border-r border-r-base-100/37;
@@ -190,4 +188,12 @@
 }
 .delay-500 {
     animation-delay: 0.5s;
+}
+
+@keyframes menuAppear {
+  from { opacity: 0; transform: scale(0.95); }
+  to { opacity: 1; transform: scale(1); }
+}
+.animate-menu {
+  animation: menuAppear 0.15s ease-out;
 }

@@ -36,7 +36,7 @@ type BasePattern = {
 
 type PatternVST = BasePattern & {
   type: "vst";
-  notes: Note[] | null;
+  notes: Note[] | [];
 };
 
 type PatternAudio = BasePattern & {

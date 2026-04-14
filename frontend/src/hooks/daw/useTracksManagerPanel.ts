@@ -9,6 +9,10 @@ import { useTracksContext } from "./context/useTracksContext";
 import usePatternManage from "./pattern/usePatternManage";
 import { PRESETS_CATEGORIES_ENUM } from "../../components/DAW/PianoRoll/PresetChooseModal";
 import { usePresetsContext } from "../../context/daw/presets.context";
+import { audioEngine } from "../../instruments/audioEngine";
+import { PolySynthInstance } from "../../types/presets.types";
+import * as Tone from "tone";
+import { volumeToDb } from "../../context/daw/player.context";
 
 const useMainDawTrackPanel = () => {
   const { tracks, setTracks } = useProjectContext();
@@ -58,7 +62,7 @@ const useMainDawTrackPanel = () => {
     switch (category) {
       case PRESETS_CATEGORIES_ENUM.LEAD:
         return 6;
-      case PRESETS_CATEGORIES_ENUM.PAD:
+      case PRESETS_CATEGORIES_ENUM.TUBE:
         return 7;
       case PRESETS_CATEGORIES_ENUM.GUITAR:
         return 8;
@@ -100,11 +104,21 @@ const useMainDawTrackPanel = () => {
     trackId: string,
   ) => {
     const trackIndex = tracks.findIndex((t) => t.trackId === trackId);
+    const volume = Number(e.currentTarget.value);
 
     setTracks(trackIndex, (prev) => ({
       ...prev,
-      volume: Number(e.currentTarget.value),
+      volume,
     }));
+    
+    const preset = audioEngine.getInstrument(trackId);
+    if (preset && (preset as PolySynthInstance).type === "polySynth") {
+      (preset as PolySynthInstance).setVolume(volume / 100);
+    }
+    if (preset instanceof Tone.Sampler) {
+      (preset as Tone.Sampler).volume.value = volumeToDb(volume);
+    }
+    
   };
 
   const { openMenu } = useContextMenu();
