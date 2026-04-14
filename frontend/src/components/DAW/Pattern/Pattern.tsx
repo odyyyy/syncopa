@@ -20,7 +20,7 @@ const Pattern: Component<{
     startResizeRight,
     startGrab,
     patternWidthInTacts,
-  } = usePatternTransform(props.pattern(), props.trackId);
+  } = usePatternTransform(props.pattern, props.trackId);
   const { handlePatternContextMenu, editPattern } =
     usePatternManage(patternWidthInTacts);
   const { ROWS_NUMBER, PIANOROLL_NOTES } = usePianoRoll();

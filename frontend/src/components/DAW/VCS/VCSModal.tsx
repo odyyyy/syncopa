@@ -15,40 +15,32 @@ const COMMITS: Commit[] = [
   {
     id: "a1",
     branch: "main",
-    msg: "Набросок басовой линии",
-    author: "Alex",
+    msg: "Бас партия",
+    author: "Admin",
     date: "2 часа назад",
     color: "#570df8",
     description:
-      "Использовал Serum с кастомным пресетом. Нужно подрезать низ на 40Гц.",
+      "Использовал Bass Synth с кастомным пресетом. Нужно подрезать низ на 40Гц.",
   },
   {
     id: "b1",
     branch: "feature/vocals",
     msg: "Запись припева (дубли)",
-    author: "Max",
+    author: "Test",
     date: "1 час назад",
     color: "#f000b8",
-    description: "Три удачных дубля, выбрал основной. Эффекты пока не вешал.",
+    description: "Три удачных дубля, выбрал основной",
   },
   {
     id: "a2",
     branch: "main",
-    msg: "Мастеринг: правки EQ",
-    author: "Alex",
+    msg: "Мастеринг",
+    author: "User",
     date: "30 мин назад",
     color: "#570df8",
-    description: "Добавил 2дб на 12кГц для воздуха.",
+    description: "Добавил .........",
   },
-  {
-    id: "b2",
-    branch: "feature/vocals",
-    msg: "Деэссер на вокале",
-    author: "Max",
-    date: "10 мин назад",
-    color: "#f000b8",
-    description: "Убрал свистящие в районе 7кГц.",
-  },
+
 ];
 
 const BRANCHES = ["main", "feature/vocals", "experimental-synth"];
@@ -65,8 +57,7 @@ const VCSModal: Component<{ dialogRef: (el: HTMLDialogElement) => void }> = (
 
   return (
     <ModalMenu dialogRef={props.dialogRef}>
-      <div class="w-[1100px] h-[750px] bg-base-100 rounded-[2rem] shadow-2xl border border-neutral/20 overflow-hidden flex flex-col select-none">
-        {/* Header */}
+      <div class="w-275 h-187.5 bg-base-100 rounded-4xl shadow-2xl border border-neutral/20 overflow-hidden flex flex-col select-none">
         <div class="p-6 bg-base-200 border-b border-base-content/5 flex items-center justify-between">
           <div class="flex items-center gap-4">
             <div class="p-2 bg-primary/10 rounded-xl">
@@ -97,7 +88,6 @@ const VCSModal: Component<{ dialogRef: (el: HTMLDialogElement) => void }> = (
             </div>
           </div>
 
-          {/* Центральные вкладки */}
           <div class="flex bg-base-300 p-1 rounded-xl">
             <button
               onClick={() => setActiveTab("history")}
@@ -114,7 +104,6 @@ const VCSModal: Component<{ dialogRef: (el: HTMLDialogElement) => void }> = (
             </button>
           </div>
 
-          {/* Переключатель графа */}
           <div class="flex bg-base-300 p-1 rounded-xl gap-1">
             <button
               onClick={() => setViewMode("all")}
@@ -132,7 +121,6 @@ const VCSModal: Component<{ dialogRef: (el: HTMLDialogElement) => void }> = (
         </div>
 
         <div class="flex flex-1 overflow-hidden">
-          {/* Sidebar: Branches */}
           <div class="w-56 bg-base-200 border-r border-base-content/5 p-4 flex flex-col gap-4">
             <div>
               <label class="text-[9px] font-black uppercase opacity-30 mb-2 block ml-2 tracking-widest">
@@ -164,10 +152,8 @@ const VCSModal: Component<{ dialogRef: (el: HTMLDialogElement) => void }> = (
             </div>
           </div>
 
-          {/* Main Area */}
           <div class="flex-1 bg-base-200/50 flex overflow-hidden">
             <Show when={activeTab() === "history"}>
-              {/* Visual Commit Graph */}
               <div class="flex-1 overflow-y-auto relative p-6 custom-scrollbar">
                 <div class="absolute left-10 top-0 bottom-0 w-0.5 bg-neutral/10" />
                 <div class="space-y-8 relative">
@@ -199,7 +185,7 @@ const VCSModal: Component<{ dialogRef: (el: HTMLDialogElement) => void }> = (
                             </span>
                           </div>
                           <div class="flex items-center gap-3">
-                            <span class="text-[10px] font-black uppercase text-primary">
+                            <span class="text-[10px] font-black uppercase  text-primary/70">
                               {commit.author}
                             </span>
                             <span class="text-[10px] opacity-30 italic">
@@ -213,7 +199,6 @@ const VCSModal: Component<{ dialogRef: (el: HTMLDialogElement) => void }> = (
                 </div>
               </div>
 
-              {/* Right Inspector Panel */}
               <div
                 class={`w-72 bg-base-200 border-l border-base-content/5 flex flex-col transition-all duration-300 ${selectedCommit() ? "translate-x-0 opacity-100" : "translate-x-full opacity-0 absolute right-0"}`}
               >
@@ -279,7 +264,6 @@ const VCSModal: Component<{ dialogRef: (el: HTMLDialogElement) => void }> = (
           </div>
         </div>
 
-        {/* Footer: Commit Box */}
         <div class="p-6 bg-base-300 flex flex-col gap-4 border-t border-black/20">
           <div class="flex flex-col gap-2">
             <label class="text-[9px] font-black uppercase opacity-30 ml-2 tracking-widest">

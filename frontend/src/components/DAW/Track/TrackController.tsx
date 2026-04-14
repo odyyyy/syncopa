@@ -42,6 +42,7 @@ const TrackController: Component<TrackControllerProps> = ({
             class="text-base w-fit selection:bg-base-content/15 cursor-pointer focus-visible:border-none outline-none  border-none user-select-none"
             type="text"
             value={track().title}
+            disabled
             onChange={(e) => (track().title = e.target.value)}
           />
         </div>

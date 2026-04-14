@@ -1,43 +1,49 @@
-import { createSignal, createEffect } from "solid-js";
+import { createSignal, createEffect, Accessor } from "solid-js";
 import { useTracksContext } from "../context/useTracksContext";
-import { PatternType } from "../../../types/daw.types";
+import { Note, PatternType, PatternVST } from "../../../types/daw.types";
 import { useProjectContext } from "../context/useProjectContext";
 
-const usePatternTransform = (pattern: PatternType, trackId: string) => {
+const usePatternTransform = (
+  pattern: Accessor<PatternType>,
+  trackId: string,
+) => {
   const { tactWidth, tactElementsNumber, beatNumber } = useTracksContext();
   const { setTracks } = useProjectContext();
   const [isGrabbing, setIsGrabbing] = createSignal(false);
   const [patternPos, setPatternPos] = createSignal(0);
-  const [patternPosInTacts, setPatternPosInTacts] = createSignal(pattern.pos);
+  const [patternPosInTacts, setPatternPosInTacts] = createSignal(pattern().pos);
 
-  const [patternWidthInTacts, setPatternWidthInTacts] = createSignal(pattern.width);
+  const [patternWidthInTacts, setPatternWidthInTacts] = createSignal(
+    pattern().width,
+  );
   const [isResizeLeft, setIsResizeLeft] = createSignal(false);
   const [isResizeRight, setIsResizeRight] = createSignal(false);
-  
+
   const updatePatternField = <K extends keyof PatternType>(
     trackId: string,
     patternId: string,
     field: K,
-    value: PatternType[K]
+    value: PatternType[K],
   ) => {
     setTracks((prev) =>
       prev.map((track) => {
         if (track.trackId !== trackId) return track;
-  
+
         return {
           ...track,
-          patterns: track.patterns?.map((p) =>
-            p.patternId === patternId ? { ...p, [field]: value } : p
-          ) ?? null,
+          patterns:
+            track.patterns?.map((p) =>
+              p.patternId === patternId ? { ...p, [field]: value } : p,
+            ) ?? null,
         };
-      })
+      }),
     );
   };
-  
+
   createEffect(() => {
     setPatternPos(patternPosInTacts() * tactWidth());
   });
-  
+
   const patternWidth = () => patternWidthInTacts() * tactWidth();
 
   const handleGlobalMouseMove = (e: MouseEvent) => {
@@ -87,28 +93,69 @@ const usePatternTransform = (pattern: PatternType, trackId: string) => {
   const handleGlobalMouseUp = () => {
     const wasGrabbing = isGrabbing();
     const wasResizing = isResizeLeft() || isResizeRight();
-    
-    updatePatternField(trackId, pattern.patternId, 'pos', patternPosInTacts());
-    updatePatternField(trackId, pattern.patternId, 'width', patternWidthInTacts());
+
+    if (wasGrabbing || wasResizing) {
+      const stepInTacts = 1 / beatNumber() / 4;
+      const finalPos =
+        Math.round(patternPosInTacts() / stepInTacts) * stepInTacts;
+      const finalWidth =
+        Math.round(patternWidthInTacts() / stepInTacts) * stepInTacts;
+
+      const maxPos = finalWidth * beatNumber();
+      let updatedNotes: Note[] = [];
+
+      if ("notes" in pattern()) {
+        updatedNotes = (pattern() as PatternVST).notes;
+      }
+
+      if (pattern().type === "vst" && pattern().width > finalWidth) {
+        const newNotes: Note[] = [];
+
+        for (const note of (pattern() as PatternVST).notes) {
+          const startPos = note.pos - 1;
+          const endPos = startPos + note.duration;
+
+          if (endPos > maxPos) {
+            if (startPos >= maxPos) continue;
+
+            newNotes.push({
+              ...note,
+              duration: Math.max(0.1, maxPos - startPos),
+            });
+          } else {
+            newNotes.push(note);
+          }
+        }
+        updatedNotes = newNotes;
+      }
+
+      setTracks((prev) =>
+        prev.map((track) => {
+          if (track.trackId !== trackId) return track;
+          return {
+            ...track,
+            patterns:
+              track.patterns?.map((p) =>
+                p.patternId === pattern().patternId
+                  ? {
+                      ...p,
+                      pos: finalPos,
+                      width: finalWidth,
+                      notes: updatedNotes,
+                    }
+                  : p,
+              ) ?? null,
+          };
+        }),
+      );
+
+      setPatternPosInTacts(finalPos);
+      setPatternWidthInTacts(finalWidth);
+    }
 
     setIsGrabbing(false);
     setIsResizeLeft(false);
     setIsResizeRight(false);
-
-    if (wasGrabbing || wasResizing) {
-      const stepInTacts = 1 / beatNumber() / 4;
-      const threshold = stepInTacts * 0.3;
-
-      setPatternPosInTacts((prev) => {
-        const snapped = Math.round(prev / stepInTacts) * stepInTacts;
-        return Math.abs(prev - snapped) < threshold ? snapped : prev;
-      });
-
-      setPatternWidthInTacts((prev) => {
-        const snapped = Math.round(prev / stepInTacts) * stepInTacts;
-        return snapped;
-      });
-    }
   };
 
   const startResizeLeft = (e: MouseEvent) => {
