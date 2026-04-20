@@ -8,6 +8,8 @@ import ExitProjectModal from "../../utils/ConfirmActionModal";
 import { useNavigate } from "@solidjs/router";
 import ExportProgressLoading from "../Export/ExportProgressLoading";
 import useExportProject from "../../../hooks/daw/export/useExport";
+import ProjectMembersAvatars from "../../ProjectsManagement/ProjectMembersAvatars";
+import { useCoopSession } from "../../../context/coop/coopsession.context";
 
 const UpperControlPanel: Component = () => {
   const { project } = useProjectContext();
@@ -23,6 +25,7 @@ const UpperControlPanel: Component = () => {
   const { muteOrUnmuteMasterVolume, setExitModalOpen, exitModalOpen } =
     useUpperControlPanel();
   const { exportOpen, setExportOpen } = useExportProject();
+  const { coopSessionMembers } = useCoopSession();
 
   const navigate = useNavigate();
 
@@ -294,6 +297,7 @@ const UpperControlPanel: Component = () => {
       </div>
 
       <div class="navbar-end gap-4">
+        <ProjectMembersAvatars members={coopSessionMembers} />
         <ThemeController />
       </div>
     </nav>

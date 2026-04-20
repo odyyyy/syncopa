@@ -6,8 +6,9 @@ interface ProjectItemProps {
 }
 
 type ProjectMember = {
+  id: string;
   username: string;
-  avatar?: string;
+  avatar?: string | null;
 };
 
 interface ProjectCreate {

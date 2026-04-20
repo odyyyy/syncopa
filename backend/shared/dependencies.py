@@ -17,9 +17,17 @@ RefreshTokenRequiredPayload = Annotated[
 ]
 
 
-async def get_redis() -> RedisAsync:
+async def get_redis_auth() -> RedisAsync:
     from core.main import app
-    return app.state.redis_client
+
+    return app.state.redis_auth
 
 
-RedisDep = Annotated[RedisAsync, Depends(get_redis)]
+async def get_redis_coop() -> RedisAsync:
+    from core.main import app
+
+    return app.state.redis_coop
+
+
+RedisAuthDep = Annotated[RedisAsync, Depends(get_redis_auth)]
+RedisCoopDep = Annotated[RedisAsync, Depends(get_redis_coop)]

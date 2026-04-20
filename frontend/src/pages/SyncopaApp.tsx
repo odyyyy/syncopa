@@ -9,6 +9,7 @@ import { TracksProvider } from "../context/daw/tracks.context";
 import { PianoRollProvider } from "../context/daw/pianoroll.context";
 import * as Tone from "tone";
 import { PresetsProvider } from "../context/daw/presets.context";
+import { CoopSessionProvider } from "../context/coop/coopsession.context";
 
 const SyncopaApp: Component = () => {
   const onBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -34,23 +35,25 @@ const SyncopaApp: Component = () => {
 
   return (
     <div class="flex flex-col h-screen">
-      <ProjectProvider>
-        <TracksProvider>
-          <PlayerProvider>
-            <UpperControlPanel />
-
-            <ContextMenuProvider>
-              <PianoRollProvider>
-                <PresetsProvider>
-                  <MainDawTrackPanel />
-                  <LowerControlPanel />
-                </PresetsProvider>
-              </PianoRollProvider>
-            </ContextMenuProvider>
-          </PlayerProvider>
-        </TracksProvider>
-
-      </ProjectProvider>
+        <ProjectProvider>
+          <CoopSessionProvider>
+          
+          <TracksProvider>
+            <PlayerProvider>
+              <UpperControlPanel />
+  
+              <ContextMenuProvider>
+                <PianoRollProvider>
+                  <PresetsProvider>
+                    <MainDawTrackPanel />
+                    <LowerControlPanel />
+                  </PresetsProvider>
+                </PianoRollProvider>
+              </ContextMenuProvider>
+            </PlayerProvider>
+          </TracksProvider>
+          </CoopSessionProvider>
+        </ProjectProvider>
     </div>
   );
 };

@@ -1,75 +1,40 @@
 import { Component, createSignal, For, Show } from "solid-js";
 
 import ModalMenu from "../ModalMenu";
-import { CoopMember } from "../../../types/coop.types";
 import AvatarDefault from "../../User/Avatars/AvatarDefault";
 import AvatarPicture from "../../User/Avatars/AvatarPicture";
+import { useProjectContext } from "../../../hooks/daw/context/useProjectContext";
+import { userData } from "../../../store/user";
+import { useCoopSession } from "../../../context/coop/coopsession.context";
 
 type CoopModalProps = {
   dialogRef: (el: HTMLDialogElement) => void;
-
   onClose?: (returnValue: string) => void;
 };
 
 const CoopModal: Component<CoopModalProps> = (props) => {
   let modal!: HTMLDialogElement;
-  
+
   const [isSessionRunning, setIsSessionRunning] = createSignal(false);
-  
 
-  const projectMembers: CoopMember[] = [
-    { id: "1", username: "Алексей", isOwner: true },
+  const { project } = useProjectContext();
 
-    { id: "2", username: "Мария", isOwner: false },
-
-    { id: "3", username: "Иван", isOwner: false },
-
-    { id: "4", username: "Елена", isOwner: false },
+  const projectMembers = [
+    {
+      id: userData.id,
+      username: userData.username,
+      avatar: userData.avatar,
+    },
+    ...(project()?.invitedMembers || []),
   ];
+  const ownerId = project()?.ownerId;
 
-  const sessionMembers: CoopMember[] = [
-    {
-      id: "1",
-      username: "Алексей",
-      isOwner: true,
-      status: "online",
-    },
-
-    {
-      id: "2",
-      username: "Мария",
-      isOwner: false,
-      status: "online",
-    },
-    {
-      id: "2",
-      username: "Мария",
-      isOwner: false,
-      status: "online",
-    },
-    {
-      id: "2",
-      username: "Мария",
-      isOwner: false,
-      status: "online",
-    },
-    {
-      id: "2",
-      username: "Мария",
-      isOwner: false,
-      status: "online",
-    },
-    {
-      id: "2",
-      username: "Мария",
-      isOwner: false,
-      status: "online",
-    },
-  ];
+  const { coopSessionMembers } = useCoopSession();
+  const sessionMembers: ProjectMember[] = coopSessionMembers;
 
   const sortedSession = () =>
     [...sessionMembers].sort((a, b) =>
-      a.isOwner === b.isOwner ? 0 : a.isOwner ? -1 : 1,
+      a.id === ownerId ? -1 : b.id === ownerId ? 1 : 0,
     );
 
   return (
@@ -116,8 +81,8 @@ const CoopModal: Component<CoopModalProps> = (props) => {
                           <span class="text-sm font-semibold">
                             {user.username}
                           </span>
-                          
-                          <Show when={user.isOwner}>
+
+                          <Show when={user.id === ownerId}>
                             <span
                               class="text-warning tooltip ml-1"
                               data-tip="Владелец проекта"
@@ -132,11 +97,9 @@ const CoopModal: Component<CoopModalProps> = (props) => {
                             </span>
                           </Show>
                         </div>
-                        
-                        
 
                         <span class="text-[10px] uppercase opacity-40 font-bold tracking-tighter">
-                          {user.isOwner ? "Владелец" : "Участник"}
+                          {user.id === ownerId ? "Владелец" : "Участник"}
                         </span>
                       </div>
                     </div>
@@ -145,9 +108,14 @@ const CoopModal: Component<CoopModalProps> = (props) => {
               </div>
             </div>
 
-              <div class="tooltip tooltip-bottom flex items-center justify-center mt-2" data-tip="Добавить участника">
-                <button class="btn text-3xl btn-lg text-bold bg-base-100/25 border-base-200 text-center border-2 rounded-lg">+</button>
-              </div>
+            <div
+              class="tooltip tooltip-bottom flex items-center justify-center mt-2"
+              data-tip="Добавить участника"
+            >
+              <button class="btn text-3xl btn-lg text-bold bg-base-100/25 border-base-200 text-center border-2 rounded-lg">
+                +
+              </button>
+            </div>
           </div>
 
           <div class="flex-1 bg-base-300 flex flex-col relative w-135">
@@ -213,7 +181,7 @@ const CoopModal: Component<CoopModalProps> = (props) => {
                   {(user) => (
                     <div
                       class={`flex  cursor-pointer items-center justify-between p-5 rounded-2xl border transition-all duration-100 hover:border-base-content/20 ${
-                        user.isOwner
+                        user.id === ownerId
                           ? "bg-base-content/5 border-primary/20 shadow-sm"
                           : "bg-primary/1 border-primary/20  "
                       }`}
@@ -234,12 +202,14 @@ const CoopModal: Component<CoopModalProps> = (props) => {
 
                         <div class="flex flex-col gap-1">
                           <div class="flex items-center gap-2">
-                            <span title={user.username} class="text-lg truncate  font-bold text-base-content">
-                              
+                            <span
+                              title={user.username}
+                              class="text-lg truncate  font-bold text-base-content"
+                            >
                               {user.username}
                             </span>
 
-                            <Show when={user.isOwner}>
+                            <Show when={user.id === ownerId}>
                               <span
                                 class="text-warning tooltip"
                                 data-tip="Владелец проекта"
@@ -256,14 +226,13 @@ const CoopModal: Component<CoopModalProps> = (props) => {
                           </div>
 
                           <span class="text-xs opacity-50 font-medium">
-                            {user.isOwner ? "Владелец" : "Участник"}
+                            {user.id === ownerId ? "Владелец" : "Участник"}
                           </span>
                         </div>
                       </div>
 
                       <div class="flex items-center self-start gap-2 px-1 py-1 bg-success/10 rounded-full">
                         <div class="w-1.5 h-1.5 bg-success rounded-full" />
-
                       </div>
                     </div>
                   )}
@@ -281,7 +250,6 @@ const CoopModal: Component<CoopModalProps> = (props) => {
             </Show>
           </div>
         </div>
-
       </div>
     </ModalMenu>
   );

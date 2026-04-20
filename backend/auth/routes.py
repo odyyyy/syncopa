@@ -9,7 +9,7 @@ from auth.services import (
     get_authenticated_user,
     get_new_access_token,
 )
-from shared.dependencies import RedisDep
+from shared.dependencies import RedisAuthDep
 from users.schemas import UserOut
 
 auth_router = APIRouter(prefix="/auth", tags=["auth"])
@@ -36,7 +36,7 @@ async def login(user_data: LoginPayload, response: Response):
 
 
 @auth_router.post("/logout")
-async def logout(request: Request, response: Response, redis: RedisDep):
+async def logout(request: Request, response: Response, redis: RedisAuthDep):
     refresh_token = await auth.get_refresh_token_from_request(
         request, locations=["cookies"]
     )
@@ -49,6 +49,6 @@ async def logout(request: Request, response: Response, redis: RedisDep):
 
 
 @auth_router.post("/refresh")
-async def refresh(request: Request, redis: RedisDep):
+async def refresh(request: Request, redis: RedisAuthDep):
     new_access_token = await get_new_access_token(request, redis)
     return {"access_token": new_access_token}

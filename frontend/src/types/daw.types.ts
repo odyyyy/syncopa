@@ -4,6 +4,7 @@ import { SetStoreFunction } from "solid-js/store";
 type ProjectWithPayload = {
   projectId: string;
   title: string;
+  ownerId: string;
   invitedMembers: ProjectMember[];
   payload: ProjectPayload;
 };

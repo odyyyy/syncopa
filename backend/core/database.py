@@ -16,11 +16,17 @@ def register_orm(app: FastAPI):
 
 
 # Redis
-async def setup_redis_client():
+async def setup_redis_clients():
     from core.settings import get_settings
 
-    redis_client = Redis.from_url(
+    redis_auth = Redis.from_url(
         url=get_settings().REDIS_AUTH_DB_URI,
         decode_responses=True,
     )
-    return redis_client
+
+    redis_coop = Redis.from_url(
+        url=get_settings().REDIS_COOP_DB_URI,
+        decode_responses=True,
+    )
+
+    return redis_auth, redis_coop

@@ -6,7 +6,7 @@ from pathlib import Path
 from fastapi import FastAPI
 from pydantic_settings import BaseSettings
 
-from core.database import register_orm, setup_redis_client
+from core.database import register_orm, setup_redis_clients
 
 
 # ====== Global settings ======
@@ -43,6 +43,7 @@ class Settings(BaseSettings):
     REDIS_USER: str
     REDIS_PASSWORD: str
     REDIS_DB_AUTH: int
+    REDIS_DB_COOP: int
 
     @property
     def REDIS_AUTH_DB_URI(self) -> str:
@@ -51,6 +52,15 @@ class Settings(BaseSettings):
             f":{self.REDIS_PASSWORD}"
             f"@{self.REDIS_HOST}:{self.REDIS_PORT}"
             f"/{self.REDIS_DB_AUTH}"
+        )
+
+    @property
+    def REDIS_COOP_DB_URI(self) -> str:
+        return (
+            f"redis://"
+            f":{self.REDIS_PASSWORD}"
+            f"@{self.REDIS_HOST}:{self.REDIS_PORT}"
+            f"/{self.REDIS_DB_COOP}"
         )
 
     # Auth
@@ -91,17 +101,18 @@ TORTOISE_ORM: dict = {
 @asynccontextmanager
 async def lifespan(app: FastAPI) -> AsyncGenerator[None]:
     # Redis
-    from time import sleep
+    redis_auth, redis_coop = await setup_redis_clients()
 
-    sleep(3)
+    await redis_auth.ping()
+    await redis_coop.ping()
 
-    redis_client = await setup_redis_client()
-    await redis_client.ping()
-    app.state.redis_client = redis_client
+    app.state.redis_auth = redis_auth
+    app.state.redis_coop = redis_coop
 
     async with register_orm(app):
         # db connected
         yield
         # app teardown
 
-    await app.state.redis_client.close()
+    await app.state.redis_auth.close()
+    await app.state.redis_coop.close()
