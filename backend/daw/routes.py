@@ -1,4 +1,3 @@
-
 from fastapi import APIRouter, Depends, Query
 from tortoise.exceptions import DoesNotExist
 
@@ -10,7 +9,8 @@ from daw.schemas.preset import PresetConfig
 from daw.services import get_used_presets_with_config, update_project_payload
 from projects_management.models.projects import Projects
 from projects_management.permissions import require_project_member_or_owner_permission
-from projects_management.schemas import ProjectMember
+from projects_management.services import serialize_project_users
+from shared.dependencies import AccessTokenRequiredPayload
 
 daw_router = APIRouter(
     prefix="/daw", tags=["daw"], dependencies=[Depends(auth.access_token_required)]
@@ -19,26 +19,27 @@ daw_router = APIRouter(
 
 @daw_router.get("/payload/{project_id}", response_model=ProjectWithPayload)
 async def get_daw_project_with_payload(
+    user_payload: AccessTokenRequiredPayload,
     project_with_payload: ProjectsPayloads = Depends(
         require_project_member_or_owner_permission
     ),
 ):
-    invited_members = await project_with_payload.project.invited_members.all()
+    project = project_with_payload.project
+    await project.fetch_related("owner")
 
     return ProjectWithPayload(
-        project_id=project_with_payload.project.id,
-        title=project_with_payload.project.title,
+        project_id=project.id,
+        owner_id=project.owner.id,
+        title=project.title,
         payload=project_with_payload.project_payload,
-        invited_members=[
-            ProjectMember(username=member.username, avatar=member.avatar)
-            for member in invited_members
-        ],
+        invited_members=await serialize_project_users(
+            project, user_payload.sub
+        ),
     )
 
 
 @daw_router.put("/payload/{project_id}")
 async def update_daw_project_payload(
-    project_id: str,
     new_project_payload: ProjectPayload,
     project_with_payload: Projects = Depends(
         require_project_member_or_owner_permission

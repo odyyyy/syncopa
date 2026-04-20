@@ -28,11 +28,7 @@ async def get_user_by_id(user_id: str):
 async def get_current_user(
     user_payload: AccessTokenRequiredPayload,
 ) -> Users:
-    user = await Users.get_or_none(id=user_payload.sub)
-
-    if user is None:
-        raise DoesNotExist("Пользователь не найден")
-
+    user = await get_user_by_id(user_payload.sub)
     return user
 
 
@@ -42,7 +38,7 @@ async def get_matched_users_by_username(username: str):
     users = await Users.filter(username__icontains=username).only("username", "avatar")
     users_avatars = await gather_users_avatars(users)
     users = [
-        ProjectMember(username=user.username, avatar=avatar)
+        ProjectMember(id=user.id, username=user.username, avatar=avatar)
         for user, avatar in zip(users, users_avatars, strict=False)
     ]
     return users
@@ -111,9 +107,7 @@ async def update_user_data(user_id: str, user_data: UserUpdateIn):
             continue
         elif key == "avatar":
             user.avatar = await get_avatar_path(value, user_id)
-            user_updated_data["avatar"] = await get_user_avatar_base64(
-                get_settings().BASE_AVATARS_DIR / user.avatar
-            )
+            user_updated_data["avatar"] = await get_user_avatar_image(user.avatar)
             continue
         setattr(user, key, value)
 
@@ -162,7 +156,12 @@ def get_image_extension_by_memetype(avatar: UploadFile) -> str:
         raise ValueError("Не удалось определить расширение изображения")
 
 
-async def get_user_avatar_base64(user_avatar_abs_path: Path) -> str:
+async def get_user_avatar_image(user_avatar: str) -> str | None:
+    if not user_avatar:
+        return None
+
+    user_avatar_abs_path = get_settings().BASE_AVATARS_DIR / user_avatar
+
     async with aiofiles.open(user_avatar_abs_path, "rb") as f:
         avatar_data = await f.read()
         encoded_avatar = base64.b64encode(avatar_data).decode("utf-8")

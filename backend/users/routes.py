@@ -2,7 +2,6 @@ from authx import TokenPayload
 from fastapi import APIRouter, Depends, File, Form, UploadFile
 
 from auth.config import auth
-from core.settings import get_settings
 from projects_management.schemas import ProjectMember
 from shared.dependencies import AccessTokenRequiredPayload
 from users.schemas import (
@@ -15,7 +14,7 @@ from users.schemas import (
 from users.services import (
     change_invitation_status,
     get_matched_users_by_username,
-    get_user_avatar_base64,
+    get_user_avatar_image,
     get_user_by_id,
     get_user_invitations,
     update_user_data,
@@ -33,9 +32,7 @@ async def get_current_user_info(
 ):
     user_data = await get_user_by_id(payload.sub)
     if user_data.avatar:
-        user_data.avatar = await get_user_avatar_base64(
-            get_settings().BASE_AVATARS_DIR / user_data.avatar
-        )
+        user_data.avatar = await get_user_avatar_image(user_data.avatar)
     return user_data
 
 

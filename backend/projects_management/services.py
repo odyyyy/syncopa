@@ -7,7 +7,7 @@ from tortoise.expressions import Q
 
 from core.settings import get_settings
 from users.models import Users
-from users.services import get_user_avatar_base64, get_user_by_id
+from users.services import get_user_avatar_image, get_user_by_id
 
 from .models import Invitations, Projects
 from .schemas import ProjectIn, ProjectMember, ProjectOut
@@ -78,7 +78,7 @@ async def serialize_project_users(project: Projects, user_id: str):
 
     members_avatars = await gather_users_avatars(members)
     serialized_members = [
-        ProjectMember(username=m.username, avatar=avatar)
+        ProjectMember(id=m.id, username=m.username, avatar=avatar)
         for m, avatar in zip(members, members_avatars, strict=False)
     ]
 
@@ -102,11 +102,9 @@ async def gather_users_avatars(users: list[Users]):
     tasks = []
     indices = []
 
-    base_dir = get_settings().BASE_AVATARS_DIR
-
     for i, user in enumerate(users):
         if user.avatar:
-            tasks.append(get_user_avatar_base64(base_dir / user.avatar))
+            tasks.append(get_user_avatar_image(user.avatar))
             indices.append(i)
 
     if not tasks:

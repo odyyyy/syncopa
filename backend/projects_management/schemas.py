@@ -6,6 +6,7 @@ from shared.base_schema import BaseSchema
 
 
 class ProjectMember(BaseSchema):
+    id: UUID4
     username: str
     avatar: str | None = None
 

@@ -35,7 +35,7 @@ async def require_project_member_or_owner_permission(
             Q(project_id=project_id)
             & (Q(project__owner_id=user.id) | Q(project__invited_members__id=user.id))
         )
-        .select_related("project")
+        .select_related("project__owner")
         .prefetch_related("project__invited_members")
         .first()
     )
