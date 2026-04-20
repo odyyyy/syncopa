@@ -4,37 +4,23 @@ import {
   createSignal,
   onMount,
   ParentComponent,
-  useContext,
 } from "solid-js";
 import { BACKEND_URL } from "../config/config";
 import { accessToken, setAccessToken } from "../store/auth";
-import { logoutFetch } from "../api/auth.api";
+import { logoutFetch, refreshToken } from "../api/auth.api";
 import { setUserData } from "../store/user";
+import { apiRequest } from "../api/base.api";
 
 export const AuthContext = createContext<AuthContextType>();
 
 export const AuthProvider: ParentComponent = (props) => {
-  let refreshPromise: Promise<void> | null = null;
-
   const refresh = async () => {
-    if (!refreshPromise) {
-      refreshPromise = fetch(`${BACKEND_URL}/auth/refresh`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "X-CSRF-TOKEN": getCsrfToken() },
-      })
-        .then(async (res) => {
-          if (!res.ok) throw new Error("Ошибка при обновлении токена");
-          const data = await res.json();
-          setAccessToken(data.access_token);
-          await setupUserData();
-        })
-        .finally(() => {
-          refreshPromise = null;
-        });
-    }
-
-    return refreshPromise;
+    const response = await refreshToken();
+    if (response.type === "error")
+      throw new Error("Ошибка при обновлении токена");
+    const data = response.data;
+    setAccessToken(data.access_token);
+    await setupUserData();
   };
 
   const logout = async () => {
@@ -74,20 +60,20 @@ export function getCsrfToken() {
 }
 
 export const setupUserData = async () => {
-  const response = await fetch(`${BACKEND_URL}/users/me`, {
+  const response = await apiRequest<User>(`${BACKEND_URL}/users/me`, {
     method: "GET",
     headers: {
       ...(accessToken() && {
         Authorization: `Bearer ${accessToken()}`,
       }),
     },
-    credentials: 'omit'
+    credentials: "omit",
   });
-  
-  if (!response.ok) {
+
+  if (response.type === "error") {
     toast.error("Ошибка при получении данных пользователя");
     throw new Error("Ошибка при получении данных пользователя");
   }
-  
-  setUserData(await response.json());
+
+  setUserData(response.data);
 };

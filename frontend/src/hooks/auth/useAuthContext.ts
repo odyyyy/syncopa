@@ -1,5 +1,5 @@
 import { useContext } from "solid-js";
-import { AuthContext } from "../../context/auth";
+import { AuthContext } from "../../context/auth.context";
 
 export const useAuthContext = () => {
   const ctx = useContext(AuthContext);

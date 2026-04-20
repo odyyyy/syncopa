@@ -15,6 +15,9 @@ type CustomInputEvent = {
   target: Element;
 };
 
+type RefreshResponse = {
+  access_token: string;
+};
 
 type AuthContextType = {
   accessToken: () => string | null;

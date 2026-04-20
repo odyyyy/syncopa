@@ -1,5 +1,5 @@
 import { BACKEND_URL } from "../config/config";
-import { getCsrfToken } from "../context/auth";
+import { getCsrfToken } from "../context/auth.context";
 import { apiRequest } from "./base.api";
 
 
@@ -23,6 +23,14 @@ export function login(data: LoginFormData) {
 
 export function logoutFetch() {
   return apiRequest(`${BACKEND_URL}/auth/logout`, {
+    method: "POST",
+    headers: { "X-CSRF-TOKEN": getCsrfToken() },
+    credentials: "include",
+  });
+}
+
+export function refreshToken() {
+  return apiRequest<RefreshResponse>(`${BACKEND_URL}/auth/refresh`, {
     method: "POST",
     headers: { "X-CSRF-TOKEN": getCsrfToken() },
     credentials: "include",

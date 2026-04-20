@@ -4,7 +4,7 @@ import { createStore } from "solid-js/store";
 import toast from "solid-toast";
 import { login } from "../../api/auth.api";
 import { setAccessToken } from "../../store/auth";
-import { setupUserData } from "../../context/auth";
+import { setupUserData } from "../../context/auth.context";
 import { createFieldHandler } from "../shared";
 
 export default function useLoginForm() {
