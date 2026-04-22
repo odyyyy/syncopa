@@ -1,13 +1,76 @@
 import { A } from "@solidjs/router";
-import { Component } from "solid-js";
-import logo from "../assets/imgs/logo.svg";
+import { Component, For } from "solid-js";
 
 const Landing: Component = () => {
+  const features = [
+    {
+      title: "Коллаборация в реальном времени",
+      description:
+        "Создавайте музыку вместе в реальном времени. Каждое изменение в проекте мгновенно синхронизируется между всеми участниками сессии.",
+      icon: (
+        <svg
+          class="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+          />
+        </svg>
+      ),
+    },
+    {
+      title: "Система контроля версий",
+      description:
+        "Полноценная система контроля версий проекта. Ветвление проектов, мгновенные откаты к предыдущим состояниям и детальная история изменений каждого трека.",
+      icon: (
+        <svg
+          class="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4"
+          />
+        </svg>
+      ),
+    },
+    {
+      title: "Минимальная задержка",
+      description:
+        "Высокопроизводительное ядро на базе современных веб-технологий. Минимальная задержка при обработке сигналов и плавная работа даже в больших проектах.",
+      icon: (
+        <svg
+          class="w-8 h-8"
+          fill="none"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="1.5"
+            d="M13 10V3L4 14h7v7l9-11h-7z"
+          />
+        </svg>
+      ),
+    },
+  ];
+
   return (
     <div
       data-theme="luxury"
       class="min-h-screen bg-base-100 flex flex-col selection:bg-primary selection:text-primary-content scroll-smooth"
     >
+      {/*
       <nav class="fixed top-0 w-full z-50 px-6 py-4 flex justify-between items-center bg-gradient-to-b from-black/50 to-transparent backdrop-blur-sm">
         <div class="text-2xl font-bold tracking-tighter font-['SyncopaLogoFont'] text-white">
           <img src={logo} alt="Logo" class="h-1 w-1 fill-amber-50" />
@@ -17,12 +80,12 @@ const Landing: Component = () => {
             href="/projects"
             class="text-primary font-bold hover:scale-105 duration-200"
           >
-            {/*Launch App*/}
+           Launch App
           </A>
         </div>
-      </nav>
+      </nav>*/}
 
-      <main class="relative h-screen w-full flex items-center justify-center overflow-hidden">
+      <main class="relative h-screen w-full flex flex-col items-center justify-center overflow-hidden">
         <div class="absolute inset-0 z-0 bg-cover bg-center bg-no-repeat scale-105 animate-slow-zoom">
           <div class="w-[661.13px] h-[661.13px] top-[798.94px] absolute  left-1/2 transform -translate-x-1/2  bg-base-content blur-[342px]"></div>
 
@@ -163,6 +226,39 @@ const Landing: Component = () => {
           </A>
         </div>
       </main>
+
+      <section class="relative py-32 px-10 bg-base-200/50">
+        <div class="max-w-7xl mx-auto">
+          <div class="flex flex-col items-center mb-24 text-center">
+            <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-6">
+              Разработано для коллаборации
+            </h2>
+            <div class="w-24 h-1 bg-primary rounded-full"></div>
+          </div>
+
+          <div class="flex justify-between gap-10">
+            <For each={features}>
+              {(feature) => (
+                <div class="group p-10 w-120 rounded-[2.5rem] bg-base-100/95 border border-white/5 hover:border-primary/20 transition-all duration-500 hover:shadow-[0_20px_80px_rgba(0,0,0,0.4)] relative overflow-hidden">
+                  <div class="absolute top-0 left-0 w-full h-1 bg-linear-to-r from-transparent via-primary/50 to-transparent opacity-0 group-hover:opacity-100 transition-opacity"></div>
+
+                  <div class="w-16 h-16 rounded-2xl bg-primary/10 flex items-center justify-center text-primary mb-8 group-hover:scale-110 transition-transform duration-500 shadow-inner">
+                    {feature.icon}
+                  </div>
+
+                  <h3 class="text-2xl font-black uppercase tracking-tight mb-4 group-hover:text-primary transition-colors">
+                    {feature.title}
+                  </h3>
+
+                  <p class="text-zinc-400 leading-relaxed font-light text-sm">
+                    {feature.description}
+                  </p>
+                </div>
+              )}
+            </For>
+          </div>
+        </div>
+      </section>
 
       {/* Footer */}
       <footer class="bg-base-100 border-t border-white/5 py-12 px-10">
