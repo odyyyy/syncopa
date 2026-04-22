@@ -1,5 +1,4 @@
 from enum import StrEnum
-from typing import Union
 
 from pydantic.types import UUID4
 
@@ -14,23 +13,25 @@ class CoopSession(BaseSchema):
 
 
 class ProjectChanges(BaseSchema):
-    id: int
     operation: "SyncOperation"
-    subject: "Subject"
+    target: "Target"
     payload: dict
+    timestamp: int
 
 
 class SyncOperation(StrEnum):
-    MOVE = "move"
+    TRANSFORM = "transform"
     CREATE = "create"
-    DELETE = "delete"
+    REMOVE = "remove"
     UPDATE = "update"
 
 
-class Subject(StrEnum):
+class Target(StrEnum):
     TRACK = "track"
+    PATTERN = "pattern"
     NOTE = "note"
     PRESET = "preset"
+    TRACK_VOLUME = "track_volume"
 
 
 class ConnectionState(StrEnum):

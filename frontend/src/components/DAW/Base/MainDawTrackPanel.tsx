@@ -1,7 +1,7 @@
 import { Component, Index, onCleanup, onMount, Show } from "solid-js";
 import TrackController from "../Track/TrackController";
 import BaseTactsGrid from "../Track/BaseTactsGrid";
-import useMainDawTrackPanel from "../../../hooks/daw/useTracksManagerPanel";
+import useMainDawTrackPanel from "../../../hooks/daw/useMainDawTrackPanel";
 import { useProjectContext } from "../../../hooks/daw/context/useProjectContext";
 import { usePlayerContext } from "../../../hooks/daw/context/usePlayerContext";
 import useHotkeysGlobalEvents from "../../../hooks/daw/hotkeys/useHotkeysGlobalEvents";
@@ -12,18 +12,24 @@ import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
 import TrackInstrumentChooseModal from "../Track/TrackInstrumentChooseModal";
 import PresetChooseModal from "../PianoRoll/PresetChooseModal";
 import { usePresetsContext } from "../../../context/daw/presets.context";
+import { useSendChangeEvent } from "../../../coop/handleCoopEvents";
+import { SyncOperation, Target } from "../../../types/coop.types";
+import useTracksManager from "../../../hooks/daw/useTracksManager";
+import useSwitchPreset from "../../../hooks/daw/preset/useSwitchPreset";
 
 const MainDawTrackPanel: Component = () => {
   const {
     tactWidth,
     handleOnWheelAndCtrlChangeTactsWidth,
-    addNewTrack,
     handlePlayerHeadChangePos,
     handleContextMenu,
   } = useMainDawTrackPanel();
 
-  const { setAndLoadSelectedPresetInModal, setPresetModalState } =
+  const { addNewTrack } = useTracksManager();
+
+  const { setPresetModalState } =
     usePresetsContext();
+  const { selectPresetFromModal } = useSwitchPreset();
   const { tracks } = useProjectContext();
   const { tactElementsNumber } = usePlayerContext();
   const { isPianoRollOpen, pianoRollHeight } = usePianoRollContext();
@@ -49,6 +55,7 @@ const MainDawTrackPanel: Component = () => {
 
   let chooseTrackInstrumentRef: HTMLDialogElement | undefined;
   let choosePresetRef: HTMLDialogElement | undefined;
+  const { sendChangeEvent } = useSendChangeEvent();
 
   return (
     <div
@@ -88,14 +95,19 @@ const MainDawTrackPanel: Component = () => {
           dialogRef={(el) => (chooseTrackInstrumentRef = el)}
           onSelect={(instrumentChoice) => {
             if (!instrumentChoice) return;
-            addNewTrack(undefined, instrumentChoice);
+            const newTrack = addNewTrack(undefined, instrumentChoice);
+            if (!newTrack) return;
+
+            sendChangeEvent(SyncOperation.CREATE, Target.TRACK, {
+              track: newTrack,
+            });
           }}
         />
 
         <PresetChooseModal
           dialogRef={(el) => (choosePresetRef = el)}
           onSelect={(presetId) => {
-            setAndLoadSelectedPresetInModal(presetId)
+            selectPresetFromModal(presetId);
           }}
         />
         <div

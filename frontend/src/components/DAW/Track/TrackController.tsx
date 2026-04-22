@@ -1,7 +1,9 @@
 import { Accessor, Component } from "solid-js";
-import useMainDawTrackPanel from "../../../hooks/daw/useTracksManagerPanel";
 import { Track } from "../../../types/daw.types";
 import { usePresetsContext } from "../../../context/daw/presets.context";
+import useTracksManager from "../../../hooks/daw/useTracksManager";
+import { useSendChangeEvent } from "../../../coop/handleCoopEvents";
+import { SyncOperation, Target } from "../../../types/coop.types";
 
 interface TrackControllerProps {
   track: Accessor<Track>;
@@ -12,13 +14,15 @@ const TrackController: Component<TrackControllerProps> = ({
   track,
   openPresetsMenu,
 }) => {
-  const { onTrackVolumeChange } = useMainDawTrackPanel();
+  const { handleTrackVolumeChange } = useTracksManager();
   const { presets } = usePresetsContext();
   const trackPresetName = () => {
     return track().presetId
       ? presets?.find((p) => p.id === track().presetId)?.title
       : "???";
   };
+
+  const { sendChangeEvent } = useSendChangeEvent();
 
   return (
     <div
@@ -60,7 +64,16 @@ const TrackController: Component<TrackControllerProps> = ({
             min="0"
             max="100"
             value={track().volume ?? 50}
-            oninput={(e) => onTrackVolumeChange(e, track().trackId)}
+            oninput={(e) => {
+              handleTrackVolumeChange(
+                Number(e.currentTarget.value),
+                track().trackId,
+              );
+              sendChangeEvent(SyncOperation.UPDATE, Target.TRACK_VOLUME, {
+                volume: Number(e.currentTarget.value),
+                trackId: track().trackId,
+              });
+            }}
             class="range range-xs max-w-50 w-50 max-h-4"
           />
         </div>

@@ -1,15 +1,16 @@
 import { createContext, onMount, ParentComponent, useContext } from "solid-js";
 import { createStore } from "solid-js/store";
 import CoopCursor from "../../components/DAW/Coop/CoopCursor";
-import { useProjectContext } from "../../hooks/daw/context/useProjectContext";
-import { accessToken } from "../../store/auth";
-import toast from "solid-toast";
 import {
-  ConnectionState,
   CoopSessionContextType,
-  MemberConnectionInfo,
-  ProjectChanges,
+  CoopOperationsHandlers,
 } from "../../types/coop.types";
+import setupCoopConnectionsAndHandleEvents from "../../coop/coopConnections";
+import usePatternManage from "../../hooks/daw/pattern/usePatternManage";
+import useTracksManager from "../../hooks/daw/useTracksManager";
+import useNoteManage from "../../hooks/daw/pianoroll/useNoteManage";
+import useUpdatePatternPosAndWidth from "../../hooks/daw/pattern/updatePatternPosAndWidth";
+import { usePresetsContext } from "../daw/presets.context";
 
 export const CoopSessionContext = createContext<CoopSessionContextType>();
 
@@ -18,44 +19,37 @@ export const CoopSessionProvider: ParentComponent = (props) => {
     ProjectMember[]
   >([]);
 
+  const patternManager = usePatternManage();
+  const patternTransform = useUpdatePatternPosAndWidth();
+  const tracksManager = useTracksManager();
+  const noteManager = useNoteManage();
+  const { updatePreset } = usePresetsContext();
+
+  const coopOperationsHandlers: CoopOperationsHandlers = {
+    addTrack: tracksManager.addTrackInStoreAndLoadDefaultPreset,
+    removeTrack: tracksManager.removeTrackFromStore,
+    addPattern: patternManager.addPatternOnTrack,
+    removePattern: patternManager.removePattern,
+    transformPattern: patternTransform.updatePatternPosAndWidth,
+    addNote: noteManager.addNote,
+    removeNote: noteManager.removeNote,
+    transformNote: noteManager.updateTransformedNote,
+    updatePreset: updatePreset,
+    updateTrackVolume: tracksManager.handleTrackVolumeChange,
+  };
+
+  const websocketConnection = setupCoopConnectionsAndHandleEvents(
+    setCoopSessionMembers,
+    coopOperationsHandlers,
+  );
+
   onMount(() => {
-    const { project } = useProjectContext();
-    const projectId = project()?.projectId;
-
-    const websocketConnection = new WebSocket(
-      `ws://localhost:8000/ws/sessions/${projectId}?access_token=${accessToken()}`,
-    );
-
-    websocketConnection.onopen = () => {
-      toast.success("Сессия совместной работы активна");
+    const handlePopState = (e: PopStateEvent) => {
+      websocketConnection.close();
     };
-    websocketConnection.onmessage = (income_event: MessageEvent) => {
-      const data: MemberConnectionInfo | ProjectChanges = JSON.parse(
-        income_event.data,
-      );
-      if (!data || typeof data !== "object") return;
-      if ("event" in data && "member" in data) {
-        switch (data.event) {
-          case ConnectionState.INIT:
-            setCoopSessionMembers(data.member);
-            break;
-          case ConnectionState.CONNECTED:
-            setCoopSessionMembers((prev) => [...prev, data.member]);
-            break;
-          case ConnectionState.DISCONNECTED:
-            setCoopSessionMembers((prev) =>
-              prev.filter((member) => member.id !== data.member.id),
-            );
-            break;
-        }
-      } else {
-      }
-    };
-    websocketConnection.onerror = (error: Event) => {
-      toast.error(
-        "Ошибка сессии совместной работы.\nИзменения не будут синхронизированы",
-      );
-      console.log("WebSocket error", error);
+    window.addEventListener("popstate", handlePopState);
+    return () => {
+      window.removeEventListener("popstate", handlePopState);
     };
   });
 
@@ -64,9 +58,10 @@ export const CoopSessionProvider: ParentComponent = (props) => {
       value={{
         coopSessionMembers,
         setCoopSessionMembers,
+        websocketConnection,
       }}
     >
-      <CoopCursor />
+      {/*<CoopCursor />*/}
       {props.children}
     </CoopSessionContext.Provider>
   );

@@ -1,156 +1,110 @@
-import { createSignal, createEffect, Accessor } from "solid-js";
+import { createSignal, createEffect, createMemo, Accessor } from "solid-js";
 import { useTracksContext } from "../context/useTracksContext";
 import { Note, PatternType, PatternVST } from "../../../types/daw.types";
-import { useProjectContext } from "../context/useProjectContext";
+import { useSendChangeEvent } from "../../../coop/handleCoopEvents";
+import { SyncOperation, Target } from "../../../types/coop.types";
+import useUpdatePatternPosAndWidth from "./updatePatternPosAndWidth";
 
-const usePatternTransform = (
-  pattern: Accessor<PatternType>,
-  trackId: string,
-) => {
+const truncateNotes = (notes: Note[], maxPos: number): Note[] => {
+  return notes.reduce((acc: Note[], note) => {
+    const startPos = note.pos - 1;
+    const endPos = startPos + note.duration;
+
+    if (startPos >= maxPos) return acc;
+
+    if (endPos > maxPos) {
+      acc.push({ ...note, duration: Math.max(0.1, maxPos - startPos) });
+    } else {
+      acc.push(note);
+    }
+    return acc;
+  }, []);
+};
+
+const usePatternTransform = (pattern: Accessor<PatternType>, trackId: string) => {
   const { tactWidth, tactElementsNumber, beatNumber } = useTracksContext();
-  const { setTracks } = useProjectContext();
-  const [isGrabbing, setIsGrabbing] = createSignal(false);
-  const [patternPos, setPatternPos] = createSignal(0);
-  const [patternPosInTacts, setPatternPosInTacts] = createSignal(pattern().pos);
+  const { sendChangeEvent } = useSendChangeEvent();
+  const { updatePatternPosAndWidth } = useUpdatePatternPosAndWidth();
 
-  const [patternWidthInTacts, setPatternWidthInTacts] = createSignal(
-    pattern().width,
-  );
+  const [isGrabbing, setIsGrabbing] = createSignal(false);
   const [isResizeLeft, setIsResizeLeft] = createSignal(false);
   const [isResizeRight, setIsResizeRight] = createSignal(false);
 
-  const updatePatternField = <K extends keyof PatternType>(
-    trackId: string,
-    patternId: string,
-    field: K,
-    value: PatternType[K],
-  ) => {
-    setTracks((prev) =>
-      prev.map((track) => {
-        if (track.trackId !== trackId) return track;
-
-        return {
-          ...track,
-          patterns:
-            track.patterns?.map((p) =>
-              p.patternId === patternId ? { ...p, [field]: value } : p,
-            ) ?? null,
-        };
-      }),
-    );
-  };
+  const [patternPosInTacts, setPatternPosInTacts] = createSignal(pattern().pos);
+  const [patternWidthInTacts, setPatternWidthInTacts] = createSignal(pattern().width);
 
   createEffect(() => {
-    setPatternPos(patternPosInTacts() * tactWidth());
+    const p = pattern();
+    setPatternPosInTacts(p.pos);
+    setPatternWidthInTacts(p.width);
   });
 
-  const patternWidth = () => patternWidthInTacts() * tactWidth();
+  const patternPos = createMemo(() => patternPosInTacts() * tactWidth());
+  const patternWidth = createMemo(() => patternWidthInTacts() * tactWidth());
 
-  const handleGlobalMouseMove = (e: MouseEvent) => {
+  const handlePatternGlobalMouseMove = (e: MouseEvent) => {
+    const deltaTacts = e.movementX / tactWidth();
+
     if (isGrabbing()) {
-      e.preventDefault();
-      e.stopPropagation();
-
       setPatternPosInTacts((prev) => {
-        const newPosInTacts = prev + e.movementX / tactWidth();
-        if (newPosInTacts < 0) return 0;
+        const next = Math.max(0, prev + deltaTacts);
         const maxPos = tactElementsNumber() - patternWidthInTacts();
-        if (newPosInTacts > maxPos) return maxPos;
-        return newPosInTacts;
+        return Math.min(next, maxPos);
       });
     }
 
     if (isResizeRight()) {
-      e.preventDefault();
-      e.stopPropagation();
-
       setPatternWidthInTacts((prev) => {
-        const deltaTacts = e.movementX / tactWidth();
-        const newWidth = prev + deltaTacts;
         const minWidth = 1 / beatNumber();
         const maxWidth = tactElementsNumber() - patternPosInTacts();
-        return Math.min(maxWidth, Math.max(minWidth, newWidth));
+        return Math.min(maxWidth, Math.max(minWidth, prev + deltaTacts));
       });
     }
 
     if (isResizeLeft()) {
-      e.preventDefault();
-      e.stopPropagation();
-
-      if (patternPosInTacts() - e.movementX / tactWidth() < 0) return;
+      const currentPos = patternPosInTacts();
+      if (currentPos + deltaTacts < 0) return;
 
       setPatternWidthInTacts((prev) => {
-        const deltaTacts = -e.movementX / tactWidth();
-        const newWidth = prev + deltaTacts;
         const minWidth = 1 / beatNumber();
-        return Math.max(minWidth, newWidth);
+        return Math.max(minWidth, prev - deltaTacts);
       });
-
-      setPatternPosInTacts((posPrev) => posPrev + e.movementX / tactWidth());
+      setPatternPosInTacts((prev) => prev + deltaTacts);
     }
   };
 
-  const handleGlobalMouseUp = () => {
-    const wasGrabbing = isGrabbing();
-    const wasResizing = isResizeLeft() || isResizeRight();
+  const handlePatternGlobalMouseUp = () => {
+    if (isGrabbing() || isResizeLeft() || isResizeRight()) {
+      const step = 1 / beatNumber() / 4;
+      const finalPos = Math.round(patternPosInTacts() / step) * step;
+      const finalWidth = Math.round(patternWidthInTacts() / step) * step;
 
-    if (wasGrabbing || wasResizing) {
-      const stepInTacts = 1 / beatNumber() / 4;
-      const finalPos =
-        Math.round(patternPosInTacts() / stepInTacts) * stepInTacts;
-      const finalWidth =
-        Math.round(patternWidthInTacts() / stepInTacts) * stepInTacts;
-
-      const maxPos = finalWidth * beatNumber();
       let updatedNotes: Note[] = [];
+      const currentPattern = pattern();
 
-      if ("notes" in pattern()) {
-        updatedNotes = (pattern() as PatternVST).notes;
+      if (currentPattern.type === "vst") {
+        const rawNotes = (currentPattern as PatternVST).notes || [];
+        const maxNotePos = finalWidth * beatNumber();
+        updatedNotes = currentPattern.width > finalWidth 
+          ? truncateNotes(rawNotes, maxNotePos) 
+          : rawNotes;
       }
 
-      if (pattern().type === "vst" && pattern().width > finalWidth) {
-        const newNotes: Note[] = [];
-
-        for (const note of (pattern() as PatternVST).notes) {
-          const startPos = note.pos - 1;
-          const endPos = startPos + note.duration;
-
-          if (endPos > maxPos) {
-            if (startPos >= maxPos) continue;
-
-            newNotes.push({
-              ...note,
-              duration: Math.max(0.1, maxPos - startPos),
-            });
-          } else {
-            newNotes.push(note);
-          }
-        }
-        updatedNotes = newNotes;
-      }
-
-      setTracks((prev) =>
-        prev.map((track) => {
-          if (track.trackId !== trackId) return track;
-          return {
-            ...track,
-            patterns:
-              track.patterns?.map((p) =>
-                p.patternId === pattern().patternId
-                  ? {
-                      ...p,
-                      pos: finalPos,
-                      width: finalWidth,
-                      notes: updatedNotes,
-                    }
-                  : p,
-              ) ?? null,
-          };
-        }),
+      updatePatternPosAndWidth(
+        currentPattern.patternId,
+        trackId,
+        finalPos,
+        finalWidth,
+        updatedNotes
       );
 
-      setPatternPosInTacts(finalPos);
-      setPatternWidthInTacts(finalWidth);
+      sendChangeEvent(SyncOperation.TRANSFORM, Target.PATTERN, {
+        patternId: currentPattern.patternId,
+        trackId,
+        pos: finalPos,
+        width: finalWidth,
+        notes: updatedNotes,
+      });
     }
 
     setIsGrabbing(false);
@@ -158,22 +112,10 @@ const usePatternTransform = (
     setIsResizeRight(false);
   };
 
-  const startResizeLeft = (e: MouseEvent) => {
+  const startAction = (setter: (v: boolean) => void) => (e: MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    setIsResizeLeft(true);
-  };
-
-  const startResizeRight = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsResizeRight(true);
-  };
-
-  const startGrab = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-    setIsGrabbing(true);
+    setter(true);
   };
 
   return {
@@ -183,12 +125,12 @@ const usePatternTransform = (
     patternWidthInTacts,
     isResizeLeft,
     isResizeRight,
-    handleGlobalMouseMove,
-    handleGlobalMouseUp,
-    startResizeLeft,
-    startResizeRight,
-    startGrab,
-    setPatternPos,
+    handlePatternGlobalMouseMove,
+    handlePatternGlobalMouseUp,
+    startResizeLeft: startAction(setIsResizeLeft),
+    startResizeRight: startAction(setIsResizeRight),
+    startGrab: startAction(setIsGrabbing),
+    updatePatternPosAndWidth
   };
 };
 

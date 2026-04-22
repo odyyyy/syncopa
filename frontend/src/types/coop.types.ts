@@ -1,3 +1,6 @@
+import { SetStoreFunction } from "solid-js/store";
+import { Note, Track } from "./daw.types";
+
 type CoopSession = {
   project_id: string;
   members: string[];
@@ -5,23 +8,25 @@ type CoopSession = {
 };
 
 type ProjectChanges = {
-  id: number;
   operation: SyncOperation;
-  subject: Subject;
+  target: Target;
   payload: Record<string, any>;
+  timestamp: number;
 };
 
 enum SyncOperation {
-  MOVE = "move",
+  TRANSFORM = "transform",
   CREATE = "create",
-  DELETE = "delete",
+  REMOVE = "remove",
   UPDATE = "update",
 }
 
-enum Subject {
+enum Target {
   TRACK = "track",
+  PATTERN = "pattern",
   NOTE = "note",
   PRESET = "preset",
+  TRACK_VOLUME = "track_volume",
 }
 
 enum ConnectionState {
@@ -29,11 +34,6 @@ enum ConnectionState {
   CONNECTED = "connected",
   DISCONNECTED = "disconnected",
 }
-
-type MemberConnectionInfo = {
-  event: ConnectionState;
-  member: ProjectMember;
-};
 
 type ProjectMember = {
   id: string;
@@ -43,20 +43,48 @@ type ProjectMember = {
 
 type CoopSessionContextType = {
   coopSessionMembers: ProjectMember[];
-  setCoopSessionMembers: (members: ProjectMember[]) => void;
+  setCoopSessionMembers: SetStoreFunction<ProjectMember[]>;
+  websocketConnection: WebSocket | null;
 };
 
+type ConnectionData =
+  | { event: ConnectionState.INIT; member: ProjectMember[] }
+  | { event: ConnectionState.CONNECTED; member: ProjectMember }
+  | { event: ConnectionState.DISCONNECTED; member: ProjectMember };
+
+type CoopOperationsHandlers = {
+  addTrack: (track: Track) => void;
+  removeTrack: (trackId: string) => void;
+  addPattern: (trackId: string, patternId: string) => void;
+  removePattern: (patternId: string, trackId: string) => void;
+  transformPattern: (
+    patternId: string,
+    trackId: string,
+    pos: number,
+    width: number,
+    notes: Note[],
+  ) => void;
+  addNote: (note: Note, trackId: string, patternId: string) => void;
+  removeNote: (trackId: string, patternId: string, noteId: string) => void;
+  transformNote: (
+    pos: number,
+    duration: number,
+    note: string,
+    trackId: string,
+    patternId: string,
+    noteId: string,
+  ) => void;
+  updatePreset: (presetId: number, trackId: string) => void;
+  updateTrackVolume: (volume: number, trackId: string) => void;
+};
 
 export type {
   CoopSession,
   ProjectChanges,
-  MemberConnectionInfo,
   ProjectMember,
   CoopSessionContextType,
+  ConnectionData,
+  CoopOperationsHandlers,
 };
 
-export {
-  SyncOperation,
-  Subject,
-  ConnectionState,
-};
+export { SyncOperation, Target, ConnectionState };

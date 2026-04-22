@@ -25,6 +25,7 @@ import { audioEngine } from "../../instruments/audioEngine";
 import { createPolySynth } from "../../instruments/createSynth";
 import * as Tone from "tone";
 import { getSamplesBasePath } from "../../config/config";
+import usePresetManage from "../../hooks/daw/preset/usePresetManage";
 
 export const PresetsContext = createContext<PresetsContextType>();
 
@@ -62,7 +63,7 @@ export const PresetsProvider: ParentComponent = (props) => {
     if (res.type === "success") {
       tracks.forEach((track) => {
         const preset = res.data[track.presetId];
-        
+
         if (!preset) return;
         setPresets(preset, track.trackId);
       });
@@ -70,8 +71,6 @@ export const PresetsProvider: ParentComponent = (props) => {
       toast.error("Ошибка загрузки пресетов.\nПерезагрузите страницу");
     }
   });
-
-  const { setTracks } = useProjectContext();
 
   const { getPresetConfigById } = useDawApi();
 
@@ -117,20 +116,16 @@ export const PresetsProvider: ParentComponent = (props) => {
     setIsPresetLoading(false);
   };
 
-  const setAndLoadSelectedPresetInModal = async (presetId: number) => {
-    if (!presetId) return;
-
-    const targetTrackId = presetModalState().trackId;
-    if (!targetTrackId) return;
-
-    await setAndLoadSelectedPreset(presetId, targetTrackId);
-
-    setTracks((t) => t.trackId === targetTrackId, "presetId", presetId);
-    setPresetModalState((s) => ({
-      ...s,
+  const { updatePreset: internalUpdate } = usePresetManage();
+  const updatePreset = async (presetId: number, trackId: string) => {
+    await internalUpdate(
       presetId,
-    }));
+      trackId,
+      setAndLoadSelectedPreset,
+      setPresetModalState,
+    );
   };
+
 
   return (
     <Switch>
@@ -144,9 +139,10 @@ export const PresetsProvider: ParentComponent = (props) => {
             presetModalState,
             setPresetModalState,
             setAndLoadSelectedPreset,
-            setAndLoadSelectedPresetInModal,
+            // setAndLoadSelectedPresetInModal,
             isPresetLoading,
             setIsPresetLoading,
+            updatePreset,
           }}
         >
           {props.children}

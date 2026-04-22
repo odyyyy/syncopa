@@ -7,6 +7,7 @@ from tortoise import transactions
 
 from shared.dependencies import RedisAsync
 from users.models import Role, Users
+from users.services import get_user_by_id
 
 from .config import auth
 from .exceptions import AuthException
@@ -34,7 +35,7 @@ async def create_user(user_data: RegisterPayload) -> Users:
     return created_user
 
 
-async def get_authenticated_user(user_data: LoginPayload) -> Users:
+async def get_logged_user(user_data: LoginPayload) -> Users:
     user = await Users.get_or_none(email=user_data.email)
     if user is None:
         raise ValueError("Неверный Email")

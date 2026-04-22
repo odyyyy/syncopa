@@ -1,18 +1,13 @@
 import { createEffect, createSignal } from "solid-js";
-import toast from "solid-toast";
 import { useProjectContext } from "./context/useProjectContext";
-import { Track } from "../../types/daw.types";
 import useUpperControlPanel from "./useUpperControlPanel";
 import { usePlayerContext } from "./context/usePlayerContext";
 import { useContextMenu } from "../../context/daw/contextmenu.context";
 import { useTracksContext } from "./context/useTracksContext";
 import usePatternManage from "./pattern/usePatternManage";
-import { PRESETS_CATEGORIES_ENUM } from "../../components/DAW/PianoRoll/PresetChooseModal";
-import { usePresetsContext } from "../../context/daw/presets.context";
-import { audioEngine } from "../../instruments/audioEngine";
-import { PolySynthInstance } from "../../types/presets.types";
-import * as Tone from "tone";
-import { volumeToDb } from "../../context/daw/player.context";
+import { useSendChangeEvent } from "../../coop/handleCoopEvents";
+import { SyncOperation, Target } from "../../types/coop.types";
+import useTracksManager from "./useTracksManager";
 
 const useMainDawTrackPanel = () => {
   const { tracks, setTracks } = useProjectContext();
@@ -27,53 +22,6 @@ const useMainDawTrackPanel = () => {
   createEffect(() => {
     updateTimer(playerBeatPos());
   });
-
-  const { setAndLoadSelectedPreset } = usePresetsContext();
-  const addNewTrack = (
-    title: string | undefined = undefined,
-    presetCategory: string,
-  ) => {
-    if (tracks.length > 50) {
-      toast.error("Максимальное количество дорожек достигнуто");
-      return;
-    }
-
-    if (!title) {
-      title = `Дорожка ${tracks.length + 1}`;
-    }
-
-    const trackId = crypto.randomUUID();
-    const presetId = getDefaultPresetIdByCategory(presetCategory);
-
-    setTracks((prev: Track[]) => [
-      ...prev,
-      {
-        trackId: trackId,
-        presetId: presetId,
-        title: title,
-        patterns: [],
-        volume: 50,
-      },
-    ]);
-    setAndLoadSelectedPreset(presetId, trackId);
-  };
-
-  const getDefaultPresetIdByCategory = (category: string): number => {
-    switch (category) {
-      case PRESETS_CATEGORIES_ENUM.LEAD:
-        return 6;
-      case PRESETS_CATEGORIES_ENUM.TUBE:
-        return 7;
-      case PRESETS_CATEGORIES_ENUM.GUITAR:
-        return 8;
-      case PRESETS_CATEGORIES_ENUM.DRUM:
-        return 9;
-      case PRESETS_CATEGORIES_ENUM.KEY:
-        return 10;
-      default:
-        return 6;
-    }
-  };
 
   const handleOnWheelAndCtrlChangeTactsWidth = (e: WheelEvent) => {
     if (e.ctrlKey) {
@@ -97,32 +45,10 @@ const useMainDawTrackPanel = () => {
     setPlayerBeatPos(beat);
   };
 
-  const onTrackVolumeChange = (
-    e: Event & {
-      currentTarget: HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement;
-    },
-    trackId: string,
-  ) => {
-    const trackIndex = tracks.findIndex((t) => t.trackId === trackId);
-    const volume = Number(e.currentTarget.value);
-
-    setTracks(trackIndex, (prev) => ({
-      ...prev,
-      volume,
-    }));
-    
-    const preset = audioEngine.getInstrument(trackId);
-    if (preset && (preset as PolySynthInstance).type === "polySynth") {
-      (preset as PolySynthInstance).setVolume(volume / 100);
-    }
-    if (preset instanceof Tone.Sampler) {
-      (preset as Tone.Sampler).volume.value = volumeToDb(volume);
-    }
-    
-  };
-
   const { openMenu } = useContextMenu();
   const { addPatternOnTrack } = usePatternManage();
+  const { removeTrackFromStore } = useTracksManager();
+  const { sendChangeEvent } = useSendChangeEvent();
 
   const handleContextMenu = (e: MouseEvent) => {
     e.preventDefault();
@@ -136,8 +62,15 @@ const useMainDawTrackPanel = () => {
           const trackId = (
             (e.target as HTMLElement).closest(".track") as HTMLElement
           )?.dataset.trackId;
+
           if (!trackId) return;
-          addPatternOnTrack(trackId);
+          const pattern = addPatternOnTrack(trackId);
+
+          if (!pattern) return;
+          sendChangeEvent(SyncOperation.CREATE, Target.PATTERN, {
+            trackId,
+            patternId: pattern.patternId,
+          });
         },
       },
       {
@@ -148,9 +81,15 @@ const useMainDawTrackPanel = () => {
             (e.target as HTMLElement).closest(".track") as HTMLElement
           )?.dataset.trackId;
           if (!trackId) return;
+
           const trackIndex = tracks.findIndex((t) => t.trackId === trackId);
           if (trackIndex === -1) return;
+
           setTracks((prev) => prev.filter((_, i) => i !== trackIndex));
+          sendChangeEvent(SyncOperation.REMOVE, Target.TRACK, {
+            trackId,
+          });
+          
         },
       },
     ]);
@@ -160,9 +99,7 @@ const useMainDawTrackPanel = () => {
     tracks,
     tactWidth,
     handleOnWheelAndCtrlChangeTactsWidth,
-    addNewTrack,
     setTracks,
-    onTrackVolumeChange,
     playerHeadPos,
     setPlayerHeadPos,
     isPlaying,

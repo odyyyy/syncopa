@@ -25,7 +25,7 @@ export function useProjectsApi() {
       protectedRequest,
     );
   
-  const deleteProject = (project_id: string):ApiResponse<ProjectItemProps> =>
+  const removeProject = (project_id: string):ApiResponse<ProjectItemProps> =>
     apiRequest(
       `${BACKEND_URL}/projects/${project_id}`,
       {
@@ -34,5 +34,5 @@ export function useProjectsApi() {
       protectedRequest,
     );
 
-  return { createProject, getProjectsList, deleteProject };
+  return { createProject, getProjectsList, removeProject };
 }

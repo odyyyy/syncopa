@@ -124,9 +124,9 @@ type PresetsContextType = {
   presetModalState: Accessor<PresetModalState>;
   setPresetModalState: Setter<PresetModalState>;
   setAndLoadSelectedPreset: (presetId: number, trackId: string) => void;
-  setAndLoadSelectedPresetInModal: (presetId: number) => void;
   isPresetLoading: Accessor<boolean>;
   setIsPresetLoading: Setter<boolean>;
+  updatePreset: (presetId: number, trackId: string) => void;
 };
 
 type Voice = {

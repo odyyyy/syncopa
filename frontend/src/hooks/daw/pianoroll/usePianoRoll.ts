@@ -1,4 +1,3 @@
-import * as Tone from "tone";
 import { useProjectContext } from "../context/useProjectContext";
 import { Note } from "../../../types/daw.types";
 import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
@@ -6,6 +5,10 @@ import { useTracksContext } from "../context/useTracksContext";
 import { audioEngine } from "../../../instruments/audioEngine";
 import { PolySynthInstance } from "../../../types/presets.types";
 import { createEffect, createSignal } from "solid-js";
+import useNoteManage from "./useNoteManage";
+import { useSendChangeEvent } from "../../../coop/handleCoopEvents";
+import { SyncOperation, Target } from "../../../types/coop.types";
+import { useContextMenu } from "../../../context/daw/contextmenu.context";
 
 const usePianoRoll = () => {
   const { tracks, setTracks } = useProjectContext();
@@ -52,7 +55,9 @@ const usePianoRoll = () => {
     return `${noteNames[noteIndex]}${octave}`;
   }).reverse();
 
-  const addNote = (e: MouseEvent, pianoPanelWidth: number) => {
+  const { addNote } = useNoteManage();
+  const { sendChangeEvent } = useSendChangeEvent();
+  const addNoteInPianoRoll = (e: MouseEvent, pianoPanelWidth: number) => {
     const note = (e.target as HTMLElement).parentElement?.dataset.note;
     if (!note) return;
 
@@ -79,24 +84,35 @@ const usePianoRoll = () => {
       velocity: 1,
     };
 
-    setTracks(
-      (track) => track.trackId === currentPatternAndTrackId.trackId,
-      "patterns",
-      (patterns) =>
-        patterns?.map((pattern) => {
-          if (
-            pattern.patternId === currentPatternAndTrackId.patternId &&
-            pattern.type === "vst"
-          ) {
-            return {
-              ...pattern,
-              notes: [...(pattern.notes || []), newNote],
-            };
-          }
-          return pattern;
-        }) ?? null,
+    addNote(
+      newNote,
+      currentPatternAndTrackId.trackId,
+      currentPatternAndTrackId.patternId,
     );
-    (synth() as PolySynthInstance)?.triggerAttackRelease(note, 1);
+    sendChangeEvent(SyncOperation.CREATE, Target.NOTE, {
+      trackId: currentPatternAndTrackId.trackId,
+      patternId: currentPatternAndTrackId.patternId,
+      note: newNote,
+    });
+
+    (synth() as PolySynthInstance)?.triggerAttackRelease(newNote.note, 1);
+  };
+
+  const { removeNote } = useNoteManage();
+  const removeNoteFromPianoRoll = (e: MouseEvent) => {
+    const noteId = (e.currentTarget as HTMLElement).dataset?.noteId;
+    if (!noteId) return;
+
+    removeNote(
+      currentPatternAndTrackId.trackId,
+      currentPatternAndTrackId.patternId,
+      noteId,
+    );
+    sendChangeEvent(SyncOperation.REMOVE, Target.NOTE, {
+      trackId: currentPatternAndTrackId.trackId,
+      patternId: currentPatternAndTrackId.patternId,
+      noteId,
+    });
   };
 
   const findPatternById = () => {
@@ -150,14 +166,30 @@ const usePianoRoll = () => {
     window.addEventListener("mouseup", up);
   };
 
+  const { openMenu } = useContextMenu();
+  const handleNoteContextMenu = (e: MouseEvent) => {
+    e.preventDefault();
+    e.stopPropagation();
+
+    openMenu(e.clientX, e.clientY, [
+      {
+        label: "Удалить ноту",
+        icon: "✕",
+        onClick: () => removeNoteFromPianoRoll(e),
+      },
+    ]);
+  };
+
   return {
-    addNote,
+    addNoteInPianoRoll,
     PIANOROLL_NOTES,
     ROWS_NUMBER,
     onPianoKeyPress,
     findPatternById,
     noteNames,
     resizePianoRollPanel,
+    removeNoteFromPianoRoll,
+    handleNoteContextMenu,
   };
 };
 

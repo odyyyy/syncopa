@@ -1,7 +1,7 @@
 import { Component, createMemo, For, Index, Show } from "solid-js";
 import { useTracksContext } from "../../../hooks/daw/context/useTracksContext";
 import usePianoRoll from "../../../hooks/daw/pianoroll/usePianoRoll";
-import useMainDawTrackPanel from "../../../hooks/daw/useTracksManagerPanel";
+import useMainDawTrackPanel from "../../../hooks/daw/useMainDawTrackPanel";
 import { PatternVST } from "../../../types/daw.types";
 import Note from "../Pattern/Note";
 import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
@@ -11,7 +11,7 @@ const OCTAVES_NUMBER = 7;
 const PianoRoll: Component<{ onClose?: () => void }> = (props) => {
   const { handleOnWheelAndCtrlChangeTactsWidth } = useMainDawTrackPanel();
   const {
-    addNote,
+    addNoteInPianoRoll,
     PIANOROLL_NOTES,
     onPianoKeyPress,
     findPatternById,
@@ -142,7 +142,7 @@ const PianoRoll: Component<{ onClose?: () => void }> = (props) => {
 
         <div
           class="grid flex-1 min-w-0"
-          onDblClick={(e) => addNote(e, pianoRef?.clientWidth!)}
+          onDblClick={(e) => addNoteInPianoRoll(e, pianoRef?.clientWidth!)}
         >
           <div class="flex flex-col">
             <Index each={Array.from({ length: ROWS_NUMBER })}>

@@ -25,12 +25,12 @@ const UpperControlPanel: Component = () => {
   const { muteOrUnmuteMasterVolume, setExitModalOpen, exitModalOpen } =
     useUpperControlPanel();
   const { exportOpen, setExportOpen } = useExportProject();
-  const { coopSessionMembers } = useCoopSession();
+  const { coopSessionMembers, websocketConnection } = useCoopSession();
 
   const navigate = useNavigate();
 
   return (
-    <nav class="navbar bg-header p-2.5 shadow-sm relative z-40 shrink-0 ">
+    <nav class="navbar bg-base-200/50 p-2.5 shadow-sm relative z-40 shrink-0 ">
       <div class="navbar-start gap-1">
         <div class="dropdown dropdown-hover">
           <div tabindex="0" role="button" class="btn-main m-1 p-2">
@@ -132,6 +132,7 @@ const UpperControlPanel: Component = () => {
           onClose={() => setExitModalOpen(false)}
           onConfirm={() => {
             setExitModalOpen(false);
+            websocketConnection?.close();
             navigate("../");
           }}
         />

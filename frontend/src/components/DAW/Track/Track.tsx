@@ -10,13 +10,8 @@ type TrackProps = {
 };
 
 export const Track: Component<TrackProps> = (props) => {
-  const handleClick = () => {
-    props.onClick?.();
-  };
-
-  
   return (
-    <div data-track-id={`${props.trackId}`} class="track" onClick={handleClick}>
+    <div data-track-id={`${props.trackId}`} class="track" onClick={() => props.onClick?.()}>
       <Index each={Array.from({ length: props.tactElementsNumber })}>
         {(_, index) => (
           <div class="tact">

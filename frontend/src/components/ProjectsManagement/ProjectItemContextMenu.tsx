@@ -7,7 +7,7 @@ import {
   Show,
 } from "solid-js";
 
-import DeleteModal from "../utils/ConfirmActionModal";
+import RemoveProjectModal from "../utils/ConfirmActionModal";
 import { useProjectsApi } from "../../api/projects-management.api";
 import toast from "solid-toast";
 
@@ -21,7 +21,8 @@ const ProjectItemContextMenu: Component<ContextMenuProps> = (
   props: ContextMenuProps,
 ) => {
   const [openContextMenu, setOpenContextMenu] = createSignal(false);
-  const [deleteOpen, setDeleteOpen] = createSignal(false);
+  const [removeProjectModalOpen, setRemoveProjectModalOpen] =
+    createSignal(false);
 
   let triggerRef: HTMLDivElement | undefined;
 
@@ -50,9 +51,9 @@ const ProjectItemContextMenu: Component<ContextMenuProps> = (
     document.removeEventListener("click", handleClickOutside);
     document.removeEventListener("keydown", handleEsc);
   });
-  const { deleteProject } = useProjectsApi();
-  const handleDeleteProject = async (project_id: string) => {
-    const res = await deleteProject(project_id);
+  const { removeProject } = useProjectsApi();
+  const handleRemoveProject = async (project_id: string) => {
+    const res = await removeProject(project_id);
     if (res.type === "success") {
       toast.success(`Проект ${res.data.title} успешно удален`);
       props.onRemove?.(props.project_id);
@@ -116,7 +117,10 @@ const ProjectItemContextMenu: Component<ContextMenuProps> = (
             </a>
           </li>
 
-          <li class="rounded-4xl" onclick={() => setDeleteOpen(true)}>
+          <li
+            class="rounded-4xl"
+            onclick={() => setRemoveProjectModalOpen(true)}
+          >
             <p class="text-red-700">
               <svg
                 class="h-5 w-5"
@@ -137,13 +141,13 @@ const ProjectItemContextMenu: Component<ContextMenuProps> = (
           </li>
         </ul>
       </Show>
-      <DeleteModal
+      <RemoveProjectModal
         title="Удалить проект?"
-        open={deleteOpen()}
-        onClose={() => setDeleteOpen(false)}
+        open={removeProjectModalOpen()}
+        onClose={() => setRemoveProjectModalOpen(false)}
         onConfirm={() => {
-          setDeleteOpen(false);
-          handleDeleteProject(props.project_id);
+          setRemoveProjectModalOpen(false);
+          handleRemoveProject(props.project_id);
           setOpenContextMenu(false);
         }}
       />

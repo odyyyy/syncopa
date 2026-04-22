@@ -4,8 +4,18 @@ from pydantic import UUID4
 from starlette.websockets import WebSocketDisconnect
 
 from auth.config import auth
-from coop_sessions.schemas import ConnectionState, MemberConnectionInfo
-from coop_sessions.services import create_or_update_session, get_current_session_member, get_session_members
+from coop_sessions.schemas import (
+    ConnectionState,
+    MemberConnectionInfo,
+    ProjectChanges,
+    SyncOperation,
+    Target,
+)
+from coop_sessions.services import (
+    create_or_update_session,
+    get_current_session_member,
+    get_session_members,
+)
 from coop_sessions.websocket import session_connection_manager
 from projects_management.permissions import require_project_member_or_owner_permission
 from shared.dependencies import RedisCoopDep
@@ -53,8 +63,18 @@ async def coop_session_manager(
     )
     try:
         while True:
-            income_data = await websocket.receive_json()
-            await session_connection_manager.broadcast(user_id, session_id, income_data)
+            income_data: dict = await websocket.receive_json()
+            print(income_data)
+            await session_connection_manager.broadcast(
+                user_id,
+                session_id,
+                ProjectChanges(
+                    operation=SyncOperation(income_data["operation"]),
+                    target=Target(income_data["target"]),
+                    payload=income_data["payload"],
+                    timestamp=income_data["timestamp"],
+                ),
+            )
 
     except WebSocketDisconnect:
         await session_connection_manager.disconnect(session_id, user_id)

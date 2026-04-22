@@ -5,6 +5,7 @@ import { Accessor } from "solid-js";
 import usePatternManage from "../../../hooks/daw/pattern/usePatternManage";
 import usePianoRoll from "../../../hooks/daw/pianoroll/usePianoRoll";
 import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
+import usePatternContextMenu from "../../../hooks/daw/pattern/usePatternContextMenu";
 
 const Pattern: Component<{
   pattern: Accessor<PatternType>;
@@ -14,15 +15,16 @@ const Pattern: Component<{
     isGrabbing,
     patternPos,
     patternWidth,
-    handleGlobalMouseMove,
-    handleGlobalMouseUp,
+    handlePatternGlobalMouseMove,
+    handlePatternGlobalMouseUp,
     startResizeLeft,
     startResizeRight,
     startGrab,
     patternWidthInTacts,
   } = usePatternTransform(props.pattern, props.trackId);
-  const { handlePatternContextMenu, editPattern } =
-    usePatternManage(patternWidthInTacts);
+  const { editPattern } = usePatternManage(patternWidthInTacts);
+
+  const { handlePatternContextMenu } = usePatternContextMenu();
   const { ROWS_NUMBER, PIANOROLL_NOTES } = usePianoRoll();
   const { setCurrentPatternWidthInTacts, currentPatternAndTrackId } =
     usePianoRollContext();
@@ -39,12 +41,12 @@ const Pattern: Component<{
   );
 
   if (typeof window !== "undefined") {
-    window.addEventListener("mousemove", handleGlobalMouseMove);
-    window.addEventListener("mouseup", handleGlobalMouseUp);
+    window.addEventListener("mousemove", handlePatternGlobalMouseMove);
+    window.addEventListener("mouseup", handlePatternGlobalMouseUp);
 
     onCleanup(() => {
-      window.removeEventListener("mousemove", handleGlobalMouseMove);
-      window.removeEventListener("mouseup", handleGlobalMouseUp);
+      window.removeEventListener("mousemove", handlePatternGlobalMouseMove);
+      window.removeEventListener("mouseup", handlePatternGlobalMouseUp);
     });
   }
 

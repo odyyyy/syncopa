@@ -1,5 +1,5 @@
 import { Component } from "solid-js";
-import useMainDawTrackPanel from "../../../hooks/daw/useTracksManagerPanel";
+import useMainDawTrackPanel from "../../../hooks/daw/useMainDawTrackPanel";
 
 const PlayerHead: Component = () => {
   const { finalPlayerHeadPos } = useMainDawTrackPanel();

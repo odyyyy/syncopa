@@ -6,7 +6,7 @@ from auth.schemas import LoginPayload, RegisterPayload
 from auth.services import (
     add_token_in_blacklist,
     create_user,
-    get_authenticated_user,
+    get_logged_user,
     get_new_access_token,
 )
 from shared.dependencies import RedisAuthDep
@@ -25,7 +25,7 @@ async def register(user_data: RegisterPayload):
 
 @auth_router.post("/login")
 async def login(user_data: LoginPayload, response: Response):
-    user = await get_authenticated_user(user_data)
+    user = await get_logged_user(user_data)
 
     refresh_token = auth.create_refresh_token(uid=str(user.id))
     access_token = auth.create_access_token(uid=str(user.id))

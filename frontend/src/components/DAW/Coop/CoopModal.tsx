@@ -119,45 +119,6 @@ const CoopModal: Component<CoopModalProps> = (props) => {
           </div>
 
           <div class="flex-1 bg-base-300 flex flex-col relative w-135">
-            <Show
-              when={isSessionRunning()}
-              fallback={
-                <div class="flex flex-col items-center justify-center h-full p-15 text-center bg-base-200">
-                  <div class="w-24 h-24 rounded-full bg-base-300 flex items-center justify-center mb-6 text-base-content/20">
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      class="w-12 h-12"
-                      fill="none"
-                      viewBox="0 0 24 24"
-                      stroke="currentColor"
-                    >
-                      <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="1.5"
-                        d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
-                      />
-                    </svg>
-                  </div>
-
-                  <h3 class="text-2xl font-bold text-base-content">
-                    Сессия неактивна
-                  </h3>
-
-                  <p class="text-base-content/50 mt-2 mb-8 max-w-sm">
-                    Запустите сессию, чтобы другие участники проекта могли
-                    подключиться к работе в реальном времени.
-                  </p>
-
-                  <button
-                    onClick={() => setIsSessionRunning(true)}
-                    class="btn btn-primary btn-wide btn-lg shadow-xs shadow-primary/20"
-                  >
-                    Начать сессию
-                  </button>
-                </div>
-              }
-            >
               <div class="p-6 border-b border-base-200 flex justify-between items-center bg-base-200/80">
                 <div class="flex items-center gap-3">
                   <span class="relative flex h-3 w-3">
@@ -240,14 +201,7 @@ const CoopModal: Component<CoopModalProps> = (props) => {
               </div>
 
               <div class="p-6 bg-base-200 border-t border-base-200 flex justify-center">
-                <button
-                  onClick={() => setIsSessionRunning(false)}
-                  class="btn btn-ghost p-2 transition-all duration-200 text-sm text-error hover:bg-error/10"
-                >
-                  Завершить сессию
-                </button>
               </div>
-            </Show>
           </div>
         </div>
       </div>

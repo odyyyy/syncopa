@@ -35,25 +35,23 @@ const SyncopaApp: Component = () => {
 
   return (
     <div class="flex flex-col h-screen">
-        <ProjectProvider>
-          <CoopSessionProvider>
-          
-          <TracksProvider>
-            <PlayerProvider>
-              <UpperControlPanel />
-  
-              <ContextMenuProvider>
-                <PianoRollProvider>
-                  <PresetsProvider>
+      <ProjectProvider>
+        <TracksProvider>
+          <PlayerProvider>
+            <ContextMenuProvider>
+              <PianoRollProvider>
+                <PresetsProvider>
+                  <CoopSessionProvider>
+                    <UpperControlPanel />
                     <MainDawTrackPanel />
                     <LowerControlPanel />
-                  </PresetsProvider>
-                </PianoRollProvider>
-              </ContextMenuProvider>
-            </PlayerProvider>
-          </TracksProvider>
-          </CoopSessionProvider>
-        </ProjectProvider>
+                  </CoopSessionProvider>
+                </PresetsProvider>
+              </PianoRollProvider>
+            </ContextMenuProvider>
+          </PlayerProvider>
+        </TracksProvider>
+      </ProjectProvider>
     </div>
   );
 };

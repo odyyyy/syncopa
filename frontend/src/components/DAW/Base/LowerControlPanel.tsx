@@ -3,7 +3,7 @@ import CoopModal from "../Coop/CoopModal";
 import EffectsModal from "../Effects/EffectsChooseModal";
 import VCSModal from "../VCS/VCSModal";
 import PresetChooseModal from "../PianoRoll/PresetChooseModal";
-import { usePresetsContext } from "../../../context/daw/presets.context";
+import useSwitchPreset from "../../../hooks/daw/preset/useSwitchPreset";
 
 const LowerControlPanel: Component = () => {
   let coopDialogRef!: HTMLDialogElement;
@@ -11,7 +11,7 @@ const LowerControlPanel: Component = () => {
   let vcsDialogRef!: HTMLDialogElement;
   let choosePresetRef!: HTMLDialogElement;
   
-  const { setAndLoadSelectedPresetInModal } = usePresetsContext();
+  const { selectPresetFromModal } = useSwitchPreset();
 
   return (
     <div>
@@ -129,7 +129,7 @@ const LowerControlPanel: Component = () => {
       <PresetChooseModal
         dialogRef={(el) => (choosePresetRef = el)}
         onSelect={(presetId) => {
-          setAndLoadSelectedPresetInModal(presetId)
+          selectPresetFromModal(presetId)
         }}
       />
       

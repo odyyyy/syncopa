@@ -1,12 +1,8 @@
-import { useContextMenu } from "../../../context/daw/contextmenu.context";
-import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
-import {  PatternType, PatternVST } from "../../../types/daw.types";
 import { useProjectContext } from "../context/useProjectContext";
-
+import { Note, PatternType, PatternVST } from "../../../types/daw.types";
 const useNoteManage = () => {
-  const { currentPatternAndTrackId } = usePianoRollContext();
   const { tracks, setTracks } = useProjectContext();
-  
+
   const findIndexes = (trackId: string, patternId: string, noteId: string) => {
     const tIndex = tracks.findIndex((t) => t.trackId === trackId);
     if (tIndex === -1) return null;
@@ -24,19 +20,29 @@ const useNoteManage = () => {
     return { tIndex, pIndex, nIndex };
   };
 
+  const addNote = (note: Note, trackId: string, patternId: string) => {
+    setTracks(
+      (track) => track.trackId === trackId,
+      "patterns",
+      (patterns) =>
+        patterns?.map((pattern) => {
+          if (pattern.patternId === patternId && pattern.type === "vst") {
+            return {
+              ...pattern,
+              notes: [...(pattern.notes || []), note],
+            };
+          }
+          return pattern;
+        }) ?? null,
+    );
+  };
 
-  
-  const removeNote = (e: MouseEvent) => {
-    const noteId = (e.currentTarget as HTMLElement).dataset?.noteId
-    if (!noteId) return;
-    
-    const indexes = findIndexes(currentPatternAndTrackId.trackId, currentPatternAndTrackId.patternId, noteId);
+  const removeNote = (trackId: string, patternId: string, noteId: string) => {
+    const indexes = findIndexes(trackId, patternId, noteId);
     if (!indexes) return;
-    
-    
-    
+
     const { tIndex, pIndex } = indexes;
-    
+
     const isPatternVST = (pattern: PatternType): pattern is PatternVST => {
       return pattern.type === "vst";
     };
@@ -46,31 +52,36 @@ const useNoteManage = () => {
       }
       return {
         ...prevPattern,
-        notes: prevPattern.notes?.filter((note) => note.noteId != noteId)
+        notes: prevPattern.notes?.filter((note) => note.noteId != noteId),
       };
     });
-    
-  }
-  
-  
-  
-  const { openMenu } = useContextMenu();
-  const handleNoteContextMenu = (e: MouseEvent) => {
-    e.preventDefault();
-    e.stopPropagation();
-
-    openMenu(e.clientX, e.clientY, [
-      {
-        label: "Удалить ноту",
-        icon: "✕",
-        onClick: () => removeNote(e),
-      },
-      
-    ]);
   };
-  
+
+  const updateTransformedNote = (
+    pos: number,
+    duration: number,
+    note: string,
+    trackId: string,
+    patternId: string,
+    noteId: string,
+  ) => {
+    const indexes = findIndexes(trackId, patternId, noteId);
+    if (!indexes) return;
+
+    const { tIndex, pIndex } = indexes;
+    
+    setTracks(tIndex, "patterns", pIndex, "notes" as any, (prev: Note[]) =>
+      prev.map((n) =>
+        n.noteId === noteId ? { ...n, pos, duration, note } : n,
+      ),
+    );
+  };
+
   return {
-    handleNoteContextMenu,findIndexes,removeNote
-  }
-}
+    findIndexes,
+    removeNote,
+    addNote,
+    updateTransformedNote,
+  };
+};
 export default useNoteManage;
