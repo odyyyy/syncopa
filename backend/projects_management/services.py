@@ -5,7 +5,6 @@ from tortoise import transactions
 from tortoise.exceptions import DoesNotExist
 from tortoise.expressions import Q
 
-from core.settings import get_settings
 from users.models import Users
 from users.services import get_user_avatar_image, get_user_by_id
 

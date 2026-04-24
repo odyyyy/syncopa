@@ -14,6 +14,7 @@ from core.settings import get_settings
 from projects_management.models.invitations import Invitations, InvitationStatus
 from projects_management.schemas import ProjectMember
 from shared.dependencies import AccessTokenRequiredPayload
+from shared.services import save_file
 from users.models import Users
 from users.schemas import UserUpdateIn
 
@@ -122,20 +123,26 @@ async def get_avatar_path(avatar: UploadFile, user_id: str) -> str:
     avatar_extension = get_image_extension_by_memetype(avatar)
     user_avatar_dir = f"{user_id}/avatars/"
 
-    user_avatar_path = user_avatar_dir / Path(
-        f"{str(uuid.uuid4()) + '_' + timezone.now().strftime('%Y-%m-%d-%H-%M-%S')}{avatar_extension}"
+    user_avatar_file_path = (
+        get_settings().BASE_AVATARS_DIR.resolve()
+        / user_avatar_dir
+        / Path(
+            f"{str(uuid.uuid4()) + '_' + timezone.now().strftime('%Y-%m-%d-%H-%M-%S')}{avatar_extension}"
+        )
     )
 
-    (get_settings().BASE_AVATARS_DIR.resolve() / user_avatar_dir).mkdir(
-        exist_ok=True, parents=True
-    )
+    await save_file(avatar, user_avatar_file_path)
 
-    async with aiofiles.open(
-        get_settings().BASE_AVATARS_DIR / user_avatar_path,
-        "wb",
-    ) as f:
-        await f.write(await avatar.read())
-    return str(user_avatar_path)
+    return str(user_avatar_file_path)
+
+
+supported_images_extensions = {
+    "image/jpeg": ".jpg",
+    "image/jpg": ".jpg",
+    "image/png": ".png",
+    "image/gif": ".gif",
+    "image/webp": ".webp",
+}
 
 
 def get_image_extension_by_memetype(avatar: UploadFile) -> str:
@@ -143,24 +150,17 @@ def get_image_extension_by_memetype(avatar: UploadFile) -> str:
         return Path(avatar.filename).suffix
 
     elif avatar.content_type is not None:
-        extension_map = {
-            "image/jpeg": ".jpg",
-            "image/jpg": ".jpg",
-            "image/png": ".png",
-            "image/gif": ".gif",
-            "image/webp": ".webp",
-        }
-        return extension_map.get(avatar.content_type, "")
+        return supported_images_extensions.get(avatar.content_type, "")
 
     else:
         raise ValueError("Не удалось определить расширение изображения")
 
 
-async def get_user_avatar_image(user_avatar: str) -> str | None:
-    if not user_avatar:
+async def get_user_avatar_image(user_avatar_url: str) -> str | None:
+    if not user_avatar_url:
         return None
 
-    user_avatar_abs_path = get_settings().BASE_AVATARS_DIR / user_avatar
+    user_avatar_abs_path = get_settings().BASE_AVATARS_DIR / user_avatar_url
 
     async with aiofiles.open(user_avatar_abs_path, "rb") as f:
         avatar_data = await f.read()

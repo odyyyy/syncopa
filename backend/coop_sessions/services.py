@@ -1,7 +1,5 @@
 from uuid import UUID
 
-from pydantic import UUID4
-
 from coop_sessions.schemas import CoopSession
 from projects_management.schemas import ProjectMember
 from projects_management.services import gather_users_avatars

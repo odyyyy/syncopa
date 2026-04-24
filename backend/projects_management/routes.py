@@ -40,13 +40,6 @@ async def create_project(
     }
 
 
-@project_router.put("/{project_id}")
-async def update_project_main_info(
-    project: Projects = Depends(require_project_owner_permission),
-):
-    return {"message": f"Project updated for project ID {project.id}"}
-
-
 @project_router.delete("/{project_id}")
 async def remove_project(
     project: Projects = Depends(require_project_owner_permission),
