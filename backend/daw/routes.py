@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, Query
+from fastapi import APIRouter, Depends, File, Query, UploadFile
 from tortoise.exceptions import DoesNotExist
 
 from auth.config import auth
@@ -6,7 +6,13 @@ from daw.models import Presets, ProjectsPayloads
 from daw.models.presets import PresetsConfigs
 from daw.schemas import ProjectPayload, ProjectWithPayload
 from daw.schemas.preset import PresetConfig
-from daw.services import get_used_presets_with_config, update_project_payload
+from daw.schemas.project_payload import PatternAudioOut
+from daw.services import (
+    get_audio_file,
+    get_used_presets_with_config,
+    save_audio_pattern,
+    update_project_payload,
+)
 from projects_management.models.projects import Projects
 from projects_management.permissions import require_project_member_or_owner_permission
 from projects_management.services import serialize_project_users
@@ -32,9 +38,7 @@ async def get_daw_project_with_payload(
         owner_id=project.owner.id,
         title=project.title,
         payload=project_with_payload.project_payload,
-        invited_members=await serialize_project_users(
-            project, user_payload.sub
-        ),
+        invited_members=await serialize_project_users(project, user_payload.sub),
     )
 
 
@@ -51,10 +55,33 @@ async def update_daw_project_payload(
     return project_payload
 
 
+@daw_router.post("/payload/{project_id}/audio")
+async def upload_audio_pattern(
+    audio: UploadFile | None = File(None),
+    project_with_payload: ProjectsPayloads = Depends(
+        require_project_member_or_owner_permission
+    ),
+):
+    saved_audio_pattern_id = await save_audio_pattern(
+        audio, str(project_with_payload.project.id)
+    )
+    return PatternAudioOut(pattern_id=saved_audio_pattern_id)
+
+
+@daw_router.get("/payload/{project_id}/audio/{audio_id}")
+async def get_audio_pattern(
+    audio_id: str,
+    project_with_payload: ProjectsPayloads = Depends(
+        require_project_member_or_owner_permission
+    ),
+):
+    return get_audio_file(str(project_with_payload.project.id), audio_id)
+
+
 @daw_router.get("/presets")
-async def get_presets(presets: list[int] | None = Query(None)):
-    if presets:
-        return await get_used_presets_with_config(presets)
+async def get_presets(presets_ids: list[int] = Query(None, alias="ids")):
+    if presets_ids:
+        return await get_used_presets_with_config(presets_ids)
     else:
         return await Presets.all()
 

@@ -53,14 +53,17 @@ class Note(BaseSchema):
 
 
 class PatternAudio(Pattern):
-    source: str
     audio_metadata: "AudioClipMetadata"
 
 
 class AudioClipMetadata(BaseSchema):
-    id: str
-    title: str
     duration: float
+    sample_rate: int
+    channels_number: int = Field(default=1, ge=1, le=2)
+
+
+class PatternAudioOut(BaseSchema):
+    pattern_id: str
 
 
 """
@@ -99,10 +102,12 @@ class AudioClipMetadata(BaseSchema):
                                 "pattern_id": "b88514cb-2bb3-4dcb-a5af-1499b79f7d8a",
                                 "pos": 0,
                                 "type": "audio",
+                                "title": "Title",
                                 "source": "http://s3.syncopa.daw/....",
                                 "audio_metadata": {
-                                    "title": "audio clip",
-                                    "duration": 30.5
+                                    "duration": 30.5,
+                                    "sample_rate": 44100,
+                                    "channels_number": 2
                                 },
                                 "ref": null
                             }

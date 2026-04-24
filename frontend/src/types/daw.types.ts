@@ -42,7 +42,6 @@ type PatternVST = BasePattern & {
 
 type PatternAudio = BasePattern & {
   type: "audio";
-  source: string;
   audioMetadata: AudioClipMetadata;
 };
 
@@ -57,8 +56,15 @@ type Note = {
 };
 
 type AudioClipMetadata = {
-  title: string;
   duration: number;
+  sampleRate: number;
+  channelsNumber: number;
+  
+};
+
+
+type PatternAudioLoaded = {
+  patternId: string;
 };
 
 // Context Types
@@ -78,9 +84,6 @@ type PlayerContextType = {
   setPlayerBeatPos: (beatPos: number) => void;
   isPlaying: Accessor<boolean>;
   setIsPlaying: (isPlaying: boolean) => void;
-  startOrPausePlaying: () => void;
-  tactElementsNumber: Accessor<number>;
-  setTactElementsNumber: (tactElementsNumber: number) => void;
   totalVolume: Accessor<number>;
   setTotalVolume: (totalVolume: number) => void;
 };
@@ -102,7 +105,7 @@ type ContextMenuProviderType = {
   closeMenu: () => void;
 };
 
-type TracksContextType = {
+type TimelineContextType = {
   tactElementsNumber: Accessor<number>;
   setTactElementsNumber: (value: number | ((prev: number) => number)) => void;
   tactWidth: Accessor<number>;
@@ -127,7 +130,6 @@ type PianoRollContextType = {
   closePianoRoll: () => boolean;
   pianoRollHeight: Accessor<number>;
   setPianoRollHeight: Setter<number>;
-  
 };
 
 export type {
@@ -139,14 +141,15 @@ export type {
   PatternVST,
   PatternAudio,
   PatternType,
+  PatternAudioLoaded,
   Note,
   AudioClipMetadata,
   ProjectContextType,
   PlayerContextType,
   ContextMenuItems,
   ContextMenuProviderType,
-  TracksContextType,
+  TimelineContextType,
   ContextMenuItem,
   PianoRollContextType,
-  PatternAndTrack,
+  PatternAndTrack
 };

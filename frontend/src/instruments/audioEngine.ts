@@ -4,7 +4,10 @@ import { PolySynthInstance } from "../types/presets.types";
 
 type Instrument = Tone.ToneAudioNode | PolySynthInstance;
 
-const [instruments, setInstruments] = createStore<Record<string, Instrument | undefined>>({});
+const [instruments, setInstruments] = createStore<
+  Record<string, Instrument | undefined>
+>({});
+const audioPlayers = new Map<string, Tone.Player>();
 
 export const audioEngine = {
   setInstrument(trackId: string, instrument: Instrument) {
@@ -31,11 +34,28 @@ export const audioEngine = {
     }
     setInstruments(trackId, undefined!);
   },
-  
+
   isLoaded(trackId: string) {
     const inst = instruments[trackId];
     if (!inst) return false;
     return !(inst instanceof Tone.Sampler) || (inst as Tone.Sampler).loaded;
   },
-  
+
+  async addAudioPlayer(patternId: string, audio: string | AudioBuffer) {
+    const player = new Tone.Player({
+      url: audio,
+    }).toDestination();
+
+    await Tone.loaded();
+
+    audioPlayers.set(patternId, player);
+  },
+
+  getAudioPlayer(trackId: string) {
+    return audioPlayers.get(trackId);
+  },
+
+  getAllAudioPlayers() {
+    return audioPlayers.values();
+  },
 };

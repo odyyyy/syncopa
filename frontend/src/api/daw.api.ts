@@ -1,6 +1,10 @@
 import { BACKEND_URL } from "../config/config";
 import { useAuthFetch } from "../hooks/auth/useAuthFetch";
-import { ProjectWithPayload, ProjectPayload } from "../types/daw.types";
+import {
+  ProjectWithPayload,
+  ProjectPayload,
+  PatternAudioLoaded,
+} from "../types/daw.types";
 import { Preset, PresetConfig } from "../types/presets.types";
 import { apiRequest } from "./base.api";
 
@@ -48,7 +52,7 @@ const useDawApi = () => {
   ): ApiResponse<PresetConfig[]> => {
     const params = new URLSearchParams();
     usedPresetsIds.forEach((presetId) =>
-      params.append("presets", presetId.toString()),
+      params.append("ids", presetId.toString()),
     );
 
     return apiRequest(
@@ -69,12 +73,54 @@ const useDawApi = () => {
       protectedRequest,
     );
 
+  const saveAudioPatternFile = (
+    projectId: string,
+    file: File,
+  ): ApiResponse<PatternAudioLoaded> => {
+    const formData = new FormData();
+    formData.append("audio", file);
+
+    return apiRequest(
+      `${BACKEND_URL}/daw/payload/${projectId}/audio`,
+      {
+        method: "POST",
+        body: formData,
+      },
+      protectedRequest,
+    );
+  };
+
+  const loadAudioPatternFile = async (
+    projectId: string,
+    audioPatternId: string,
+  ): Promise<{ type: "success"; data: Blob } | { type: "error"; status: number }> => {
+    const res = await protectedRequest(
+      `${BACKEND_URL}/daw/payload/${projectId}/audio/${audioPatternId}`,
+      {
+        method: "GET",
+      }
+    );
+  
+    if (!res.ok) {
+      return { type: "error", status: res.status };
+    }
+  
+    const blob = await res.blob();
+  
+    return {
+      type: "success",
+      data: blob,
+    };
+  };
+
   return {
     getProjectWithPayload,
     updateProjectPayload,
     getPresetsCatalog,
     getPresetConfigById,
     getUsedInProjectPresetsConfigs,
+    saveAudioPatternFile,
+    loadAudioPatternFile,
   };
 };
 

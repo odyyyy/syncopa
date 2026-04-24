@@ -14,6 +14,7 @@ class Settings(BaseSettings):
     DEBUG: bool = True
     BASE_DIR: Path = Path(__file__).parent.parent
     BASE_AVATARS_DIR: Path = BASE_DIR / "users/users_files/"
+    BASE_DAW_DIR: Path = BASE_DIR / "daw/daw_files/"
 
     # CORS Config
     CORS_ALLOW_ORIGINS: list[str] = [
