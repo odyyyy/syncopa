@@ -160,13 +160,13 @@ const PianoRoll: Component<{ onClose?: () => void }> = (props) => {
                 >
                   <Index each={Array.from({ length: fullBeats() })}>
                     {() => (
-                      <div class="border border-primary/5 border-dashed" />
+                      <div class="border border-primary/5 light:border-neutral/7 border-dashed" />
                     )}
                   </Index>
 
                   <Show when={remainderBeat() > 0}>
                     <div
-                      class="border border-primary/5 border-dashed"
+                      class="border border-primary/5 light:border-neutral/6 border-dashed"
                       style={{
                         flex: "0 0 auto",
                         width: `${((tactWidth() * 3) / beatNumber()) * remainderBeat()}px`,

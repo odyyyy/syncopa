@@ -4,7 +4,7 @@ import { TimelineContextType } from "../../types/daw.types";
 const TimelineContext = createContext<TimelineContextType>();
 
 export const TimelineProvider: ParentComponent = (props) => {
-  const [tactElementsNumber, setTactElementsNumber] = createSignal(225);
+  const [tactElementsNumber, setTactElementsNumber] = createSignal(30); // 225
   const [tactWidth, setTactWidth] = createSignal(180);
   const [beatNumber, setBeatNumber] = createSignal(4);
 

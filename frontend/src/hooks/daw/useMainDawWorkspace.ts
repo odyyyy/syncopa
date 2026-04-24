@@ -3,7 +3,7 @@ import { useProjectContext } from "@/context/daw/project.context";
 import useUpperControlPanel from "./useUpperControlPanel";
 import { usePlayerContext } from "@/context/daw/player.context";
 import { useContextMenu } from "../../context/daw/contextmenu.context";
-import usePatternManage from "./pattern/usePatternManage";
+import usePatternManager from "./pattern/usePatternManager";
 import { useSendChangeEvent } from "../../coop/handleCoopEvents";
 import { SyncOperation, Target } from "../../types/coop.types";
 import { useTimelineContext } from "@/context/daw/timeline.context";
@@ -45,7 +45,7 @@ const useMainDawWorkspace = () => {
   };
 
   const { openMenu } = useContextMenu();
-  const { addPatternOnTrack } = usePatternManage();
+  const { addPatternOnTrack } = usePatternManager();
   const { sendChangeEvent } = useSendChangeEvent();
 
   const handleContextMenu = (e: MouseEvent) => {

@@ -2,12 +2,12 @@ import { PatternType } from "@/types/daw.types";
 import { useContextMenu } from "../../../context/daw/contextmenu.context";
 import { useSendChangeEvent } from "../../../coop/handleCoopEvents";
 import { SyncOperation, Target } from "../../../types/coop.types";
-import usePatternManage from "./usePatternManage";
+import usePatternManager from "./usePatternManager";
 
 const usePatternContextMenu = () => {
   const { openMenu } = useContextMenu();
   const { sendChangeEvent } = useSendChangeEvent();
-  const { editPattern, removePattern } = usePatternManage();
+  const { editPattern, removePattern } = usePatternManager();
 
   const handlePatternContextMenu = (e: MouseEvent, pattern: PatternType) => {
     e.preventDefault();

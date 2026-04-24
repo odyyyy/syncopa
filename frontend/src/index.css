@@ -8,14 +8,14 @@
 }
 
 @plugin "daisyui/theme" {
-    name: "corporate";
+    name: "light";
     default: true;
     color-scheme: "light";
     --color-base-100: oklch(100% 0 0);
     --color-base-200: oklch(97.466% 0.011 259.822);
     --color-base-300: oklch(93.268% 0.016 262.751);
     --color-base-content: oklch(41.886% 0.053 255.824);
-    --color-primary: oklch(56.86% 0.255 257.57);
+    --color-primary: oklch(67% 0.182 276.935);
     --color-primary-content: oklch(91.372% 0.051 257.57);
     --color-secondary: oklch(42.551% 0.161 282.339);
     --color-secondary-content: oklch(88.51% 0.032 282.339);
@@ -34,6 +34,40 @@
     --radius-selector: 1rem;
     --radius-field: 0.5rem;
     --radius-box: 1rem;
+    --size-selector: 0.25rem;
+    --size-field: 0.25rem;
+    --border: 1px;
+    --depth: 0;
+    --noise: 0;
+}
+
+@plugin "daisyui/theme" {
+    name: "wireframe";
+    /*default: true;*/
+    color-scheme: "light";
+    --color-base-100: oklch(100% 0 0);
+    --color-base-200: oklch(97% 0 0);
+    --color-base-300: oklch(94% 0 0);
+    --color-base-content: oklch(20% 0 0);
+    --color-primary: oklch(87% 0 0);
+    --color-primary-content: oklch(26% 0 0);
+    --color-secondary: oklch(87% 0 0);
+    --color-secondary-content: oklch(26% 0 0);
+    --color-accent: oklch(87% 0 0);
+    --color-accent-content: oklch(26% 0 0);
+    --color-neutral: oklch(87% 0 0);
+    --color-neutral-content: oklch(26% 0 0);
+    --color-info: oklch(44% 0.11 240.79);
+    --color-info-content: oklch(90% 0.058 230.902);
+    --color-success: oklch(43% 0.095 166.913);
+    --color-success-content: oklch(90% 0.093 164.15);
+    --color-warning: oklch(47% 0.137 46.201);
+    --color-warning-content: oklch(92% 0.12 95.746);
+    --color-error: oklch(44% 0.177 26.899);
+    --color-error-content: oklch(88% 0.062 18.334);
+    --radius-selector: 0rem;
+    --radius-field: 0.25rem;
+    --radius-box: 0.25rem;
     --size-selector: 0.25rem;
     --size-field: 0.25rem;
     --border: 1px;
@@ -134,7 +168,7 @@
         @apply flex flex-col h-full w-30 max-w-40 z-10;
     }
     .whitekey {
-        @apply bg-amber-50 relative w-full border border-slate-950/10 shrink-0 active:bg-amber-50/96 duration-300 active:scale-105 transition-all;
+        @apply bg-amber-50 light:bg-white relative w-full border border-slate-950/10 shrink-0 active:bg-amber-50/96 duration-300 active:scale-105 transition-all;
     }
     .blackkey {
         @apply bg-stone-800 h-5 drop-shadow-xs drop-shadow-stone-800 active:bg-stone-700 duration-300 active:scale-105 transition-all;
@@ -191,9 +225,15 @@
 }
 
 @keyframes menuAppear {
-  from { opacity: 0; transform: scale(0.95); }
-  to { opacity: 1; transform: scale(1); }
+    from {
+        opacity: 0;
+        transform: scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 .animate-menu {
-  animation: menuAppear 0.15s ease-out;
+    animation: menuAppear 0.15s ease-out;
 }

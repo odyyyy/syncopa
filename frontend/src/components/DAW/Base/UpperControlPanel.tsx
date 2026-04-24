@@ -1,6 +1,6 @@
 import { Component, Show } from "solid-js";
 import ThemeController from "../../utils/ThemeController";
-import useProjectPayloadManager from "../../../hooks/daw/useProjectPayloadManager";
+import useProjectManager from "../../../hooks/daw/project/useProjectManager";
 import { useProjectContext } from "@/context/daw/project.context";
 import { usePlayerContext } from "@/context/daw/player.context";
 import useUpperControlPanel from "../../../hooks/daw/useUpperControlPanel";
@@ -12,18 +12,20 @@ import ProjectMembersAvatars from "../../ProjectsManagement/ProjectMembersAvatar
 import { useCoopSession } from "../../../context/coop/coopsession.context";
 import useImportAudio from "../../../hooks/daw/import/useImportAudio";
 import ImportAudioModal from "../Import/ImportAudioModal";
+import usePlayerManager from "@/hooks/daw/player/usePlayerManager";
+import toast from "solid-toast";
 
 const UpperControlPanel: Component = () => {
   const { project } = useProjectContext();
   const {
     time,
     isPlaying,
-    startOrPausePlaying,
     setPlayerBeatPos,
     setTotalVolume,
     totalVolume,
   } = usePlayerContext();
-  const { saveProjectChanges } = useProjectPayloadManager();
+  const { startOrPausePlaying } = usePlayerManager();
+  const { saveProjectChanges } = useProjectManager();
   const { muteOrUnmuteMasterVolume, setExitModalOpen, exitModalOpen } =
     useUpperControlPanel();
   const { exportOpen, setExportOpen } = useExportProject();
@@ -68,6 +70,7 @@ const UpperControlPanel: Component = () => {
               onclick={(e) => {
                 e.preventDefault();
                 saveProjectChanges(project()?.projectId ?? "");
+                toast.success("Проект сохранен");
               }}
             >
               <div class="flex flex-row">

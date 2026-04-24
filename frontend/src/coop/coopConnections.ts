@@ -37,7 +37,7 @@ const setupCoopConnections = (
     toast.error(
       "Ошибка сессии совместной работы.\nИзменения не будут синхронизированы",
     );
-    console.log("WebSocket error", error);
+    console.error("WebSocket error", error);
   };
 
   return websocketConnection;

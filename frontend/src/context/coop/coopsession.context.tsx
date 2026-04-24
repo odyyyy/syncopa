@@ -6,9 +6,9 @@ import {
   CoopOperationsHandlers,
 } from "../../types/coop.types";
 import setupCoopConnectionsAndHandleEvents from "../../coop/coopConnections";
-import usePatternManage from "../../hooks/daw/pattern/usePatternManage";
+import usePatternManager from "../../hooks/daw/pattern/usePatternManager";
 import useTracksManager from "../../hooks/daw/useTracksManager";
-import useNoteManage from "../../hooks/daw/pianoroll/useNoteManage";
+import useNoteManager from "../../hooks/daw/pianoroll/useNoteManager";
 import useUpdatePatternPosAndWidth from "../../hooks/daw/pattern/updatePatternPosAndWidth";
 import { usePresetsContext } from "../daw/presets.context";
 
@@ -19,10 +19,10 @@ export const CoopSessionProvider: ParentComponent = (props) => {
     ProjectMember[]
   >([]);
 
-  const patternManager = usePatternManage();
+  const patternManager = usePatternManager();
   const patternTransform = useUpdatePatternPosAndWidth();
   const tracksManager = useTracksManager();
-  const noteManager = useNoteManage();
+  const noteManager = useNoteManager();
   const { updatePreset } = usePresetsContext();
 
   const coopOperationsHandlers: CoopOperationsHandlers = {

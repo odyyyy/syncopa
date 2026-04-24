@@ -19,7 +19,7 @@ const Note: Component<{
 
   return (
     <div
-      class="bg-primary/88 h-6 border border-base-300/20 cursor-pointer z-20 absolute"
+      class="bg-primary/88 light:bg-neutral/60 h-6 border border-base-300/20 cursor-pointer z-20 absolute"
       data-note-id={props.note.noteId}
       oncontextmenu={handleNoteContextMenu}
       style={{

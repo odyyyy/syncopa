@@ -54,7 +54,10 @@ const TrackController: Component<TrackControllerProps> = ({
       </div>
       <span
         class="text-xs  opacity-50 font-bold uppercase p-1.5 rounded-xl bg-base-200/90 w-fit "
-        style={{ cursor: track().presetId === 0 ? "default" : "pointer" }}
+        classList={{
+          "cursor-pointer": track().presetId !== 0,
+          "text-red-400": track().presetId === 0,
+        }}
         onClick={track().presetId === 0 ? undefined : openPresetsMenu}
       >
         {trackPresetName()}

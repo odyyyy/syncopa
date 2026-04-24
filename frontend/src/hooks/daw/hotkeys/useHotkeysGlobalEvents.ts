@@ -1,5 +1,6 @@
 import { usePlayerContext } from "@/context/daw/player.context";
 import { useTimelineContext } from "@/context/daw/timeline.context";
+import usePlayerManager from "../player/usePlayerManager";
 
 const useHotkeysGlobalEvents = () => {
   const { bpm, playerBeatPos, setPlayerBeatPos } =
@@ -7,7 +8,7 @@ const useHotkeysGlobalEvents = () => {
   const { tactElementsNumber } = useTimelineContext();
   
 
-  const { startOrPausePlaying } = usePlayerContext();
+  const { startOrPausePlaying } = usePlayerManager();
 
   const handlePlayerForward = (e: KeyboardEvent) => {
     e.preventDefault();

@@ -227,11 +227,13 @@ const Landing: Component = () => {
         </div>
       </main>
 
-      <section class="relative py-32 px-10 bg-base-200/50">
+      <section class="relative py-32 px-10">
+        <div class="absolute inset-0 bg-base-200/50 backdrop-blur-md -z-10"></div>
+        <div class="relative z-10">
         <div class="max-w-7xl mx-auto">
           <div class="flex flex-col items-center mb-24 text-center">
-            <h2 class="text-4xl md:text-6xl font-black uppercase tracking-tighter mb-6">
-              Разработано для коллаборации
+            <h2 class="text-3xl md:text-6xl font-black uppercase tracking-tighter mb-6">
+              Разработано для коллабораций
             </h2>
             <div class="w-24 h-1 bg-primary rounded-full"></div>
           </div>
@@ -256,6 +258,7 @@ const Landing: Component = () => {
                 </div>
               )}
             </For>
+          </div>
           </div>
         </div>
       </section>

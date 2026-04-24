@@ -1,9 +1,12 @@
 import { Accessor } from "solid-js";
 import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
-import { PatternType, PatternVST } from "../../../types/daw.types";
-import { useProjectContext } from "../context/useProjectContext";
+import {
+  PatternType,
+  PatternVST,
+} from "../../../types/daw.types";
+import { useProjectContext } from "@/context/daw/project.context";
 
-const usePatternManage = (patternWidthInTacts: Accessor<number> = () => 4) => {
+const usePatternManager = (patternWidthInTacts: Accessor<number> = () => 4) => {
   const { tracks, setTracks } = useProjectContext();
   const {
     setCurrentPatternAndTrackId,
@@ -63,6 +66,7 @@ const usePatternManage = (patternWidthInTacts: Accessor<number> = () => 4) => {
     );
   };
 
+
   return {
     addPatternOnTrack,
     removePattern,
@@ -70,4 +74,4 @@ const usePatternManage = (patternWidthInTacts: Accessor<number> = () => 4) => {
   };
 };
 
-export default usePatternManage;
+export default usePatternManager;

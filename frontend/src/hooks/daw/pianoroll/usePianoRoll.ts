@@ -5,7 +5,7 @@ import { useTimelineContext } from "@/context/daw/timeline.context";
 import { audioEngine } from "../../../instruments/audioEngine";
 import { PolySynthInstance } from "../../../types/presets.types";
 import { createEffect, createSignal } from "solid-js";
-import useNoteManage from "./useNoteManage";
+import useNoteManager from "./useNoteManager";
 import { useSendChangeEvent } from "../../../coop/handleCoopEvents";
 import { SyncOperation, Target } from "../../../types/coop.types";
 import { useContextMenu } from "../../../context/daw/contextmenu.context";
@@ -55,7 +55,7 @@ const usePianoRoll = () => {
     return `${noteNames[noteIndex]}${octave}`;
   }).reverse();
 
-  const { addNote } = useNoteManage();
+  const { addNote } = useNoteManager();
   const { sendChangeEvent } = useSendChangeEvent();
   const addNoteInPianoRoll = (e: MouseEvent, pianoPanelWidth: number) => {
     const note = (e.target as HTMLElement).parentElement?.dataset.note;
@@ -98,7 +98,7 @@ const usePianoRoll = () => {
     (synth() as PolySynthInstance)?.triggerAttackRelease(newNote.note, 1);
   };
 
-  const { removeNote } = useNoteManage();
+  const { removeNote } = useNoteManager();
   const removeNoteFromPianoRoll = (e: MouseEvent) => {
     const noteId = (e.currentTarget as HTMLElement).dataset?.noteId;
     if (!noteId) return;

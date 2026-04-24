@@ -1,6 +1,6 @@
 import { useProjectContext } from "@/context/daw/project.context";
 import { Note, PatternType, PatternVST } from "../../../types/daw.types";
-const useNoteManage = () => {
+const useNoteManager = () => {
   const { tracks, setTracks } = useProjectContext();
 
   const findIndexes = (trackId: string, patternId: string, noteId: string) => {
@@ -84,4 +84,4 @@ const useNoteManage = () => {
     updateTransformedNote,
   };
 };
-export default useNoteManage;
+export default useNoteManager;

@@ -1,7 +1,7 @@
 import { useTimelineContext } from "@/context/daw/timeline.context";
 import usePianoRoll from "./usePianoRoll";
 import { Note as NoteType } from "../../../types/daw.types";
-import useNoteManage from "./useNoteManage";
+import useNoteManager from "./useNoteManager";
 import { useSendChangeEvent } from "../../../coop/handleCoopEvents";
 import { SyncOperation, Target } from "../../../types/coop.types";
 
@@ -84,7 +84,7 @@ export default function useNoteTransform() {
   };
 
   const { sendChangeEvent } = useSendChangeEvent();
-  const { updateTransformedNote } = useNoteManage();
+  const { updateTransformedNote } = useNoteManager();
   const onNoteMove = (e: MouseEvent) => {
     const dx = e.clientX - startX;
     const dy = e.clientY - startY;

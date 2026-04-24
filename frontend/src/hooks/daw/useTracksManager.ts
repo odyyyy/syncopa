@@ -11,7 +11,6 @@ import { PRESETS_CATEGORIES_ENUM } from "../../components/DAW/Preset/PresetChoos
 const useTracksManager = () => {
   const { setAndLoadSelectedPreset } = usePresetsContext();
   const { tracks, setTracks } = useProjectContext();
-  console.log(tracks)
   
 
   const addNewTrack = (
