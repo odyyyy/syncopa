@@ -16,31 +16,48 @@ import { SyncOperation, Target } from "../../../types/coop.types";
 import useTracksManager from "../../../hooks/daw/useTracksManager";
 import useSwitchPreset from "../../../hooks/daw/preset/useSwitchPreset";
 import { useTimelineContext } from "@/context/daw/timeline.context";
+import useProjectAutoSave from "@/hooks/daw/project/useProjectAutoSave";
+import useProjectManager from "@/hooks/daw/project/useProjectManager";
 
 const MainDawWorkspace: Component = () => {
+  let mainTracksPanelRef: HTMLDivElement | undefined;
+  let chooseTrackInstrumentRef: HTMLDialogElement | undefined;
+  let choosePresetRef: HTMLDialogElement | undefined;
+
   const {
     tactWidth,
     handleOnWheelAndCtrlChangeTactsWidth,
     handlePlayerHeadChangePos,
     handleContextMenu,
   } = useMainDawWorkspace();
-
-  const { addNewTrack } = useTracksManager();
-
-  const { setPresetModalState } =
-    usePresetsContext();
+  const { setPresetModalState } = usePresetsContext();
   const { selectPresetFromModal } = useSwitchPreset();
   const { tracks } = useProjectContext();
   const { tactElementsNumber } = useTimelineContext();
   const { isPianoRollOpen, pianoRollHeight } = usePianoRollContext();
+
+  onMount(() => {
+    const audioPatternsIds = tracks.reduce((ids, track) => {
+      track.patterns?.forEach((p) => {
+        if (p.type === "audio") ids.push(p.patternId);
+      });
+      return ids;
+    }, [] as string[]);
+    
+    if (audioPatternsIds && audioPatternsIds.length !== 0) {
+      loadAudioPatternsUsedInProject(audioPatternsIds);
+    }
+  });
+  useProjectAutoSave();
+
+  const { addNewTrack } = useTracksManager();
+  const { loadAudioPatternsUsedInProject } = useProjectManager();
 
   const {
     handlePlayerForward,
     handlePlayerBackward,
     handlePlayerStartOrPause,
   } = useHotkeysGlobalEvents();
-
-  let mainTracksPanelRef: HTMLDivElement | undefined;
 
   onMount(() => {
     document.addEventListener("keydown", handlePlayerForward);
@@ -53,8 +70,6 @@ const MainDawWorkspace: Component = () => {
     document.removeEventListener("keydown", handlePlayerStartOrPause);
   });
 
-  let chooseTrackInstrumentRef: HTMLDialogElement | undefined;
-  let choosePresetRef: HTMLDialogElement | undefined;
   const { sendChangeEvent } = useSendChangeEvent();
 
   return (

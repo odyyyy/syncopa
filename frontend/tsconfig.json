@@ -12,10 +12,16 @@
     "module": "ESNext",
     "moduleResolution": "bundler",
     "noEmit": true,
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"],
+      "@components/*": ["src/components/*"]
+    },
 
     // Type Checking & Safety
     "strict": true,
     "noUncheckedIndexedAccess": true,
-    "types": ["vite/client"],
+    "types": ["vite/client", "node"],
+    
   },
 }

@@ -23,8 +23,9 @@ const SyncopaApp: Component = () => {
     window.addEventListener(
       "click",
       async () => {
-        await Tone.start();
-        Tone.getTransport().start();
+        if (Tone.getContext().state !== "running") {
+          await Tone.start();
+        }
       },
       { once: true },
     );
