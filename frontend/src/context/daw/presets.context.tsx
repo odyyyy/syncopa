@@ -20,7 +20,7 @@ import {
 import toast from "solid-toast";
 import useDawApi from "../../api/daw.api";
 import SyncopaLoader from "../../components/utils/Loaders/SyncopaLoading";
-import { useProjectContext } from "../../hooks/daw/context/useProjectContext";
+import { useProjectContext } from "@/context/daw/project.context";
 import { audioEngine } from "../../instruments/audioEngine";
 import { createPolySynth } from "../../instruments/createSynth";
 import * as Tone from "tone";

@@ -1,6 +1,6 @@
 import { Accessor, Component } from "solid-js";
 import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
-import { useTracksContext } from "../../../hooks/daw/context/useTracksContext";
+import { useTimelineContext } from "@/context/daw/timeline.context";
 import useNoteTransform from "../../../hooks/daw/pianoroll/useNoteTransform";
 import { Note as NoteType } from "../../../types/daw.types";
 import usePianoRoll from "../../../hooks/daw/pianoroll/usePianoRoll";
@@ -9,7 +9,7 @@ const Note: Component<{
   patternWidthInBeats: Accessor<number>;
   note: NoteType;
 }> = (props) => {
-  const { tactWidth, beatNumber } = useTracksContext();
+  const { tactWidth, beatNumber } = useTimelineContext();
   const { transformNote } = useNoteTransform();
   const { currentPatternAndTrackId } = usePianoRollContext();
   const { removeNoteFromPianoRoll } = usePianoRoll();

@@ -1,8 +1,8 @@
 import { Component, Show } from "solid-js";
 import ThemeController from "../../utils/ThemeController";
 import useProjectPayloadManager from "../../../hooks/daw/useProjectPayloadManager";
-import { useProjectContext } from "../../../hooks/daw/context/useProjectContext";
-import { usePlayerContext } from "../../../hooks/daw/context/usePlayerContext";
+import { useProjectContext } from "@/context/daw/project.context";
+import { usePlayerContext } from "@/context/daw/player.context";
 import useUpperControlPanel from "../../../hooks/daw/useUpperControlPanel";
 import ExitProjectModal from "../../utils/ConfirmActionModal";
 import { useNavigate } from "@solidjs/router";
@@ -10,6 +10,8 @@ import ExportProgressLoading from "../Export/ExportProgressLoading";
 import useExportProject from "../../../hooks/daw/export/useExport";
 import ProjectMembersAvatars from "../../ProjectsManagement/ProjectMembersAvatars";
 import { useCoopSession } from "../../../context/coop/coopsession.context";
+import useImportAudio from "../../../hooks/daw/import/useImportAudio";
+import ImportAudioModal from "../Import/ImportAudioModal";
 
 const UpperControlPanel: Component = () => {
   const { project } = useProjectContext();
@@ -25,12 +27,13 @@ const UpperControlPanel: Component = () => {
   const { muteOrUnmuteMasterVolume, setExitModalOpen, exitModalOpen } =
     useUpperControlPanel();
   const { exportOpen, setExportOpen } = useExportProject();
+  const { importOpen, setImportOpen } = useImportAudio();
   const { coopSessionMembers, websocketConnection } = useCoopSession();
 
   const navigate = useNavigate();
 
   return (
-    <nav class="navbar bg-base-200/50 p-2.5 shadow-sm relative z-40 shrink-0 ">
+    <nav class="navbar bg-base-200/50 p-2.5 shadow-sm relative z-40 shrink-0 h-20">
       <div class="navbar-start gap-1">
         <div class="dropdown dropdown-hover">
           <div tabindex="0" role="button" class="btn-main m-1 p-2">
@@ -78,9 +81,14 @@ const UpperControlPanel: Component = () => {
                 <a>Сохранить</a>
               </div>
             </li>
-            {/*<li>
+            <li
+              onClick={(e) => {
+                e.preventDefault();
+                setImportOpen(true);
+              }}
+            >
               <a>Импорт</a>
-            </li>*/}
+            </li>
             <li
               onClick={(e) => {
                 e.preventDefault();
@@ -123,6 +131,13 @@ const UpperControlPanel: Component = () => {
           <ExportProgressLoading
             open={exportOpen()}
             onClose={() => setExportOpen(false)}
+          />
+        </Show>
+
+        <Show when={importOpen()}>
+          <ImportAudioModal
+            open={importOpen()}
+            onClose={() => setImportOpen(false)}
           />
         </Show>
 

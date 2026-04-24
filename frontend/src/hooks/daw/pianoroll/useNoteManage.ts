@@ -1,4 +1,4 @@
-import { useProjectContext } from "../context/useProjectContext";
+import { useProjectContext } from "@/context/daw/project.context";
 import { Note, PatternType, PatternVST } from "../../../types/daw.types";
 const useNoteManage = () => {
   const { tracks, setTracks } = useProjectContext();

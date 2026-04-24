@@ -1,7 +1,7 @@
-import { useProjectContext } from "../context/useProjectContext";
+import { useProjectContext } from "@/context/daw/project.context";
 import { Note } from "../../../types/daw.types";
 import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
-import { useTracksContext } from "../context/useTracksContext";
+import { useTimelineContext } from "@/context/daw/timeline.context";
 import { audioEngine } from "../../../instruments/audioEngine";
 import { PolySynthInstance } from "../../../types/presets.types";
 import { createEffect, createSignal } from "solid-js";
@@ -14,7 +14,7 @@ const usePianoRoll = () => {
   const { tracks, setTracks } = useProjectContext();
   const { currentPatternAndTrackId, currentPatternWidthInTacts } =
     usePianoRollContext();
-  const { beatNumber } = useTracksContext();
+  const { beatNumber } = useTimelineContext();
 
   const { isPianoRollOpen } = usePianoRollContext();
   const [synth, setSynth] = createSignal<PolySynthInstance | undefined>();

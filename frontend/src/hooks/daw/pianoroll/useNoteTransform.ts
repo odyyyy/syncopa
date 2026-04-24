@@ -1,5 +1,4 @@
-import { useProjectContext } from "../context/useProjectContext";
-import { useTracksContext } from "../context/useTracksContext";
+import { useTimelineContext } from "@/context/daw/timeline.context";
 import usePianoRoll from "./usePianoRoll";
 import { Note as NoteType } from "../../../types/daw.types";
 import useNoteManage from "./useNoteManage";
@@ -7,7 +6,7 @@ import { useSendChangeEvent } from "../../../coop/handleCoopEvents";
 import { SyncOperation, Target } from "../../../types/coop.types";
 
 export default function useNoteTransform() {
-  const { tactWidth, beatNumber } = useTracksContext();
+  const { tactWidth, beatNumber } = useTimelineContext();
   const { noteNames: NOTES } = usePianoRoll();
 
   let mode: "move" | "resizeL" | "resizeR" | null = null;

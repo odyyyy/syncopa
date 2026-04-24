@@ -3,16 +3,16 @@ import {
   ParentComponent,
   createSignal,
   createEffect,
+  useContext,
 } from "solid-js";
 import { PlayerContextType } from "../../types/daw.types";
 import * as Tone from "tone";
-import { useTracksContext } from "../../hooks/daw/context/useTracksContext";
-import { useProjectContext } from "../../hooks/daw/context/useProjectContext";
-import { MIN_MASTER_VOLUME_DB } from "../../config/config";
+import { useTimelineContext } from "@/context/daw/timeline.context";
+import { useProjectContext } from "@/context/daw/project.context";
 import { audioEngine } from "../../instruments/audioEngine";
 import { PolySynthInstance } from "../../types/presets.types";
 
-export const PlayerContext = createContext<PlayerContextType>();
+const PlayerContext = createContext<PlayerContextType>();
 
 export const volumeToDb = (value: number) => {
   const linear = value / 100;
@@ -27,7 +27,6 @@ export const PlayerProvider: ParentComponent = (props) => {
   const [bpm, setBpm] = createSignal<number>(120);
   const [playerBeatPos, setPlayerBeatPos] = createSignal<number>(0);
   const [isPlaying, setIsPlaying] = createSignal<boolean>(false);
-  const [tactElementsNumber, setTactElementsNumber] = createSignal(30);
 
   const { project } = useProjectContext();
   const [totalVolume, setTotalVolume] = createSignal(
@@ -40,16 +39,16 @@ export const PlayerProvider: ParentComponent = (props) => {
   });
 
   const { tracks } = useProjectContext();
-  const { beatNumber } = useTracksContext();
+  const { beatNumber } = useTimelineContext();
 
   const [parts, setParts] = createSignal<Tone.Part[]>([]);
 
-  let isInitialized = false;
+  let isAudioEngineInitialized = false;
 
   const startOrPausePlaying = async () => {
-    if (!isInitialized) {
+    if (!isAudioEngineInitialized) {
       await Tone.start();
-      isInitialized = true;
+      isAudioEngineInitialized = true;
     }
     const transport = Tone.getTransport();
 
@@ -151,8 +150,6 @@ export const PlayerProvider: ParentComponent = (props) => {
         isPlaying,
         setIsPlaying,
         startOrPausePlaying,
-        tactElementsNumber,
-        setTactElementsNumber,
         totalVolume,
         setTotalVolume,
       }}
@@ -161,3 +158,11 @@ export const PlayerProvider: ParentComponent = (props) => {
     </PlayerContext.Provider>
   );
 };
+
+export function usePlayerContext() {
+  const context = useContext(PlayerContext);
+  if (!context) {
+    throw new Error("PlayerContext не найден");
+  }
+  return context;
+}

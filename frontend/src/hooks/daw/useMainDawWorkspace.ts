@@ -1,18 +1,17 @@
 import { createEffect, createSignal } from "solid-js";
-import { useProjectContext } from "./context/useProjectContext";
+import { useProjectContext } from "@/context/daw/project.context";
 import useUpperControlPanel from "./useUpperControlPanel";
-import { usePlayerContext } from "./context/usePlayerContext";
+import { usePlayerContext } from "@/context/daw/player.context";
 import { useContextMenu } from "../../context/daw/contextmenu.context";
-import { useTracksContext } from "./context/useTracksContext";
 import usePatternManage from "./pattern/usePatternManage";
 import { useSendChangeEvent } from "../../coop/handleCoopEvents";
 import { SyncOperation, Target } from "../../types/coop.types";
-import useTracksManager from "./useTracksManager";
+import { useTimelineContext } from "@/context/daw/timeline.context";
 
-const useMainDawTrackPanel = () => {
+const useMainDawWorkspace = () => {
   const { tracks, setTracks } = useProjectContext();
   const { playerBeatPos, setPlayerBeatPos } = usePlayerContext();
-  const { tactWidth, setTactWidth } = useTracksContext();
+  const { tactWidth, setTactWidth } = useTimelineContext();
 
   const [playerHeadPos, setPlayerHeadPos] = createSignal<number>(0);
   const [isPlaying, setIsPlaying] = createSignal(false);
@@ -47,7 +46,6 @@ const useMainDawTrackPanel = () => {
 
   const { openMenu } = useContextMenu();
   const { addPatternOnTrack } = usePatternManage();
-  const { removeTrackFromStore } = useTracksManager();
   const { sendChangeEvent } = useSendChangeEvent();
 
   const handleContextMenu = (e: MouseEvent) => {
@@ -112,4 +110,4 @@ const useMainDawTrackPanel = () => {
   };
 };
 
-export default useMainDawTrackPanel;
+export default useMainDawWorkspace;

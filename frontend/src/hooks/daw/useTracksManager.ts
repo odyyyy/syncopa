@@ -1,16 +1,18 @@
 import toast from "solid-toast";
-import { PRESETS_CATEGORIES_ENUM } from "../../components/DAW/PianoRoll/PresetChooseModal";
 import { usePresetsContext } from "../../context/daw/presets.context";
 import { Track } from "../../types/daw.types";
-import { useProjectContext } from "./context/useProjectContext";
+import { useProjectContext } from "@/context/daw/project.context";
 import { volumeToDb } from "../../context/daw/player.context";
 import { audioEngine } from "../../instruments/audioEngine";
 import { PolySynthInstance } from "../../types/presets.types";
 import * as Tone from "tone";
+import { PRESETS_CATEGORIES_ENUM } from "../../components/DAW/Preset/PresetChooseModal";
 
 const useTracksManager = () => {
   const { setAndLoadSelectedPreset } = usePresetsContext();
   const { tracks, setTracks } = useProjectContext();
+  console.log(tracks)
+  
 
   const addNewTrack = (
     title: string | undefined = undefined,
@@ -42,6 +44,7 @@ const useTracksManager = () => {
 
   const addTrackInStoreAndLoadDefaultPreset = (track: Track) => {
     setTracks((prev: Track[]) => [...prev, track]);
+    if (track.presetId === 0) return;
     setAndLoadSelectedPreset(track.presetId, track.trackId);
   };
 
@@ -58,7 +61,7 @@ const useTracksManager = () => {
       case PRESETS_CATEGORIES_ENUM.KEY:
         return 10;
       default:
-        return 6;
+        return 0;
     }
   };
 

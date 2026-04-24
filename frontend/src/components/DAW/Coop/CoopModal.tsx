@@ -3,7 +3,7 @@ import { Component, createSignal, For, Show } from "solid-js";
 import ModalMenu from "../ModalMenu";
 import AvatarDefault from "../../User/Avatars/AvatarDefault";
 import AvatarPicture from "../../User/Avatars/AvatarPicture";
-import { useProjectContext } from "../../../hooks/daw/context/useProjectContext";
+import { useProjectContext } from "@/context/daw/project.context";
 import { userData } from "../../../store/user";
 import { useCoopSession } from "../../../context/coop/coopsession.context";
 

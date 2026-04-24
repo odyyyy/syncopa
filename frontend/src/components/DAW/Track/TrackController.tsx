@@ -17,6 +17,7 @@ const TrackController: Component<TrackControllerProps> = ({
   const { handleTrackVolumeChange } = useTracksManager();
   const { presets } = usePresetsContext();
   const trackPresetName = () => {
+    if (track().presetId === 0) return "Аудио-дорожка";
     return track().presetId
       ? presets?.find((p) => p.id === track().presetId)?.title
       : "???";
@@ -26,7 +27,7 @@ const TrackController: Component<TrackControllerProps> = ({
 
   return (
     <div
-      onDblClick={openPresetsMenu}
+      onDblClick={track().presetId === 0 ? undefined : openPresetsMenu}
       class="flex flex-col h-25 max-h-30 w-full bg-base-100/22  justify-between p-2 border-b border-b-base-300 "
     >
       <div class="flex justify-start ">
@@ -52,8 +53,9 @@ const TrackController: Component<TrackControllerProps> = ({
         </div>
       </div>
       <span
-        class="text-xs  opacity-50 font-bold uppercase p-1.5 rounded-xl bg-base-200/90 w-fit cursor-pointer"
-        onClick={openPresetsMenu}
+        class="text-xs  opacity-50 font-bold uppercase p-1.5 rounded-xl bg-base-200/90 w-fit "
+        style={{ cursor: track().presetId === 0 ? "default" : "pointer" }}
+        onClick={track().presetId === 0 ? undefined : openPresetsMenu}
       >
         {trackPresetName()}
       </span>

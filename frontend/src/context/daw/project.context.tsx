@@ -1,4 +1,4 @@
-import { createResource, ParentComponent, Switch, Match, createEffect } from "solid-js";
+import { createResource, ParentComponent, Switch, Match, createEffect, useContext } from "solid-js";
 import { createContext } from "solid-js";
 import toast from "solid-toast";
 import useDawApi from "../../api/daw.api";
@@ -11,7 +11,7 @@ import {
   Track,
 } from "../../types/daw.types";
 
-export const ProjectContext = createContext<ProjectContextType>();
+const ProjectContext = createContext<ProjectContextType>();
 
 export const ProjectProvider: ParentComponent = (props) => {
   const { uuid } = useParams();
@@ -59,3 +59,12 @@ export const ProjectProvider: ParentComponent = (props) => {
     </Switch>
   );
 };
+
+
+export function useProjectContext()  {
+  const context = useContext(ProjectContext);
+  if (!context) {
+    throw new Error("ProjectContext не найден");
+  }
+  return context;
+}

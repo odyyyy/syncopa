@@ -1,7 +1,7 @@
 import { Component, createMemo, For, Index, Show } from "solid-js";
-import { useTracksContext } from "../../../hooks/daw/context/useTracksContext";
+import { useTimelineContext } from "@/context/daw/timeline.context";
 import usePianoRoll from "../../../hooks/daw/pianoroll/usePianoRoll";
-import useMainDawTrackPanel from "../../../hooks/daw/useMainDawTrackPanel";
+import useMainDawWorkspace from "../../../hooks/daw/useMainDawWorkspace";
 import { PatternVST } from "../../../types/daw.types";
 import Note from "../Pattern/Note";
 import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
@@ -9,7 +9,7 @@ import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
 const OCTAVES_NUMBER = 7;
 
 const PianoRoll: Component<{ onClose?: () => void }> = (props) => {
-  const { handleOnWheelAndCtrlChangeTactsWidth } = useMainDawTrackPanel();
+  const { handleOnWheelAndCtrlChangeTactsWidth } = useMainDawWorkspace();
   const {
     addNoteInPianoRoll,
     PIANOROLL_NOTES,
@@ -19,7 +19,7 @@ const PianoRoll: Component<{ onClose?: () => void }> = (props) => {
     resizePianoRollPanel,
   } = usePianoRoll();
 
-  const { tactWidth, beatNumber } = useTracksContext();
+  const { tactWidth, beatNumber } = useTimelineContext();
   const { currentPatternWidthInTacts, setIsPianoRollOpen } =
     usePianoRollContext();
 

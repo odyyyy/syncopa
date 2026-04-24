@@ -1,5 +1,5 @@
 import toast from "solid-toast";
-import { useProjectContext } from "../hooks/daw/context/useProjectContext";
+import { useProjectContext } from "@/context/daw/project.context";
 import { accessToken } from "../store/auth";
 import { ConnectionData, ProjectChanges, CoopOperationsHandlers } from "../types/coop.types";
 

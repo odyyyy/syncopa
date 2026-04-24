@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
-import { useTracksContext } from "../context/useTracksContext";
-import { useProjectContext } from "../context/useProjectContext";
-import { usePlayerContext } from "../context/usePlayerContext";
+import { useTimelineContext } from "@/context/daw/timeline.context";
+import { useProjectContext } from "@/context/daw/project.context";
+import { usePlayerContext } from "@/context/daw/player.context";
 import toWav from "audiobuffer-to-wav";
 import * as Tone from "tone";
 import { Track } from "../../../types/daw.types";
@@ -13,7 +13,7 @@ const useExportProject = () => {
   const [exportOpen, setExportOpen] = createSignal(false);
   const { tracks } = useProjectContext();
   const { bpm } = usePlayerContext();
-  const { beatNumber } = useTracksContext();
+  const { beatNumber } = useTimelineContext();
 
   const calculateProjectDuration = () => {
     let maxBar = 0;

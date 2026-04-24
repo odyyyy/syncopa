@@ -1,11 +1,11 @@
 import { Component, onCleanup, onMount } from "solid-js";
 import UpperControlPanel from "../components/DAW/Base/UpperControlPanel";
 import LowerControlPanel from "../components/DAW/Base/LowerControlPanel";
-import MainDawTrackPanel from "../components/DAW/Base/MainDawTrackPanel";
+import MainDawWorkspace from "../components/DAW/Base/MainDawWorkspace";
 import { ProjectProvider } from "../context/daw/project.context";
 import { PlayerProvider } from "../context/daw/player.context";
 import { ContextMenuProvider } from "../context/daw/contextmenu.context";
-import { TracksProvider } from "../context/daw/tracks.context";
+import { TimelineProvider } from "../context/daw/timeline.context";
 import { PianoRollProvider } from "../context/daw/pianoroll.context";
 import * as Tone from "tone";
 import { PresetsProvider } from "../context/daw/presets.context";
@@ -36,21 +36,21 @@ const SyncopaApp: Component = () => {
   return (
     <div class="flex flex-col h-screen">
       <ProjectProvider>
-        <TracksProvider>
+        <TimelineProvider>
           <PlayerProvider>
             <ContextMenuProvider>
               <PianoRollProvider>
                 <PresetsProvider>
                   <CoopSessionProvider>
                     <UpperControlPanel />
-                    <MainDawTrackPanel />
+                    <MainDawWorkspace />
                     <LowerControlPanel />
                   </CoopSessionProvider>
                 </PresetsProvider>
               </PianoRollProvider>
             </ContextMenuProvider>
           </PlayerProvider>
-        </TracksProvider>
+        </TimelineProvider>
       </ProjectProvider>
     </div>
   );

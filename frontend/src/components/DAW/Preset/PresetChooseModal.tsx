@@ -10,7 +10,7 @@ import ModalMenu from "../ModalMenu";
 import { usePresetsContext } from "../../../context/daw/presets.context";
 import LoadingOverlay from "../../utils/Loaders/LoadingOverlay";
 import { PresetCategory } from "../../../types/presets.types";
-import { useProjectContext } from "../../../hooks/daw/context/useProjectContext";
+import { useProjectContext } from "@/context/daw/project.context";
 
 export enum PRESETS_CATEGORIES_ENUM {
   LEAD = "lead",

@@ -1,5 +1,5 @@
 import { Note } from "../../../types/daw.types";
-import { useProjectContext } from "../context/useProjectContext";
+import { useProjectContext } from "@/context/daw/project.context";
 
 const useUpdatePatternPosAndWidth = () => {
   const { setTracks } = useProjectContext();
@@ -8,11 +8,12 @@ const useUpdatePatternPosAndWidth = () => {
     trackId: string,
     pos: number,
     width: number,
-    notes: Note[],
+    notes?: Note[],
   ) => {
     setTracks((prev) =>
       prev.map((track) => {
         if (track.trackId !== trackId) return track;
+
         return {
           ...track,
           patterns:
@@ -22,14 +23,13 @@ const useUpdatePatternPosAndWidth = () => {
                     ...p,
                     pos,
                     width,
-                    notes,
+                    ...(p.type === "vst" && { notes }),
                   }
                 : p,
             ) ?? null,
         };
       }),
     );
-    
   };
   return { updatePatternPosAndWidth };
 };

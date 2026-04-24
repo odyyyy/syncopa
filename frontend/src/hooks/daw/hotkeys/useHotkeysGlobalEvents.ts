@@ -1,8 +1,11 @@
-import { usePlayerContext } from "../context/usePlayerContext";
+import { usePlayerContext } from "@/context/daw/player.context";
+import { useTimelineContext } from "@/context/daw/timeline.context";
 
 const useHotkeysGlobalEvents = () => {
-  const { bpm, playerBeatPos, setPlayerBeatPos, tactElementsNumber } =
+  const { bpm, playerBeatPos, setPlayerBeatPos } =
     usePlayerContext();
+  const { tactElementsNumber } = useTimelineContext();
+  
 
   const { startOrPausePlaying } = usePlayerContext();
 

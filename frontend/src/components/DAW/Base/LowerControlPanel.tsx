@@ -2,7 +2,7 @@ import { Component } from "solid-js";
 import CoopModal from "../Coop/CoopModal";
 import EffectsModal from "../Effects/EffectsChooseModal";
 import VCSModal from "../VCS/VCSModal";
-import PresetChooseModal from "../PianoRoll/PresetChooseModal";
+import PresetChooseModal from "../Preset/PresetChooseModal";
 import useSwitchPreset from "../../../hooks/daw/preset/useSwitchPreset";
 
 const LowerControlPanel: Component = () => {

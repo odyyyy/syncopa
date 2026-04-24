@@ -1,7 +1,7 @@
 import toast from "solid-toast";
 import useDawApi from "../../api/daw.api";
-import { useProjectContext } from "./context/useProjectContext";
-import { usePlayerContext } from "./context/usePlayerContext";
+import { useProjectContext } from "@/context/daw/project.context";
+import { usePlayerContext } from "@/context/daw/player.context";
 
 const useProjectPayloadManager = () => {
   const { updateProjectPayload } = useDawApi();

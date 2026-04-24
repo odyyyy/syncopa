@@ -1,29 +1,29 @@
 import { Component, Index, onCleanup, onMount, Show } from "solid-js";
 import TrackController from "../Track/TrackController";
 import BaseTactsGrid from "../Track/BaseTactsGrid";
-import useMainDawTrackPanel from "../../../hooks/daw/useMainDawTrackPanel";
-import { useProjectContext } from "../../../hooks/daw/context/useProjectContext";
-import { usePlayerContext } from "../../../hooks/daw/context/usePlayerContext";
+import useMainDawWorkspace from "../../../hooks/daw/useMainDawWorkspace";
+import { useProjectContext } from "@/context/daw/project.context";
 import useHotkeysGlobalEvents from "../../../hooks/daw/hotkeys/useHotkeysGlobalEvents";
 import { Track } from "../Track/Track";
 import PlayerHead from "../Track/PlayerHead";
 import PianoRoll from "../PianoRoll/PianoRoll";
 import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
 import TrackInstrumentChooseModal from "../Track/TrackInstrumentChooseModal";
-import PresetChooseModal from "../PianoRoll/PresetChooseModal";
+import PresetChooseModal from "../Preset/PresetChooseModal";
 import { usePresetsContext } from "../../../context/daw/presets.context";
 import { useSendChangeEvent } from "../../../coop/handleCoopEvents";
 import { SyncOperation, Target } from "../../../types/coop.types";
 import useTracksManager from "../../../hooks/daw/useTracksManager";
 import useSwitchPreset from "../../../hooks/daw/preset/useSwitchPreset";
+import { useTimelineContext } from "@/context/daw/timeline.context";
 
-const MainDawTrackPanel: Component = () => {
+const MainDawWorkspace: Component = () => {
   const {
     tactWidth,
     handleOnWheelAndCtrlChangeTactsWidth,
     handlePlayerHeadChangePos,
     handleContextMenu,
-  } = useMainDawTrackPanel();
+  } = useMainDawWorkspace();
 
   const { addNewTrack } = useTracksManager();
 
@@ -31,7 +31,7 @@ const MainDawTrackPanel: Component = () => {
     usePresetsContext();
   const { selectPresetFromModal } = useSwitchPreset();
   const { tracks } = useProjectContext();
-  const { tactElementsNumber } = usePlayerContext();
+  const { tactElementsNumber } = useTimelineContext();
   const { isPianoRollOpen, pianoRollHeight } = usePianoRollContext();
 
   const {
@@ -145,4 +145,4 @@ const MainDawTrackPanel: Component = () => {
   );
 };
 
-export default MainDawTrackPanel;
+export default MainDawWorkspace;

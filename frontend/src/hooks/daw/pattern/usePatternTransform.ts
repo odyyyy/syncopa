@@ -1,5 +1,5 @@
 import { createSignal, createEffect, createMemo, Accessor } from "solid-js";
-import { useTracksContext } from "../context/useTracksContext";
+import { useTimelineContext } from "@/context/daw/timeline.context";
 import { Note, PatternType, PatternVST } from "../../../types/daw.types";
 import { useSendChangeEvent } from "../../../coop/handleCoopEvents";
 import { SyncOperation, Target } from "../../../types/coop.types";
@@ -22,7 +22,7 @@ const truncateNotes = (notes: Note[], maxPos: number): Note[] => {
 };
 
 const usePatternTransform = (pattern: Accessor<PatternType>, trackId: string) => {
-  const { tactWidth, tactElementsNumber, beatNumber } = useTracksContext();
+  const { tactWidth, tactElementsNumber, beatNumber } = useTimelineContext();
   const { sendChangeEvent } = useSendChangeEvent();
   const { updatePatternPosAndWidth } = useUpdatePatternPosAndWidth();
 
@@ -100,10 +100,11 @@ const usePatternTransform = (pattern: Accessor<PatternType>, trackId: string) =>
 
       sendChangeEvent(SyncOperation.TRANSFORM, Target.PATTERN, {
         patternId: currentPattern.patternId,
+        type: currentPattern.type,
         trackId,
         pos: finalPos,
         width: finalWidth,
-        notes: updatedNotes,
+        ...(currentPattern.type !== "vst" && { notes: updatedNotes })
       });
     }
 
