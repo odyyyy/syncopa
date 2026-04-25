@@ -104,7 +104,7 @@ const usePatternTransform = (pattern: Accessor<PatternType>, trackId: string) =>
         trackId,
         pos: finalPos,
         width: finalWidth,
-        ...(currentPattern.type !== "vst" && { notes: updatedNotes })
+        ...(currentPattern.type === "vst" && { notes: updatedNotes })
       });
     }
 

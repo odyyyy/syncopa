@@ -12,7 +12,7 @@ const PlayerHead: Component = () => {
         "will-change": "left",
       }}
     >
-      <div class="relative h-full w-[1.5px] bg-primary  shadow-[0_0_8px_rgba(var(--p),0.4)]">
+      <div class="relative h-full w-[1.5px] bg-primary/60  shadow-[0_0_8px_rgba(var(--p),0.4)]">
         <div class="absolute -top-1 left-1/2 -translate-x-1/2 w-3.5 h-4">
           <div
             class="w-full h-full bg-primary"

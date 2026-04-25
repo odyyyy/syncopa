@@ -17,13 +17,8 @@ import toast from "solid-toast";
 
 const UpperControlPanel: Component = () => {
   const { project } = useProjectContext();
-  const {
-    time,
-    isPlaying,
-    setPlayerBeatPos,
-    setTotalVolume,
-    totalVolume,
-  } = usePlayerContext();
+  const { time, isPlaying, setPlayerBeatPos, setTotalVolume, totalVolume } =
+    usePlayerContext();
   const { startOrPausePlaying } = usePlayerManager();
   const { saveProjectChanges } = useProjectManager();
   const { muteOrUnmuteMasterVolume, setExitModalOpen, exitModalOpen } =
@@ -90,7 +85,32 @@ const UpperControlPanel: Component = () => {
                 setImportOpen(true);
               }}
             >
-              <a>Импорт</a>
+              <div class="flex flex-row">
+                {/*<svg
+                  viewBox="0 0 24 24"
+                  class="w-5 h-5 fill-current"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path d="M21,14a1,1,0,0,0-1,1v4a1,1,0,0,1-1,1H5a1,1,0,0,1-1-1V15a1,1,0,0,0-2,0v4a3,3,0,0,0,3,3H19a3,3,0,0,0,3-3V15A1,1,0,0,0,21,14Zm-9.71,1.71a1,1,0,0,0,.33.21.94.94,0,0,0,.76,0,1,1,0,0,0,.33-.21l4-4a1,1,0,0,0-1.42-1.42L13,12.59V3a1,1,0,0,0-2,0v9.59l-2.29-2.3a1,1,0,1,0-1.42,1.42Z" />
+                </svg>*/}
+
+                <svg
+                  viewBox="0 0 32 32"
+                  class="w-5 h-5 fill-current"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <g fill="none" fill-rule="evenodd">
+                    <path d="M0 0h32v32H0z" />
+                    <path
+                      d="M19.12 0a6 6 0 0 1 4.69 2.259l4.88 6.118A6 6 0 0 1 30 12.118V26a6 6 0 0 1-6 6H8a6 6 0 0 1-6-6V6a6 6 0 0 1 6-6zm0 2H8a4 4 0 0 0-3.995 3.8L4 6v20a4 4 0 0 0 3.8 3.995L8 30h16a4 4 0 0 0 3.995-3.8L28 26V12.118a4 4 0 0 0-.725-2.297l-.148-.197-4.88-6.118a4 4 0 0 0-2.9-1.5zM16 11a1 1 0 0 1 1 1v4h4a1 1 0 0 1 0 2h-4v4a1 1 0 0 1-2 0v-4h-4a1 1 0 0 1 0-2h4v-4a1 1 0 0 1 1-1"
+                      fill="currentColor"
+                      fill-rule="nonzero"
+                    />
+                  </g>
+                </svg>
+
+                <a>Импорт</a>
+              </div>
             </li>
             <li
               onClick={(e) => {
