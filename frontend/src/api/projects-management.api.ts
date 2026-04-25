@@ -34,5 +34,16 @@ export function useProjectsApi() {
       protectedRequest,
     );
 
-  return { createProject, getProjectsList, removeProject };
+  const inviteMembers = (project_id: string, members: string[]):ApiResponse<ProjectItemProps> =>
+    apiRequest(
+      `${BACKEND_URL}/projects/${project_id}/invitations`,
+      {
+        method: "POST",
+        body: JSON.stringify({ members }),
+        headers: { "Content-Type": "application/json" },
+      },
+      protectedRequest,
+    );
+
+  return { createProject, getProjectsList, removeProject, inviteMembers };
 }

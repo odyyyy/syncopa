@@ -1,25 +1,12 @@
-import { Component, For, Show, Suspense } from "solid-js";
-import ComponentLoading from "../utils/Loaders/ComponentLoading";
+import { Component } from "solid-js";
 import useCreateProject from "../../hooks/projects_management/useCreateProject";
-import { userData } from "../../store/user";
-import AvatarPicture from "../User/Avatars/AvatarPicture";
-import AvatarDefault from "../User/Avatars/AvatarDefault";
-import useSearchMembers from "../../hooks/projects_management/useInviteMembers";
+import useSearchMembers from "../../hooks/projects_management/useSearchMembers";
+import InviteMembersPanel from "./InviteMembersPanel";
 
 const ProjectCreatePopup: Component<{
   onCreate: (project: ProjectItemProps) => void;
 }> = (props) => {
-  const {
-    setRawQuery,
-    debounced,
-    matchedUsers,
-    addMember,
-    removeMember,
-    members,
-    rawQuery,
-    setMembers,
-    clearSearch,
-  } = useSearchMembers();
+  const { members, setMembers, clearSearch } = useSearchMembers();
   let dialogRef: HTMLDialogElement | undefined;
 
   const { handleFieldInput, handleCreateProject, setProjectData, projectData } =
@@ -136,115 +123,7 @@ const ProjectCreatePopup: Component<{
               </p>
             </fieldset>
 
-            <details class="collapse bg-base-300 border-base-300 border">
-              <summary class="collapse-title font-semibold">
-                + Добавить участников проекта
-              </summary>
-              <div class="collapse-content ">
-                <label class="input ">
-                  <svg
-                    class="h-[1em] opacity-50"
-                    xmlns="http://www.w3.org/2000/svg"
-                    viewBox="0 0 24 24"
-                  >
-                    <g
-                      stroke-linejoin="round"
-                      stroke-linecap="round"
-                      stroke-width="2.5"
-                      fill="none"
-                      stroke="currentColor"
-                    >
-                      <path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path>
-                      <circle cx="12" cy="7" r="4"></circle>
-                    </g>
-                  </svg>
-                  <input
-                    type="text text-base"
-                    placeholder="Никнейм участника"
-                    maxlength="64"
-                    value={rawQuery()}
-                    form="create-project"
-                    onInput={(e) => {
-                      const value = e.currentTarget.value;
-                      setRawQuery(value);
-                      debounced(value);
-                    }}
-                  />
-                </label>
-                <div class="flex flex-wrap">
-                  <For each={members()}>
-                    {(username) => (
-                      <div>
-                        <div
-                          class="bg-base-100 p-1.5 m-2 rounded-2xl flex justify-between items-center  w-fit cursor-pointer"
-                          onclick={(e) => removeMember(username)}
-                        >
-                          <span class="m-1">{username}</span>
-                          <svg
-                            class="h-5 w-5"
-                            fill="currentColor"
-                            viewBox="0 0 36 36"
-                            xmlns="http://www.w3.org/2000/svg"
-                          >
-                            <path
-                              stroke-linecap="round"
-                              stroke-linejoin="round"
-                              stroke-width="2"
-                              d="M18 2a16 16 0 1 0 16 16A16 16 0 0 0 18 2m8 22.1a1.4 1.4 0 0 1-2 2l-6-6-6 6.02a1.4 1.4 0 1 1-2-2l6-6.04-6.17-6.22a1.4 1.4 0 1 1 2-2L18 16.1l6.17-6.17a1.4 1.4 0 1 1 2 2L20 18.08Z"
-                            />
-                            <path fill="none" d="M0 0h36v36H0z" />
-                          </svg>
-                        </div>
-                      </div>
-                    )}
-                  </For>
-                </div>
-              </div>
-
-              <ul class="list bg-base-300 flex rounded-box shadow-md gap-2">
-                <Suspense fallback={<ComponentLoading />}>
-                  <Show
-                    when={members().length < 11}
-                    fallback=<div class="text-lg text-center hover:bg-base-200">
-                      Максимальное число участников - 10
-                    </div>
-                  >
-                    <For each={matchedUsers()}>
-                      {(user) => (
-                        <Show
-                          when={
-                            !members().includes(user.username) &&
-                            user.username !== userData.username
-                          }
-                        >
-                          <li
-                            class="list-row cursor-pointer hover:bg-base-200"
-                            onclick={() => addMember(user.username)}
-                          >
-                            <Show when={user.avatar}>
-                              <AvatarPicture
-                                src={user.avatar}
-                                username={user.username}
-                                size={6}
-                              />
-                            </Show>
-                            <Show when={!user.avatar}>
-                              <AvatarDefault
-                                username={user.username}
-                                size={6}
-                              />
-                            </Show>
-                            <div>
-                              <div>{user.username}</div>
-                            </div>
-                          </li>
-                        </Show>
-                      )}
-                    </For>
-                  </Show>
-                </Suspense>
-              </ul>
-            </details>
+            <InviteMembersPanel members={members} setMembers={setMembers} />
           </form>
 
           <button

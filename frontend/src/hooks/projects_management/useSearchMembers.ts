@@ -7,14 +7,6 @@ export default function useSearchMembers() {
   const [query, setQuery] = createSignal("");
   const [members, setMembers] = createSignal<string[]>([]);
 
-  const addMember = (memberUsername: string) => {
-    setMembers([...members(), memberUsername]);
-  };
-
-  const removeMember = (memberUsername: string) => {
-    setMembers(members().filter((username) => username !== memberUsername));
-  };
-
   const clearSearch = () => {
     setRawQuery("");
     setQuery("");
@@ -36,12 +28,11 @@ export default function useSearchMembers() {
     return [];
   });
 
+
   return {
     setRawQuery,
     debounced,
     members,
-    addMember,
-    removeMember,
     matchedUsers,
     setMembers,
     clearSearch,

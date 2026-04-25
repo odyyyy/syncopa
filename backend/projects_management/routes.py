@@ -2,6 +2,7 @@ import asyncio
 
 from fastapi import Depends, status
 from fastapi.routing import APIRouter
+from starlette.responses import JSONResponse
 
 from projects_management.models.projects import Projects
 from projects_management.permissions import require_project_owner_permission
@@ -9,11 +10,12 @@ from projects_management.services import (
     create_project_and_invite_members,
     delete_project,
     get_user_projects,
+    invite_members,
     serialize_project,
 )
 from shared.dependencies import AccessTokenRequiredPayload
 
-from .schemas import ProjectIn, ProjectOut
+from .schemas import InvitedMembers, ProjectIn, ProjectOut
 
 project_router = APIRouter(prefix="/projects", tags=["projects"])
 
@@ -50,3 +52,16 @@ async def remove_project(
         "title": deleted_project.title,
         "id": deleted_project.id,
     }
+
+
+@project_router.post("/{project_id}/invitations")
+async def invite_member(
+    members: InvitedMembers,
+    project: Projects = Depends(require_project_owner_permission),
+):
+    await invite_members(project, members.members)
+
+    return JSONResponse(
+        status_code=status.HTTP_201_CREATED,
+        content={"detail": "Приглашения успешно отправлены"},
+    )

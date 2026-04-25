@@ -36,7 +36,9 @@ async def get_current_user(
 async def get_matched_users_by_username(username: str):
     from projects_management.services import gather_users_avatars
 
-    users = await Users.filter(username__icontains=username).only("username", "avatar")
+    users = await Users.filter(username__icontains=username).only(
+        "id", "username", "avatar"
+    )
     users_avatars = await gather_users_avatars(users)
     users = [
         ProjectMember(id=user.id, username=user.username, avatar=avatar)
@@ -70,6 +72,23 @@ async def change_invitation_status(
         raise ValueError("Данные о приглашении не найдены")
 
     invitation.status = status
+
+    if invitation.status == InvitationStatus.REJECTED.value:
+        await invitation.save()
+        return invitation
+
+    if (
+        invitation.status == InvitationStatus.ACCEPTED.value
+        and await invitation.project.invited_members.filter(id=user_id).exists()
+    ):
+        raise ValueError("Вы уже состоите в этом проекте")
+
+    MAX_MEMBERS_NUMBER = 10
+    if (
+        invitation.status == InvitationStatus.ACCEPTED.value
+        and await invitation.project.invited_members.all().count() >= MAX_MEMBERS_NUMBER
+    ):
+        raise ValueError("Проект достиг максимального количества участников")
 
     if invitation.status == InvitationStatus.ACCEPTED.value:
         from projects_management.services import add_member_to_project

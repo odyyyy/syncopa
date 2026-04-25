@@ -15,7 +15,7 @@ async def require_project_owner_permission(
     project = await Projects.get_or_none(
         id=project_id,
         owner_id=user.id,
-    )
+    ).select_related("owner")
 
     if not project:
         raise HTTPException(

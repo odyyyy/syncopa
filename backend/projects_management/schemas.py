@@ -2,6 +2,7 @@ from datetime import datetime
 
 from pydantic import UUID4, Field, field_validator
 
+from auth.schemas import UserValidatorsMixin
 from shared.base_schema import BaseSchema
 
 
@@ -30,3 +31,20 @@ class ProjectIn(BaseSchema):
         if len(v) > 10:
             raise ValueError("Нельзя пригласить больше 10 пользователей")
         return v
+
+
+class InvitedMembers(BaseSchema):
+    members: list[str] = Field(
+        default_factory=list,
+        min_length=1,
+        max_length=9,
+    )
+
+    @field_validator("members")
+    @classmethod
+    def validate_members(cls, values: list[str]) -> list[str]:
+        validated = []
+        for value in values:
+            if value is not None:
+                validated.append(UserValidatorsMixin.validate_username(value))
+        return validated
