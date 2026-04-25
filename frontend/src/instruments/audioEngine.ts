@@ -51,8 +51,8 @@ export const audioEngine = {
     audioPlayers.set(patternId, player);
   },
 
-  getAudioPlayer(trackId: string) {
-    return audioPlayers.get(trackId);
+  getAudioPlayer(patternId: string) {
+    return audioPlayers.get(patternId);
   },
 
   getAllAudioPlayers() {

@@ -7,11 +7,12 @@ import { audioEngine } from "../../instruments/audioEngine";
 import { PolySynthInstance } from "../../types/presets.types";
 import * as Tone from "tone";
 import { PRESETS_CATEGORIES_ENUM } from "../../components/DAW/Preset/PresetChooseModal";
+import { createSignal } from "solid-js";
 
 const useTracksManager = () => {
   const { setAndLoadSelectedPreset } = usePresetsContext();
   const { tracks, setTracks } = useProjectContext();
-  
+  const [isMuted, setIsMuted] = createSignal(false);
 
   const addNewTrack = (
     title: string | undefined = undefined,
@@ -73,18 +74,30 @@ const useTracksManager = () => {
       trackId: string,
     ) => {
       const trackIndex = tracks.findIndex((t) => t.trackId === trackId);
+      const track = tracks.at(trackIndex);
   
       setTracks(trackIndex, (prev) => ({
         ...prev,
         volume: newVolume,
       }));
-  
-      const preset = audioEngine.getInstrument(trackId);
-      if (preset && (preset as PolySynthInstance).type === "polySynth") {
-        (preset as PolySynthInstance).setVolume(newVolume / 100);
+      
+      if (track?.presetId === 0) {
+        track.patterns?.forEach((pattern) => {
+          const patternAudioPlayer = audioEngine.getAudioPlayer(pattern.patternId);
+          if (patternAudioPlayer) {
+            patternAudioPlayer.volume.value = volumeToDb(newVolume);
+          }
+        });
       }
-      if (preset instanceof Tone.Sampler) {
-        (preset as Tone.Sampler).volume.value = volumeToDb(newVolume);
+      
+      else {
+        const preset = audioEngine.getInstrument(trackId);
+        if (preset && (preset as PolySynthInstance).type === "polySynth") {
+          (preset as PolySynthInstance).setVolume(newVolume / 100);
+        }
+        if (preset instanceof Tone.Sampler) {
+          (preset as Tone.Sampler).volume.value = volumeToDb(newVolume);
+        }
       }
     };
 
@@ -94,6 +107,8 @@ const useTracksManager = () => {
     getDefaultPresetIdByCategory,
     handleTrackVolumeChange,
     removeTrackFromStore,
+    isMuted,
+    setIsMuted,
   };
 };
 
