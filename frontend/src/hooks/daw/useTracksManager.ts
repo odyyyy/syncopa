@@ -6,8 +6,8 @@ import { volumeToDb } from "../../context/daw/player.context";
 import { audioEngine } from "../../instruments/audioEngine";
 import { PolySynthInstance } from "../../types/presets.types";
 import * as Tone from "tone";
-import { PRESETS_CATEGORIES_ENUM } from "../../components/DAW/Preset/PresetChooseModal";
 import { createSignal } from "solid-js";
+import { InstrumentTypeEnum } from "@/components/DAW/Track/TrackInstrumentChooseModal";
 
 const useTracksManager = () => {
   const { setAndLoadSelectedPreset } = usePresetsContext();
@@ -50,18 +50,16 @@ const useTracksManager = () => {
 
   const getDefaultPresetIdByCategory = (category: string): number => {
     switch (category) {
-      case PRESETS_CATEGORIES_ENUM.LEAD:
+      case InstrumentTypeEnum.Synth:
         return 6;
-      case PRESETS_CATEGORIES_ENUM.TUBE:
-        return 7;
-      case PRESETS_CATEGORIES_ENUM.GUITAR:
+      case InstrumentTypeEnum.Guitar:
         return 8;
-      case PRESETS_CATEGORIES_ENUM.DRUM:
+      case InstrumentTypeEnum.Drum:
         return 9;
-      case PRESETS_CATEGORIES_ENUM.KEY:
-        return 10;
-      default:
+      case InstrumentTypeEnum.Audio:
         return 0;
+      default:
+        return 6;
     }
   };
 
@@ -69,37 +67,34 @@ const useTracksManager = () => {
     setTracks((prev: Track[]) => prev.filter((t) => t.trackId !== trackId));
   };
 
-    const handleTrackVolumeChange = (
-      newVolume: number,
-      trackId: string,
-    ) => {
-      const trackIndex = tracks.findIndex((t) => t.trackId === trackId);
-      const track = tracks.at(trackIndex);
-  
-      setTracks(trackIndex, (prev) => ({
-        ...prev,
-        volume: newVolume,
-      }));
-      
-      if (track?.presetId === 0) {
-        track.patterns?.forEach((pattern) => {
-          const patternAudioPlayer = audioEngine.getAudioPlayer(pattern.patternId);
-          if (patternAudioPlayer) {
-            patternAudioPlayer.volume.value = volumeToDb(newVolume);
-          }
-        });
-      }
-      
-      else {
-        const preset = audioEngine.getInstrument(trackId);
-        if (preset && (preset as PolySynthInstance).type === "polySynth") {
-          (preset as PolySynthInstance).setVolume(newVolume / 100);
+  const handleTrackVolumeChange = (newVolume: number, trackId: string) => {
+    const trackIndex = tracks.findIndex((t) => t.trackId === trackId);
+    const track = tracks.at(trackIndex);
+
+    setTracks(trackIndex, (prev) => ({
+      ...prev,
+      volume: newVolume,
+    }));
+
+    if (track?.presetId === 0) {
+      track.patterns?.forEach((pattern) => {
+        const patternAudioPlayer = audioEngine.getAudioPlayer(
+          pattern.patternId,
+        );
+        if (patternAudioPlayer) {
+          patternAudioPlayer.volume.value = volumeToDb(newVolume);
         }
-        if (preset instanceof Tone.Sampler) {
-          (preset as Tone.Sampler).volume.value = volumeToDb(newVolume);
-        }
+      });
+    } else {
+      const preset = audioEngine.getInstrument(trackId);
+      if (preset && (preset as PolySynthInstance).type === "polySynth") {
+        (preset as PolySynthInstance).setVolume(newVolume / 100);
       }
-    };
+      if (preset instanceof Tone.Sampler) {
+        (preset as Tone.Sampler).volume.value = volumeToDb(newVolume);
+      }
+    }
+  };
 
   return {
     addNewTrack,

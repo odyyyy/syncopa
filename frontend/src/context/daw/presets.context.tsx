@@ -126,7 +126,6 @@ export const PresetsProvider: ParentComponent = (props) => {
     );
   };
 
-
   return (
     <Switch>
       <Match when={presets.loading}>
@@ -139,7 +138,6 @@ export const PresetsProvider: ParentComponent = (props) => {
             presetModalState,
             setPresetModalState,
             setAndLoadSelectedPreset,
-            // setAndLoadSelectedPresetInModal,
             isPresetLoading,
             setIsPresetLoading,
             updatePreset,

@@ -2,8 +2,10 @@ import {
   Component,
   createEffect,
   createMemo,
+  createSignal,
   For,
   onCleanup,
+  onMount,
   Show,
 } from "solid-js";
 import usePatternTransform from "../../../hooks/daw/pattern/usePatternTransform";
@@ -18,6 +20,7 @@ import usePianoRoll from "../../../hooks/daw/pianoroll/usePianoRoll";
 import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
 import usePatternContextMenu from "../../../hooks/daw/pattern/usePatternContextMenu";
 import AudioPatternWaveform from "./AudioPatternWaveform";
+import * as Tone from "tone";
 
 const Pattern: Component<{
   pattern: Accessor<PatternType>;
@@ -62,72 +65,91 @@ const Pattern: Component<{
     });
   }
 
+  const [isLoaded, setIsLoaded] = createSignal(false);
+
+  onMount(async () => {
+    await Tone.loaded();
+    setIsLoaded(true);
+    setTimeout(() => {}, 1101);
+  });
+
   return (
-    <div
-      class="pattern h-full"
-      data-pattern-id={props.pattern().patternId}
-      style={{
-        left: `${patternPos()}px`,
-        width: `${patternWidth()}px`,
-        cursor: isGrabbing() ? "grabbing" : "pointer",
-      }}
-      onMouseDown={startGrab}
-      onContextMenu={(e: MouseEvent) => {
-        e.preventDefault();
-        handlePatternContextMenu(e, props.pattern());
-      }}
-      ondblclick={editPattern}
+    <Show
+      when={isLoaded()}
+      fallback={
+        <div class="w-full h-full flex items-center justify-center">
+          <span class="loading loading-spinner loading-sm"></span>
+        </div>
+      }
     >
-      <Show when={props.pattern().type === "vst"}>
       <div
-        class="absolute top-0 w-2 left-0 z-1 h-full cursor-ew-resize rounded-sm bg-base-content/30 opacity-0 hover:opacity-100 transition-opacity"
-        onMouseDown={startResizeLeft}
-      />
-
-      <div
-        class="absolute top-0 w-2 right-0  z-1 h-full cursor-ew-resize rounded-sm bg-base-content/30 opacity-0 hover:opacity-100 transition-opacity"
-        onMouseDown={startResizeRight}
-        />
-      </Show>
-
-      <div class="w-full h-full bg-base-content/20">
+        class="pattern h-full"
+        data-pattern-id={props.pattern().patternId}
+        style={{
+          left: `${patternPos()}px`,
+          width: `${patternWidth()}px`,
+          cursor: isGrabbing() ? "grabbing" : "pointer",
+        }}
+        onMouseDown={startGrab}
+        onContextMenu={(e: MouseEvent) => {
+          e.preventDefault();
+          handlePatternContextMenu(e, props.pattern());
+        }}
+        ondblclick={editPattern}
+      >
         <Show when={props.pattern().type === "vst"}>
           <div
-            class="grid absolute w-full h-full "
-            style={{
-              "grid-template-rows": `repeat(${ROWS_NUMBER}, minmax(0, 1fr))`,
-            }}
-          >
-            <For each={notes()}>
-              {(note) => {
-                const row = PIANOROLL_NOTES.indexOf(note.note);
+            class="absolute top-0 w-2 left-0 z-1 h-full cursor-ew-resize rounded-sm bg-base-content/30 opacity-0 hover:opacity-100 transition-opacity"
+            onMouseDown={startResizeLeft}
+          />
 
-                return (
-                  <div
-                    class="absolute w-full "
-                    style={{
-                      top: `${(row / ROWS_NUMBER) * 100}%`,
-                      height: `${100 / ROWS_NUMBER / 10 / 10}%`,
-                    }}
-                  >
-                    <div
-                      class="absolute h-1 bg-primary/54 light:bg-neutral/60"
-                      style={{
-                        left: `${(Math.max(note.pos - 1, 0) * patternWidth()) / patternWidthInTacts() / 4.04}px`,
-                        width: `${(note.duration * patternWidth()) / 4.2 / patternWidthInTacts()}px`,
-                      }}
-                    />
-                  </div>
-                );
-              }}
-            </For>
-          </div>
+          <div
+            class="absolute top-0 w-2 right-0  z-1 h-full cursor-ew-resize rounded-sm bg-base-content/30 opacity-0 hover:opacity-100 transition-opacity"
+            onMouseDown={startResizeRight}
+          />
         </Show>
-          <Show when={props.pattern().type === "audio"}>
-             <AudioPatternWaveform pattern={() => props.pattern() as PatternAudio} />
+
+        <div class="w-full h-full bg-base-content/20">
+          <Show when={props.pattern().type === "vst"}>
+            <div
+              class="grid absolute w-full h-full "
+              style={{
+                "grid-template-rows": `repeat(${ROWS_NUMBER}, minmax(0, 1fr))`,
+              }}
+            >
+              <For each={notes()}>
+                {(note) => {
+                  const row = PIANOROLL_NOTES.indexOf(note.note);
+
+                  return (
+                    <div
+                      class="absolute w-full "
+                      style={{
+                        top: `${(row / ROWS_NUMBER) * 100}%`,
+                        height: `${100 / ROWS_NUMBER / 10 / 10}%`,
+                      }}
+                    >
+                      <div
+                        class="absolute h-1 bg-primary/54 light:bg-neutral/60"
+                        style={{
+                          left: `${(Math.max(note.pos - 1, 0) * patternWidth()) / patternWidthInTacts() / 4.04}px`,
+                          width: `${(note.duration * patternWidth()) / 4.2 / patternWidthInTacts()}px`,
+                        }}
+                      />
+                    </div>
+                  );
+                }}
+              </For>
+            </div>
           </Show>
+          <Show when={props.pattern().type === "audio"}>
+            <AudioPatternWaveform
+              pattern={() => props.pattern() as PatternAudio}
+            />
+          </Show>
+        </div>
       </div>
-    </div>
+    </Show>
   );
 };
 

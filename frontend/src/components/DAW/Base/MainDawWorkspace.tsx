@@ -19,6 +19,7 @@ import { useTimelineContext } from "@/context/daw/timeline.context";
 import useProjectAutoSave from "@/hooks/daw/project/useProjectAutoSave";
 import useProjectManager from "@/hooks/daw/project/useProjectManager";
 import useEffectsManager from "@/hooks/daw/effect/useEffectsManager";
+import * as Tone from "tone";
 
 const MainDawWorkspace: Component = () => {
   let mainTracksPanelRef: HTMLDivElement | undefined;
@@ -38,7 +39,7 @@ const MainDawWorkspace: Component = () => {
   const { isPianoRollOpen, pianoRollHeight } = usePianoRollContext();
 
   const { initializeProjectEffects } = useEffectsManager();
-  onMount(async() => {
+  onMount(async () => {
     const audioPatternsIds = tracks.reduce((ids, track) => {
       track.patterns?.forEach((p) => {
         if (p.type === "audio") ids.push(p.patternId);
@@ -49,6 +50,8 @@ const MainDawWorkspace: Component = () => {
     if (audioPatternsIds && audioPatternsIds.length !== 0) {
       loadAudioPatternsUsedInProject(audioPatternsIds);
     }
+    await Tone.start();
+    await Tone.loaded();
     initializeProjectEffects(tracks);
   });
   useProjectAutoSave();
