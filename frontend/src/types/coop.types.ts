@@ -1,5 +1,6 @@
 import { SetStoreFunction } from "solid-js/store";
 import { Note, Track } from "./daw.types";
+import { Effect } from "./presets.types";
 
 type CoopSession = {
   project_id: string;
@@ -27,6 +28,7 @@ enum Target {
   NOTE = "note",
   PRESET = "preset",
   TRACK_VOLUME = "track_volume",
+  EFFECT = "effect",
 }
 
 enum ConnectionState {
@@ -76,6 +78,8 @@ type CoopOperationsHandlers = {
   ) => void;
   updatePreset: (presetId: number, trackId: string) => void;
   updateTrackVolume: (volume: number, trackId: string) => void;
+  applyEffectToPattern: (patternId: string, effectParams: Effect) => void;
+  removeEffectFromPattern: (patternId: string, effectType: string) => void;
 };
 
 export type {

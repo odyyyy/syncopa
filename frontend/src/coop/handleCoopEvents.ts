@@ -134,5 +134,21 @@ const applyIncomeOperation = (
           break;
       }
       break;
+    case Target.EFFECT:
+      switch (data.operation) {
+        case SyncOperation.CREATE:
+          handlers.applyEffectToPattern(
+            data.payload.patternId,
+            data.payload.effectParams,
+          );
+          break;
+        case SyncOperation.REMOVE:
+          handlers.removeEffectFromPattern(
+            data.payload.patternId,
+            data.payload.effectType,
+          );
+          break;
+      }
+      break;
   }
 };

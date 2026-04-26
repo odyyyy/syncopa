@@ -13,7 +13,6 @@ import * as Tone from "tone";
 
 const effectNodesCache = new Map<string, Tone.ToneAudioNode>();
 
-
 export const FX_DATA = {
   REVERB: {
     id: "reverb",
@@ -58,7 +57,7 @@ export const FX_DATA = {
 
 const useEffectsManager = () => {
   const { setTracks } = useProjectContext();
-  
+
   const createEffectParamsStore = () => {
     const initialValues: Record<string, number> = {};
     Object.values(FX_DATA).forEach((effect) => {
@@ -70,15 +69,11 @@ const useEffectsManager = () => {
     return { effectParams, setEffectParams };
   };
 
-  const applyEffectToPattern = (
-    patternId: string,
-    effectParams: Record<string, any>,
-  ) => {
-    const { type, ...params } = effectParams;
-    const newEffect = { type, ...params } as Effect;
+  const applyEffectToPattern = (patternId: string, effectParams: Effect) => {
+    const { type } = effectParams;
 
     let targetTrackId = "";
-    let targetPatternType = "";
+    let targetPatternType: "vst" | "audio";
 
     setTracks((prev) =>
       prev.map((track) => {
@@ -97,22 +92,21 @@ const useEffectsManager = () => {
               ...p,
               effects: [
                 ...(p.effects || []).filter((e) => e.type !== type),
-                newEffect,
+                effectParams,
               ],
             };
           }),
         };
       }),
     );
+    if (!targetPatternType!) return;
 
-    const sourceId = targetPatternType === "vst" ? targetTrackId : patternId;
-    connectEffectToSource(targetPatternType, sourceId, effectParams as Effect);
-
-    toast.success("Эффект применён");
+    const sourceId = targetPatternType! === "vst" ? targetTrackId : patternId;
+    connectEffectToSource(targetPatternType!, sourceId, effectParams);
   };
 
   const connectEffectToSource = (
-    targetPatternType: string,
+    targetPatternType: "vst" | "audio",
     targetId: string,
     effectParams: Effect,
   ) => {
@@ -168,14 +162,14 @@ const useEffectsManager = () => {
         };
       }),
     );
-    
-    const cacheKey = `${patternId}-${effectType}`; 
-        if (effectNodesCache.has(cacheKey)) {
-          const node = effectNodesCache.get(cacheKey);
-          node?.disconnect();
-          node?.dispose();
-          effectNodesCache.delete(cacheKey);
-        }
+
+    const cacheKey = `${patternId}-${effectType}`;
+    if (effectNodesCache.has(cacheKey)) {
+      const node = effectNodesCache.get(cacheKey);
+      node?.disconnect();
+      node?.dispose();
+      effectNodesCache.delete(cacheKey);
+    }
 
     if (targetPatternType === "vst") {
       const instrument = audioEngine.getInstrument(targetTrackId);
@@ -225,7 +219,8 @@ const useEffectsManager = () => {
   return {
     applyEffectToPattern,
     removeEffectFromPattern,
-    initializeProjectEffects,createEffectParamsStore
+    initializeProjectEffects,
+    createEffectParamsStore,
   };
 };
 

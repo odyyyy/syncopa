@@ -61,9 +61,7 @@ type AudioClipMetadata = {
   duration: number;
   sampleRate: number;
   channelsNumber: number;
-  
 };
-
 
 type PatternAudioLoaded = {
   patternId: string;
@@ -153,5 +151,5 @@ export type {
   TimelineContextType,
   ContextMenuItem,
   PianoRollContextType,
-  PatternAndTrack
+  PatternAndTrack,
 };

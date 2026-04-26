@@ -15,6 +15,9 @@ import useEffectsManager, {
   FX_DATA,
 } from "@/hooks/daw/effect/useEffectsManager";
 import { batch } from "solid-js";
+import toast from "solid-toast";
+import { useSendChangeEvent } from "@/coop/handleCoopEvents";
+import { SyncOperation, Target } from "@/types/coop.types";
 
 const EffectsModal: Component<{
   dialogRef: (el: HTMLDialogElement) => void;
@@ -30,16 +33,17 @@ const EffectsModal: Component<{
     createEffectParamsStore,
   } = useEffectsManager();
   const { effectParams, setEffectParams } = createEffectParamsStore();
+  const { sendChangeEvent } = useSendChangeEvent();
 
   const availablePatterns = createMemo(() =>
-    tracks.flatMap((track) => track.patterns || [])
+    tracks.flatMap((track) => track.patterns || []),
   );
 
   const currentPattern = createMemo(() => {
-      const id = targetPatternId();
-      if (!id) return undefined;
-      return availablePatterns().find((p) => p.patternId === id);
-    });
+    const id = targetPatternId();
+    if (!id) return undefined;
+    return availablePatterns().find((p) => p.patternId === id);
+  });
 
   const appliedEffectData = createMemo(() =>
     currentPattern()?.effects?.find((e) => e.type === selectedFx().id),
@@ -110,7 +114,7 @@ const EffectsModal: Component<{
             </span>
             <select
               class="select select-bordered select-sm bg-base-100 rounded-lg font-bold text-xs focus:outline-none"
-              itemprop={targetPatternId()} 
+              itemprop={targetPatternId()}
               onChange={(e) => setTargetPatternId(e.currentTarget.value)}
             >
               <Show when={!targetPatternId()}>
@@ -120,8 +124,8 @@ const EffectsModal: Component<{
               </Show>
               <For each={availablePatterns()}>
                 {(p) => (
-                  <option 
-                    value={p.patternId} 
+                  <option
+                    value={p.patternId}
                     selected={p.patternId === targetPatternId()}
                   >
                     {p.title}
@@ -179,9 +183,13 @@ const EffectsModal: Component<{
 
               <Show when={!!appliedEffectData()}>
                 <button
-                  onClick={() =>
-                    removeEffectFromPattern(targetPatternId(), selectedFx().id)
-                  }
+                  onClick={() => {
+                    removeEffectFromPattern(targetPatternId(), selectedFx().id);
+                    sendChangeEvent(SyncOperation.REMOVE, Target.EFFECT, {
+                      patternId: targetPatternId(),
+                      effectType: selectedFx().id,
+                    });
+                  }}
                   class="text-[10px] font-black uppercase px-3 py-2 bg-error/10 text-error rounded-xl border border-error/20 hover:bg-error hover:text-white transition-all cursor-pointer tracking-widest"
                 >
                   Удалить эффект
@@ -214,6 +222,14 @@ const EffectsModal: Component<{
               applyEffectToPattern(targetPatternId(), {
                 type: selectedFx().id,
                 ...effectParams(),
+              });
+              toast.success("Эффект применён");
+              sendChangeEvent(SyncOperation.CREATE, Target.EFFECT, {
+                patternId: targetPatternId(),
+                effectParams: {
+                  type: selectedFx().id,
+                  ...effectParams(),
+                },
               });
             }}
             disabled={!targetPatternId()}

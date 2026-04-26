@@ -32,6 +32,7 @@ class Target(StrEnum):
     NOTE = "note"
     PRESET = "preset"
     TRACK_VOLUME = "track_volume"
+    EFFECT = "effect"
 
 
 class ConnectionState(StrEnum):

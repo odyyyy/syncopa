@@ -11,6 +11,7 @@ import useTracksManager from "../../hooks/daw/useTracksManager";
 import useNoteManager from "../../hooks/daw/pianoroll/useNoteManager";
 import useUpdatePatternPosAndWidth from "../../hooks/daw/pattern/updatePatternPosAndWidth";
 import { usePresetsContext } from "../daw/presets.context";
+import useEffectsManager from "@/hooks/daw/effect/useEffectsManager";
 
 export const CoopSessionContext = createContext<CoopSessionContextType>();
 
@@ -24,6 +25,7 @@ export const CoopSessionProvider: ParentComponent = (props) => {
   const tracksManager = useTracksManager();
   const noteManager = useNoteManager();
   const { updatePreset } = usePresetsContext();
+  const effectManager = useEffectsManager();
 
   const coopOperationsHandlers: CoopOperationsHandlers = {
     addTrack: tracksManager.addTrackInStoreAndLoadDefaultPreset,
@@ -36,6 +38,8 @@ export const CoopSessionProvider: ParentComponent = (props) => {
     transformNote: noteManager.updateTransformedNote,
     updatePreset: updatePreset,
     updateTrackVolume: tracksManager.handleTrackVolumeChange,
+    applyEffectToPattern: effectManager.applyEffectToPattern,
+    removeEffectFromPattern: effectManager.removeEffectFromPattern,
   };
 
   const websocketConnection = setupCoopConnectionsAndHandleEvents(
