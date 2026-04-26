@@ -173,6 +173,7 @@ export function createPolySynth(config: Synth): PolySynthInstance {
     type: "polySynth",
     config,
     triggerAttackRelease,
+    output: current,
     dispose,
     setVolume: (v: number) => master.gain.rampTo(v, 0.05)
   };

@@ -18,6 +18,7 @@ import useSwitchPreset from "../../../hooks/daw/preset/useSwitchPreset";
 import { useTimelineContext } from "@/context/daw/timeline.context";
 import useProjectAutoSave from "@/hooks/daw/project/useProjectAutoSave";
 import useProjectManager from "@/hooks/daw/project/useProjectManager";
+import useEffectsManager from "@/hooks/daw/effect/useEffectsManager";
 
 const MainDawWorkspace: Component = () => {
   let mainTracksPanelRef: HTMLDivElement | undefined;
@@ -36,17 +37,19 @@ const MainDawWorkspace: Component = () => {
   const { tactElementsNumber } = useTimelineContext();
   const { isPianoRollOpen, pianoRollHeight } = usePianoRollContext();
 
-  onMount(() => {
+  const { initializeProjectEffects } = useEffectsManager();
+  onMount(async() => {
     const audioPatternsIds = tracks.reduce((ids, track) => {
       track.patterns?.forEach((p) => {
         if (p.type === "audio") ids.push(p.patternId);
       });
       return ids;
     }, [] as string[]);
-    
+
     if (audioPatternsIds && audioPatternsIds.length !== 0) {
       loadAudioPatternsUsedInProject(audioPatternsIds);
     }
+    initializeProjectEffects(tracks);
   });
   useProjectAutoSave();
 

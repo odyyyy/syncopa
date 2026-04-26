@@ -5,6 +5,8 @@ from pydantic import UUID4, Field
 from projects_management.schemas import ProjectMember
 from shared.base_schema import BaseSchema
 
+from .preset import DelayConfig, DistortionConfig, ReverbConfig
+
 
 class ProjectWithPayload(BaseSchema):
     project_id: UUID4
@@ -38,6 +40,7 @@ class Pattern(BaseSchema):
     pos: float
     width: float
     type: Literal["audio", "vst"]
+    effects: list["Effect"] = Field(default_factory=list)
 
 
 class PatternVST(Pattern):
@@ -65,6 +68,8 @@ class AudioClipMetadata(BaseSchema):
 class PatternAudioOut(BaseSchema):
     pattern_id: str
 
+
+Effect = Union["ReverbConfig", "DelayConfig", "DistortionConfig"]
 
 """
     ProjectWithPayload JSON Examples:

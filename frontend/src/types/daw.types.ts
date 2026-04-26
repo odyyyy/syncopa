@@ -1,5 +1,6 @@
 import { Accessor, JSX, Resource, Setter } from "solid-js";
 import { SetStoreFunction } from "solid-js/store";
+import { Effect } from "./presets.types";
 
 type ProjectWithPayload = {
   projectId: string;
@@ -33,6 +34,7 @@ type BasePattern = {
   pos: number;
   width: number;
   type: "audio" | "vst";
+  effects?: Effect[];
 };
 
 type PatternVST = BasePattern & {

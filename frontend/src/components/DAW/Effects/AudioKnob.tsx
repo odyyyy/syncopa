@@ -31,7 +31,7 @@ export const AudioKnob: Component<KnobProps> = (props) => {
         const deltaY = startY - moveEvent.clientY;
         const range = props.max - props.min;
 
-        const sensitivity = 0.0035;
+        const sensitivity = 0.0025;
 
         let newValue = startValue + deltaY * range * sensitivity;
         newValue = Math.max(props.min, Math.min(props.max, newValue));

@@ -103,6 +103,7 @@ type ReverbConfig = {
   type: "reverb";
   decay: number;
   wet: number;
+  preDelay: number;
 };
 
 type DelayConfig = {
@@ -149,6 +150,7 @@ interface PolySynthInstance {
   config: Synth;
   type: "polySynth",
   setVolume: (v: number) => void;
+  output: Tone.ToneAudioNode
 }
 
 interface PresetCategory {
@@ -186,5 +188,5 @@ export type {
   PresetModalState,
   Sampler,
   PolySynthInstance,
-  SamplerWithUrls,
+  SamplerWithUrls,Effect
 };

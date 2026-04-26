@@ -104,6 +104,7 @@ class DistortionConfig(BaseModel):
 class ReverbConfig(BaseModel):
     type: Literal["reverb"]
     decay: float
+    pre_delay: float | None = None
     wet: float
 
 
