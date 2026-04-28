@@ -7,7 +7,9 @@ type Instrument = Tone.ToneAudioNode | PolySynthInstance;
 const [instruments, setInstruments] = createStore<
   Record<string, Instrument | undefined>
 >({});
-const audioPlayers = new Map<string, Tone.Player>();
+const [audioPlayers, setAudioPlayers] = createStore<
+  Record<string, Tone.Player | undefined>
+>({});
 
 export const audioEngine = {
   setInstrument(trackId: string, instrument: Instrument) {
@@ -47,15 +49,15 @@ export const audioEngine = {
     }).toDestination();
 
     await Tone.loaded();
-
-    audioPlayers.set(patternId, player);
+    setAudioPlayers(patternId, player);
   },
 
   getAudioPlayer(patternId: string) {
-    return audioPlayers.get(patternId);
+    
+    return audioPlayers[patternId]; 
   },
 
   getAllAudioPlayers() {
-    return audioPlayers.values();
+    return Object.values(audioPlayers).filter(Boolean);
   },
 };

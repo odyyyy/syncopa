@@ -31,8 +31,10 @@ const usePlayerManager = () => {
       parts().forEach((p) => p.dispose());
       setParts([]);
       audioEngine.getAllAudioPlayers().forEach((player) => {
-        // player.stop();
-        player.unsync();
+        if (player) {
+          // player.stop();
+          player.unsync();
+        }
       });
       return;
     }

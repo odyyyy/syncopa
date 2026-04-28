@@ -5,7 +5,11 @@ import { usePlayerContext } from "@/context/daw/player.context";
 import toWav from "audiobuffer-to-wav";
 import * as Tone from "tone";
 import { Track } from "../../../types/daw.types";
-import { PolySynthInstance, SamplerWithUrls, Synth } from "../../../types/presets.types";
+import {
+  PolySynthInstance,
+  SamplerWithUrls,
+  Synth,
+} from "../../../types/presets.types";
 import { audioEngine } from "../../../instruments/audioEngine";
 import { createPolySynth } from "../../../instruments/createSynth";
 
@@ -41,28 +45,30 @@ const useExportProject = () => {
     a.download = `${project()?.title}.wav`;
     a.click();
   };
-  
 
   const createInstrumentOffline = async (track: Track) => {
     const preset = audioEngine.getInstrument(track.trackId);
-  
-    if ((preset as PolySynthInstance).type === "polySynth" && "config" in (preset as PolySynthInstance)) {
-      return createPolySynth((preset as PolySynthInstance).config as Synth)
+
+    if (
+      (preset as PolySynthInstance).type === "polySynth" &&
+      "config" in (preset as PolySynthInstance)
+    ) {
+      return createPolySynth((preset as PolySynthInstance).config as Synth);
     }
-  
+
     if (preset instanceof Tone.Sampler && "samplesUrls" in preset) {
       return new Promise<Tone.Sampler>((resolve, reject) => {
-            const sampler = new Tone.Sampler({
-              urls: (preset as SamplerWithUrls).samplesUrls,
-              onload: () => {
-                resolve(sampler.toDestination());
-              },
-              onerror: (err) => {
-                reject(err);
-              }
-            });
-          });
-        }
+        const sampler = new Tone.Sampler({
+          urls: (preset as SamplerWithUrls).samplesUrls,
+          onload: () => {
+            resolve(sampler.toDestination());
+          },
+          onerror: (err) => {
+            reject(err);
+          },
+        });
+      });
+    }
   };
 
   const exportProjectAudio = async () => {
@@ -72,36 +78,52 @@ const useExportProject = () => {
       Tone.getTransport().bpm.value = bpm();
 
       for (const track of tracks) {
-        const instrument = await createInstrumentOffline(track); 
-        if (!instrument) continue;
+        if (track.presetId !== 0) {
+          const instrument = await createInstrumentOffline(track);
+          if (!instrument) continue;
 
-        track.patterns?.forEach((pattern) => {
-          if (pattern.type !== "vst" || !pattern.notes) return;
+          track.patterns?.forEach((pattern) => {
+            if (pattern.type !== "vst" || !pattern.notes) return;
 
-          pattern.notes.forEach((note) => {
-            const time =
-              (pattern.pos + (note.pos - 1) / beatNumber()) *
-              (60 / bpm()) *
-              beatNumber();
+            pattern.notes.forEach((note) => {
+              const time =
+                (pattern.pos + (note.pos - 1) / beatNumber()) *
+                (60 / bpm()) *
+                beatNumber();
 
-            const duration = note.duration * (60 / bpm());
+              const duration = note.duration * (60 / bpm());
 
-            instrument?.triggerAttackRelease(
-              note.note,
-              duration,
-              time,
-              note.velocity,
-            );
+              instrument?.triggerAttackRelease(
+                note.note,
+                duration,
+                time,
+                note.velocity,
+              );
+            });
           });
-        });
+        } else {
+          track.patterns?.forEach((pattern) => {
+            if (pattern.type !== "audio") return;
+            const activePlayer = audioEngine.getAudioPlayer(pattern.patternId);
+            if (!activePlayer) return;
+
+            const buffer = activePlayer.buffer;
+
+            const time = pattern.pos * (60 / bpm()) * beatNumber();
+
+            const player = new Tone.Player({
+              url: buffer,
+            }).toDestination();
+
+            player.start(time);
+          });
+        }
       }
 
       Tone.getTransport().start();
     }, projectDuration);
-    
+
     downloadProjectAudio(buffer.get()!);
-    
-    
   };
 
   return {
