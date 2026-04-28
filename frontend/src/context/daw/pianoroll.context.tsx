@@ -3,10 +3,11 @@ import {
   ParentComponent,
   createSignal,
   useContext,
-  createEffect,
+  onMount,
 } from "solid-js";
 import { PatternAndTrack, PianoRollContextType } from "../../types/daw.types";
 import { createStore } from "solid-js/store";
+import { useProjectContext } from "./project.context";
 
 export const PianoRollContext = createContext<PianoRollContextType>();
 
@@ -20,6 +21,16 @@ export const PianoRollProvider: ParentComponent = (props) => {
 
   const openPianoRoll = () => setIsPianoRollOpen(true);
   const closePianoRoll = () => setIsPianoRollOpen(false);
+  
+  const { tracks } = useProjectContext();
+  const { patternId } = currentPatternAndTrackId;
+  onMount(() => {
+    const pattern = tracks
+      .flatMap(t => t.patterns || [])
+      .find(p => p.patternId === patternId);
+    
+    setCurrentPatternWidthInTacts(() => pattern?.width ?? 1);
+  });
   
   return (
     <PianoRollContext.Provider

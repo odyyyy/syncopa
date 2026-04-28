@@ -6,12 +6,11 @@ import {
 } from "../../../types/daw.types";
 import { useProjectContext } from "@/context/daw/project.context";
 
-const usePatternManager = (patternWidthInTacts: Accessor<number> = () => 4) => {
+const usePatternManager = () => {
   const { tracks, setTracks } = useProjectContext();
   const {
     setCurrentPatternAndTrackId,
     openPianoRoll,
-    setCurrentPatternWidthInTacts,
   } = usePianoRollContext();
 
   const addPatternOnTrack = (
@@ -50,8 +49,7 @@ const usePatternManager = (patternWidthInTacts: Accessor<number> = () => 4) => {
         trackId,
         patternId,
       });
-      setCurrentPatternWidthInTacts(patternWidthInTacts);
-
+      
       openPianoRoll();
     }
   };
@@ -65,7 +63,6 @@ const usePatternManager = (patternWidthInTacts: Accessor<number> = () => 4) => {
       prev ? prev.filter((p) => p.patternId !== patternId) : null,
     );
   };
-
 
   return {
     addPatternOnTrack,

@@ -21,6 +21,7 @@ import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
 import usePatternContextMenu from "../../../hooks/daw/pattern/usePatternContextMenu";
 import AudioPatternWaveform from "./AudioPatternWaveform";
 import * as Tone from "tone";
+import { audioEngine } from "@/instruments/audioEngine";
 
 const Pattern: Component<{
   pattern: Accessor<PatternType>;
@@ -37,7 +38,7 @@ const Pattern: Component<{
     startGrab,
     patternWidthInTacts,
   } = usePatternTransform(props.pattern, props.trackId);
-  const { editPattern } = usePatternManager(patternWidthInTacts);
+  const { editPattern } = usePatternManager();
 
   const { handlePatternContextMenu } = usePatternContextMenu();
   const { ROWS_NUMBER, PIANOROLL_NOTES } = usePianoRoll();
@@ -67,18 +68,39 @@ const Pattern: Component<{
 
   const [isLoaded, setIsLoaded] = createSignal(false);
 
-  onMount(async () => {
-    await Tone.loaded();
-    setIsLoaded(true);
-    setTimeout(() => {}, 1101);
+  createEffect(() => {
+    if (props.pattern().type === "vst") {
+      const inst = audioEngine.getInstrument(props.trackId);
+
+      if (!inst) {
+        setIsLoaded(false);
+        return;
+      }
+
+      if (inst instanceof Tone.Sampler) {
+        setIsLoaded(inst.loaded);
+      } else {
+        setIsLoaded(true);
+      }
+    } else if (props.pattern().type === "audio") {
+      const player = audioEngine.getAudioPlayer(props.pattern().patternId);
+      setIsLoaded(player?.buffer.loaded ?? false);
+    }
   });
 
   return (
     <Show
       when={isLoaded()}
       fallback={
-        <div class="w-full h-full flex items-center justify-center">
-          <span class="loading loading-spinner loading-sm"></span>
+        <div
+          class="pattern flex justify-center items-center"
+          style={{
+            left: `${patternPos()}px`,
+            width: `${patternWidth()}px`,
+            cursor: isGrabbing() ? "grabbing" : "pointer",
+          }}
+        >
+          <span class="loading loading-spinner self-center  loading-sm"></span>
         </div>
       }
     >
@@ -95,7 +117,11 @@ const Pattern: Component<{
           e.preventDefault();
           handlePatternContextMenu(e, props.pattern());
         }}
-        ondblclick={editPattern}
+        onDblClick={(e) => {
+          if (props.pattern().type === "vst") {
+            editPattern(e);
+          }
+        }}
       >
         <Show when={props.pattern().type === "vst"}>
           <div

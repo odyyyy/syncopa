@@ -11,7 +11,7 @@ import { SyncOperation, Target } from "../../../types/coop.types";
 import { useContextMenu } from "../../../context/daw/contextmenu.context";
 
 const usePianoRoll = () => {
-  const { tracks, setTracks } = useProjectContext();
+  const { tracks } = useProjectContext();
   const { currentPatternAndTrackId, currentPatternWidthInTacts } =
     usePianoRollContext();
   const { beatNumber } = useTimelineContext();

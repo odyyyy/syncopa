@@ -112,25 +112,6 @@ const MainDawWorkspace: Component = () => {
           </Index>
         </div>
 
-        <TrackInstrumentChooseModal
-          dialogRef={(el) => (chooseTrackInstrumentRef = el)}
-          onSelect={(instrumentChoice) => {
-            if (!instrumentChoice) return;
-            const newTrack = addNewTrack(undefined, instrumentChoice);
-            if (!newTrack) return;
-
-            sendChangeEvent(SyncOperation.CREATE, Target.TRACK, {
-              track: newTrack,
-            });
-          }}
-        />
-
-        <PresetChooseModal
-          dialogRef={(el) => (choosePresetRef = el)}
-          onSelect={(presetId) => {
-            selectPresetFromModal(presetId);
-          }}
-        />
         <div
           class="relative bg-base-200 h-full grid grid-flow-row place-content-start overflow-x-auto overflow-y-hidden"
           ref={mainTracksPanelRef}
@@ -162,6 +143,25 @@ const MainDawWorkspace: Component = () => {
       <Show when={isPianoRollOpen()}>
         <PianoRoll />
       </Show>
+      <TrackInstrumentChooseModal
+        dialogRef={(el) => (chooseTrackInstrumentRef = el)}
+        onSelect={(instrumentChoice) => {
+          if (!instrumentChoice) return;
+          const newTrack = addNewTrack(undefined, instrumentChoice);
+          if (!newTrack) return;
+
+          sendChangeEvent(SyncOperation.CREATE, Target.TRACK, {
+            track: newTrack,
+          });
+        }}
+      />
+
+      <PresetChooseModal
+        dialogRef={(el) => (choosePresetRef = el)}
+        onSelect={(presetId) => {
+          selectPresetFromModal(presetId);
+        }}
+      />
     </div>
   );
 };

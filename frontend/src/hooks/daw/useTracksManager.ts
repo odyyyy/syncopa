@@ -24,7 +24,7 @@ const useTracksManager = () => {
     }
 
     if (!title) {
-      title = `Дорожка ${tracks.length + 1}`;
+      title = generateTrackTitle(tracks);
     }
 
     const trackId = crypto.randomUUID();
@@ -41,6 +41,7 @@ const useTracksManager = () => {
 
     return newTrack;
   };
+  
 
   const addTrackInStoreAndLoadDefaultPreset = (track: Track) => {
     setTracks((prev: Track[]) => [...prev, track]);
@@ -108,3 +109,15 @@ const useTracksManager = () => {
 };
 
 export default useTracksManager;
+
+const generateTrackTitle = (tracks: Track[]) => {
+  const used = new Set(
+    tracks
+      .map(t => t.title.match(/^Дорожка (\d+)$/)?.[1])
+      .filter(Boolean)
+      .map(Number)
+  );
+  let i = 1;
+  while (used.has(i)) i++;
+  return `Дорожка ${i}`;
+};

@@ -1,6 +1,7 @@
 import { Accessor, Component, Index, Show } from "solid-js";
 import Pattern from "../Pattern/Pattern";
 import { PatternType } from "../../../types/daw.types";
+import { useTimelineContext } from "@/context/daw/timeline.context";
 
 type TrackProps = {
   trackId: string;
@@ -10,15 +11,19 @@ type TrackProps = {
 };
 
 export const Track: Component<TrackProps> = (props) => {
+  const { beatNumber } = useTimelineContext();
   return (
-    <div data-track-id={`${props.trackId}`} class="track" onClick={() => props.onClick?.()}>
+    <div
+      data-track-id={`${props.trackId}`}
+      class="track"
+      onClick={() => props.onClick?.()}
+    >
       <Index each={Array.from({ length: props.tactElementsNumber })}>
         {(_, index) => (
           <div class="tact">
-            <div class="tact-el"></div>
-            <div class="tact-el"></div>
-            <div class="tact-el"></div>
-            <div class="tact-el"></div>
+            <Index each={Array.from({ length: beatNumber() })}>
+              {(_, index) => <div class="tact-el"></div>}
+            </Index>
           </div>
         )}
       </Index>
