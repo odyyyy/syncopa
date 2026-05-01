@@ -17,7 +17,7 @@ const TrackController: Component<TrackControllerProps> = ({
   const { handleTrackVolumeChange, isMuted, setIsMuted } = useTracksManager();
   const { presets } = usePresetsContext();
   const trackPresetName = () => {
-    if (track().presetId === 0) return "Аудио-дорожка";
+    if (track().presetId === -1) return "Аудио-дорожка";
     return track().presetId
       ? presets?.find((p) => p.id === track().presetId)?.title
       : "???";
@@ -55,10 +55,10 @@ const TrackController: Component<TrackControllerProps> = ({
       <span
         class="text-xs  opacity-50 font-bold uppercase p-1.5 rounded-xl bg-base-200/90 w-fit "
         classList={{
-          "cursor-pointer": track().presetId !== 0,
-          "text-red-400": track().presetId === 0,
+          "cursor-pointer": track().presetId !== -1,
+          "text-red-400": track().presetId === -1,
         }}
-        onClick={track().presetId === 0 ? undefined : openPresetsMenu}
+        onClick={track().presetId === -1 ? undefined : openPresetsMenu}
       >
         {trackPresetName()}
       </span>

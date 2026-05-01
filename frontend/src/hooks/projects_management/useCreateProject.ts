@@ -30,7 +30,7 @@ export default function useCreateProject(
         id: response.data.id,
         title: response.data.title,
         modifiedAt: response.data.modifiedAt,
-        invitedMembers: response.data.invitedMembers || [],
+        members: response.data.members || [],
       };
 
       onProjectCreated(newProject);

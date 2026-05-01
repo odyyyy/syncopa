@@ -3,7 +3,7 @@ import * as Tone from "tone";
 
 type AnyOsc = Tone.Oscillator | Tone.FatOscillator;
 
-function createVoice(config: Synth): Voice {
+function createVoice(config: Synth): Voice & { started: boolean } {
   const output = new Tone.Gain();
 
   const ampEnv = new Tone.AmplitudeEnvelope(config.envelope);
@@ -57,7 +57,6 @@ function createVoice(config: Synth): Voice {
     if (filter) osc.connect(filter);
     else osc.connect(ampEnv);
 
-    osc.start();
   });
 
   if (filter) filter.connect(ampEnv);
@@ -70,6 +69,7 @@ function createVoice(config: Synth): Voice {
     filterEnv,
     output,
     active: false,
+    started: false,
   };
 }
 
@@ -137,6 +137,11 @@ export function createPolySynth(config: Synth): PolySynthInstance {
     velocity = 1
   ) {
     const voice = getFreeVoice();
+    if (!voice.started) {
+      voice.oscillators.forEach(o => o.start(time));
+      voice.started = true;
+    }
+    
     const freq = Tone.Frequency(note).toFrequency();
 
     voice.active = true;

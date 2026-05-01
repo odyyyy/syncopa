@@ -1,4 +1,4 @@
-import { Component } from "solid-js";
+import { Component, createSignal, Show } from "solid-js";
 import CoopModal from "../Coop/CoopModal";
 import EffectsModal from "../Effects/EffectsChooseModal";
 import VCSModal from "../VCS/VCSModal";
@@ -10,6 +10,12 @@ const LowerControlPanel: Component = () => {
   let effectsDialogRef!: HTMLDialogElement;
   let vcsDialogRef!: HTMLDialogElement;
   let choosePresetRef!: HTMLDialogElement;
+  
+  const [isCoopModalOpen, setIsCoopModalOpen] = createSignal(false);
+  const [isEffectsModalOpen, setIsEffectsModalOpen] = createSignal(false);
+  const [isVCSModalOpen, setIsVCSModalOpen] = createSignal(false);
+  const [isChoosePresetOpen, setIsChoosePresetOpen] = createSignal(false);
+  
   
   const { selectPresetFromModal } = useSwitchPreset();
 
@@ -42,7 +48,10 @@ const LowerControlPanel: Component = () => {
           {/* Coop */}
           <button
             class="btn btn-lg btn-circle"
-            onClick={() => coopDialogRef.showModal()}
+            onClick={() => {
+              setIsCoopModalOpen(true);
+              coopDialogRef.showModal();
+            }}
           >
             <a class="tooltip" data-tip="Коллаборация">
               <svg
@@ -59,9 +68,12 @@ const LowerControlPanel: Component = () => {
           {/* VCS */}
           <button
             class="btn btn-lg btn-circle"
-            onClick={() => vcsDialogRef.showModal()}
+            onClick={() => {
+              setIsVCSModalOpen(true);
+              vcsDialogRef.showModal();
+            }}
           >
-            <a class="tooltip" data-tip="История изменений">
+            <a class="tooltip" data-tip="Система учета изменений">
               <svg
                 class="icon-size fill-current"
                 viewBox="0 0 16 16"
@@ -77,7 +89,12 @@ const LowerControlPanel: Component = () => {
           </button>
 
           {/* Presets */}
-          <button class="btn btn-lg btn-circle">
+          <button class="btn btn-lg btn-circle"
+            onClick={() => {
+              setIsChoosePresetOpen(true);
+              choosePresetRef.showModal();
+            }}
+          >
             <a class="tooltip" data-tip="Инструменты">
               <svg
                 fill="#000000"
@@ -97,7 +114,10 @@ const LowerControlPanel: Component = () => {
           {/* FX */}
           <button
             class="btn btn-lg btn-circle"
-            onClick={() => effectsDialogRef.showModal()}
+            onClick={() => {
+              setIsEffectsModalOpen(true);
+              effectsDialogRef.showModal();
+            }}
           >
             <a class="tooltip" data-tip="Эффекты">
               <svg
@@ -123,16 +143,24 @@ const LowerControlPanel: Component = () => {
           </button>
         </div>
       </nav>
-      <CoopModal dialogRef={(el) => (coopDialogRef = el)} />
-      <EffectsModal dialogRef={(el) => (effectsDialogRef = el)} />
-      <VCSModal dialogRef={(el) => (vcsDialogRef = el)} />
-      <PresetChooseModal
-        dialogRef={(el) => (choosePresetRef = el)}
-        onSelect={(presetId) => {
-          selectPresetFromModal(presetId)
-        }}
-      />
-      
+      <Show when={isCoopModalOpen()}>
+        <CoopModal dialogRef={(el) => (coopDialogRef = el)} onClose={() => setIsCoopModalOpen(false)} />
+      </Show>
+      <Show when={isEffectsModalOpen()}>
+        <EffectsModal dialogRef={(el) => (effectsDialogRef = el)} onClose={() => setIsEffectsModalOpen(false)} />
+      </Show>
+      <Show when={isVCSModalOpen()}>
+        <VCSModal dialogRef={(el) => (vcsDialogRef = el)} onClose={() => setIsVCSModalOpen(false)} />
+      </Show>
+      <Show when={isChoosePresetOpen()}>
+        <PresetChooseModal
+          dialogRef={(el) => (choosePresetRef = el)}
+          onSelect={(presetId) => {
+            selectPresetFromModal(presetId);
+            setIsChoosePresetOpen(false);
+          }}
+        />
+      </Show>
     </div>
   );
 };

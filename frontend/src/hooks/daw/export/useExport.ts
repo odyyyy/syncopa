@@ -78,7 +78,7 @@ const useExportProject = () => {
       Tone.getTransport().bpm.value = bpm();
 
       for (const track of tracks) {
-        if (track.presetId !== 0) {
+        if (track.presetId !== -1) {
           const instrument = await createInstrumentOffline(track);
           if (!instrument) continue;
 

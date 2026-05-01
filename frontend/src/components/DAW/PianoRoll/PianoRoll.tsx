@@ -8,7 +8,7 @@ import { usePianoRollContext } from "../../../context/daw/pianoroll.context";
 import Piano from "./Piano";
 
 const PianoRoll: Component = () => {
-  let pianoRef: HTMLDivElement | undefined;
+  let pianoRef!: HTMLDivElement;
   
   const { handleOnWheelAndCtrlChangeTactsWidth } = useMainDawWorkspace();
   const {
@@ -53,11 +53,13 @@ const PianoRoll: Component = () => {
         class="flex w-full overflow-auto"
         onWheel={handleOnWheelAndCtrlChangeTactsWidth}
       >
-        <Piano ref={pianoRef} onPianoKeyPress={onPianoKeyPress} />
+        <Piano ref={(el) => (pianoRef = el)} onPianoKeyPress={onPianoKeyPress} />
 
         <div
           class="grid flex-1 min-w-0"
-          onDblClick={(e) => addNoteInPianoRoll(e, pianoRef?.clientWidth!)}
+          onDblClick={(e) => {
+            addNoteInPianoRoll(e, pianoRef?.clientWidth!)
+          }}
         >
           <div class="flex flex-col">
             <Index each={Array.from({ length: ROWS_NUMBER })}>

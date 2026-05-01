@@ -21,7 +21,7 @@ const useImportAudio = () => {
     const buffer = await file.arrayBuffer();
     validateAudioFile(file);
 
-    const trackIndex = tracks.findIndex((track) => track.presetId === 0);
+    const trackIndex = tracks.findIndex((track) => track.presetId === -1);
 
     if (trackIndex === -1) {
       toast.error("Для импорта аудио должна быть хотя бы одна аудио-дорожка!");
@@ -67,7 +67,7 @@ const useImportAudio = () => {
     trackIdx: number | undefined = undefined,
   ) => {
     if (trackIdx === undefined) {
-      trackIdx = tracks.findIndex((track) => track.presetId === 0);
+      trackIdx = tracks.findIndex((track) => track.presetId === -1);
     }
     if (trackIdx === -1) {
       return;

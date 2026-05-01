@@ -23,11 +23,11 @@ const useDawApi = () => {
     );
 
   const updateProjectPayload = (
-    project_id: string,
+    projectId: string,
     payload: ProjectPayload,
   ): ApiResponse<ProjectWithPayload> =>
     apiRequest(
-      `${BACKEND_URL}/daw/payload/${project_id}`,
+      `${BACKEND_URL}/daw/payload/${projectId}`,
       {
         method: "PUT",
         body: JSON.stringify(payload),
@@ -64,9 +64,9 @@ const useDawApi = () => {
     );
   };
 
-  const getPresetConfigById = (preset_id: number): ApiResponse<PresetConfig> =>
+  const getPresetConfigById = (presetId: number): ApiResponse<PresetConfig> =>
     apiRequest(
-      `${BACKEND_URL}/daw/presets/${preset_id}`,
+      `${BACKEND_URL}/daw/presets/${presetId}`,
       {
         method: "GET",
       },

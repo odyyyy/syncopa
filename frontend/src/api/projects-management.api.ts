@@ -25,18 +25,18 @@ export function useProjectsApi() {
       protectedRequest,
     );
   
-  const removeProject = (project_id: string):ApiResponse<ProjectItemProps> =>
+  const removeProject = (projectId: string):ApiResponse<ProjectItemProps> =>
     apiRequest(
-      `${BACKEND_URL}/projects/${project_id}`,
+      `${BACKEND_URL}/projects/${projectId}`,
       {
         method: "DELETE",
       },
       protectedRequest,
     );
 
-  const inviteMembers = (project_id: string, members: string[]):ApiResponse<ProjectItemProps> =>
+  const inviteMembers = (projectId: string, members: string[]):ApiResponse<ProjectItemProps> =>
     apiRequest(
-      `${BACKEND_URL}/projects/${project_id}/invitations`,
+      `${BACKEND_URL}/projects/${projectId}/invitations`,
       {
         method: "POST",
         body: JSON.stringify({ members }),

@@ -194,7 +194,7 @@ const useEffectsManager = () => {
 
   const initializeProjectEffects = (tracks: Track[]) => {
     tracks.forEach((track) => {
-      if (track.presetId !== 0) {
+      if (track.presetId !== -1) {
         const patternWithEffects = track.patterns?.find(
           (p) => p.effects && p.effects.length > 0,
         );
@@ -204,7 +204,7 @@ const useEffectsManager = () => {
             connectEffectToSource("vst", track.trackId, effect);
           });
         }
-      } else if (track.presetId === 0) {
+      } else if (track.presetId === -1) {
         track.patterns?.forEach((pattern) => {
           if (pattern.effects && pattern.effects.length > 0) {
             pattern.effects.forEach((effect) => {

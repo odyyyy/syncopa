@@ -2,6 +2,7 @@ import { Component } from "solid-js";
 import ProjectItemContextMenu from "./ProjectItemContextMenu";
 import ProjectMembersAvatars from "./ProjectMembersAvatars";
 import { A } from "@solidjs/router";
+import * as Tone from "tone";
 
 interface ProjectItemCardProps extends ProjectItemProps {
   onRemove?: (id: string) => void;
@@ -10,8 +11,8 @@ interface ProjectItemCardProps extends ProjectItemProps {
 const ProjectItemCard: Component<ProjectItemCardProps> = (project) => {
   return (
     <A
+      onClick={async(e) => {await Tone.start()}}
       href={`/projects/${project.id}`}
-
     >
       <div
         class="group relative flex flex-col justify-between h-52 w-full p-6
@@ -55,7 +56,7 @@ const ProjectItemCard: Component<ProjectItemCardProps> = (project) => {
 
         <div class="flex flex-col gap-4">
           <div class="flex items-center self-end">
-            <ProjectMembersAvatars members={project.invitedMembers || []} />
+            <ProjectMembersAvatars members={project.members || []} />
           </div>
 
           <div class="flex items-center justify-between pt-4 border-t border-base-200">

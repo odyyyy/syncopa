@@ -12,7 +12,7 @@ import toast from "solid-toast";
 
 type CoopModalProps = {
   dialogRef: (el: HTMLDialogElement) => void;
-  onClose?: (returnValue: string) => void;
+  onClose?: () => void;
 };
 
 const CoopModal: Component<CoopModalProps> = (props) => {
@@ -36,7 +36,7 @@ const CoopModal: Component<CoopModalProps> = (props) => {
 
   const projectMembers = () => [
     { id: userData.id, username: userData.username, avatar: userData.avatar },
-    ...(project()?.invitedMembers || []),
+    ...(project()?.members || []),
   ];
 
   const sortMembers = (members: ProjectMember[]) =>

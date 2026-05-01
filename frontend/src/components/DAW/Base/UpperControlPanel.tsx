@@ -148,16 +148,18 @@ const UpperControlPanel: Component = () => {
           />
         </Show>
 
-        <ExitProjectModal
-          title="Закрыть проект? Несохраненные изменения могут быть потеряны!"
-          open={exitModalOpen()}
-          onClose={() => setExitModalOpen(false)}
-          onConfirm={() => {
-            setExitModalOpen(false);
-            websocketConnection?.close();
-            navigate("../");
-          }}
-        />
+        <Show when={exitModalOpen()}>
+          <ExitProjectModal
+            title="Закрыть проект? Несохраненные изменения могут быть потеряны!"
+            open={exitModalOpen()}
+            onClose={() => setExitModalOpen(false)}
+            onConfirm={() => {
+              setExitModalOpen(false);
+              websocketConnection?.close();
+              navigate("../");
+            }}
+          />
+        </Show>
 
         {/* Undo */}
         <button

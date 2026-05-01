@@ -11,15 +11,15 @@ const usePlayerManager = () => {
   const { beatNumber } = useTimelineContext();
   const { bpm, isPlaying, setIsPlaying, playerBeatPos, setPlayerBeatPos } =
     usePlayerContext();
+  const [isAudioEngineInitialized, setIsAudioEngineInitialized] =
+    createSignal(false);
 
   const [parts, setParts] = createSignal<Tone.Part[]>([]);
 
-  let isAudioEngineInitialized = false;
-
   const startOrPausePlaying = async () => {
-    if (!isAudioEngineInitialized) {
+    if (!isAudioEngineInitialized()) {
       await Tone.start();
-      isAudioEngineInitialized = true;
+      setIsAudioEngineInitialized(true);
     }
 
     const transport = Tone.getTransport();
@@ -27,16 +27,15 @@ const usePlayerManager = () => {
     if (isPlaying()) {
       transport.stop();
       transport.cancel();
-      setIsPlaying(false);
       parts().forEach((p) => p.dispose());
+      setIsPlaying(false);
       setParts([]);
-      audioEngine.getAllAudioPlayers().forEach((player) => {
-        if (player) {
-          // player.stop();
-          player.unsync();
-        }
-      });
+      audioEngine.getAllAudioPlayers().forEach((player) => player?.unsync());
       return;
+    }
+
+    if (Tone.getContext().state !== "running") {
+      await Tone.getContext().resume();
     }
 
     setIsPlaying(true);
@@ -52,6 +51,11 @@ const usePlayerManager = () => {
     tracks.forEach((track) => {
       track.patterns?.forEach((pattern) => {
         if (pattern.type === "vst" && pattern.notes) {
+          const synth = audioEngine.getInstrument(track.trackId);
+          if (!synth) {
+            return;
+          }
+
           const patternStartBar = pattern.pos;
           const patternEndBar = pattern.pos + pattern.width;
 
@@ -70,8 +74,6 @@ const usePlayerManager = () => {
               };
             })
             .filter((e) => e.barPos >= startPosInBars);
-
-          const synth = audioEngine.getInstrument(track.trackId);
 
           if (events.length > 0) {
             const part = new Tone.Part(
@@ -95,29 +97,41 @@ const usePlayerManager = () => {
             newParts.push(part);
           }
         } else if (pattern.type === "audio") {
+          let time = 0;
+          let offset = 0;
           const audioClip = audioEngine.getAudioPlayer(pattern.patternId);
           if (!audioClip) return;
 
           if (pattern.pos >= startPosInBars) {
-            const time =
+            time =
               (pattern.pos - startPosInBars) *
               currentBeatNumber *
               (60 / currentBpm);
+            offset = 0;
 
-            audioClip.sync().start(time);
+            // audioClip.sync().start(time);
           } else {
-            const time = 0;
-            const offset =
-               (startPosInBars - pattern.pos) *
-              (60 / currentBpm) * currentBeatNumber;
+            time = 0;
+            offset =
+              (startPosInBars - pattern.pos) *
+              (60 / currentBpm) *
+              currentBeatNumber;
 
-            audioClip.sync().start(time, offset);
+            // audioClip.unsync();
+            // audioClip.sync().start(time, offset);
           }
+          transport.schedule((t) => {
+            audioClip.start(t, offset);
+          }, time);
+          
+          // audioClip.unsync();
+          // audioClip.sync().start(time, offset);
         }
       });
     });
 
     setParts(newParts);
+    transport.bpm.value = currentBpm;
     transport.seconds = 0;
     transport.start();
 

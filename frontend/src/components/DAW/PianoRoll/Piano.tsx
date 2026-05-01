@@ -1,13 +1,21 @@
 import { Component, Index } from "solid-js";
 
-const Piano: Component<{ onPianoKeyPress?: (e: MouseEvent) => void }> = (props) => {
-  
+const Piano: Component<{
+  ref?: (el: HTMLDivElement) => void;
+  onPianoKeyPress?: (e: MouseEvent) => void;
+}> = (props) => {
+  let el!: HTMLDivElement;
   const OCTAVES_NUMBER = 7;
-  
+
   return (
     <div
+      ref={(node) => {
+            el = node;
+            props.ref?.(node);
+          }}
       class="piano sticky left-0 z-30 shrink-0 bg-base-100"
       onMouseDown={props.onPianoKeyPress}
+      
     >
       <div data-note="C8" class=" h-6 whitekey">
         <div class="absolute right-1 -top-1 text-lg font-bold text-[#d6d2c2] ">
@@ -84,10 +92,7 @@ const Piano: Component<{ onPianoKeyPress?: (e: MouseEvent) => void }> = (props) 
       <div class="mt-72 relative h-full">
         <div data-note="B0" class=" h-9 whitekey shrink-0" />
         <div data-note="A0" class=" h-9 whitekey shrink-0" />
-        <div
-          data-note="A#0"
-          class="blackkey absolute left-0 top-7 w-1/2 "
-        />
+        <div data-note="A#0" class="blackkey absolute left-0 top-7 w-1/2 " />
       </div>
     </div>
   );

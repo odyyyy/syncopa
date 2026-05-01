@@ -1,4 +1,4 @@
-import { Component, Index, onCleanup, onMount, Show } from "solid-js";
+import { Component, createSignal, Index, onCleanup, onMount, Show } from "solid-js";
 import TrackController from "../Track/TrackController";
 import BaseTactsGrid from "../Track/BaseTactsGrid";
 import useMainDawWorkspace from "../../../hooks/daw/useMainDawWorkspace";
@@ -36,7 +36,10 @@ const MainDawWorkspace: Component = () => {
   const { selectPresetFromModal } = useSwitchPreset();
   const { tracks } = useProjectContext();
   const { tactElementsNumber } = useTimelineContext();
+  
   const { isPianoRollOpen, pianoRollHeight } = usePianoRollContext();
+  const [isTrackInstrumentChooseModalOpen, setIsTrackInstrumentChooseModalOpen] = createSignal(false);
+  const [isPresetChooseModalOpen, setIsPresetChooseModalOpen] = createSignal(false);
 
   const { initializeProjectEffects } = useEffectsManager();
   onMount(async () => {
@@ -50,7 +53,6 @@ const MainDawWorkspace: Component = () => {
     if (audioPatternsIds && audioPatternsIds.length !== 0) {
       loadAudioPatternsUsedInProject(audioPatternsIds);
     }
-    await Tone.start();
     await Tone.loaded();
     initializeProjectEffects(tracks);
   });
@@ -92,7 +94,10 @@ const MainDawWorkspace: Component = () => {
         <div class="bg-base-200 h-full min-w-70 border-r drop-shadow-xs border-r-base-300 ">
           <button
             class="btn-main sticky top-0 z-100 bg-base-300 hover:bg-base-200 text-base w-full h-10"
-            onClick={() => chooseTrackInstrumentRef?.showModal()}
+            onClick={() => {
+              setIsTrackInstrumentChooseModalOpen(true);
+              chooseTrackInstrumentRef?.showModal();
+            }}
           >
             + Добавить дорожку
           </button>
@@ -101,6 +106,7 @@ const MainDawWorkspace: Component = () => {
               <TrackController
                 track={track}
                 openPresetsMenu={() => {
+                  setIsPresetChooseModalOpen(true);
                   choosePresetRef?.showModal();
                   setPresetModalState({
                     trackId: track().trackId,
@@ -155,13 +161,28 @@ const MainDawWorkspace: Component = () => {
           });
         }}
       />
+      <Show when={isTrackInstrumentChooseModalOpen()}>
+        <TrackInstrumentChooseModal
+          dialogRef={(el) => (chooseTrackInstrumentRef = el)}
+          onSelect={(instrumentChoice) => {
+            if (!instrumentChoice) return;
+            const newTrack = addNewTrack(undefined, instrumentChoice);
+            if (!newTrack) return;
 
-      <PresetChooseModal
-        dialogRef={(el) => (choosePresetRef = el)}
-        onSelect={(presetId) => {
-          selectPresetFromModal(presetId);
-        }}
-      />
+            sendChangeEvent(SyncOperation.CREATE, Target.TRACK, {
+              track: newTrack,
+            });
+          }}
+        />
+      </Show>
+      <Show when={isPresetChooseModalOpen()}>
+        <PresetChooseModal
+          dialogRef={(el) => (choosePresetRef = el)}
+          onSelect={(presetId) => {
+            selectPresetFromModal(presetId);
+          }}
+        />
+      </Show>
     </div>
   );
 };

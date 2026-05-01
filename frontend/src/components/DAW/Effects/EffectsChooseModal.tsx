@@ -21,6 +21,7 @@ import { SyncOperation, Target } from "@/types/coop.types";
 
 const EffectsModal: Component<{
   dialogRef: (el: HTMLDialogElement) => void;
+  onClose?: () => void;
 }> = (props) => {
   let dialog!: HTMLDialogElement;
 
@@ -102,6 +103,7 @@ const EffectsModal: Component<{
         dialog = el;
         props.dialogRef(el);
       }}
+      onClose={props.onClose}
     >
       <div class="w-175 bg-base-200 rounded-3xl shadow-2xl border border-neutral/30 overflow-hidden flex flex-col select-none">
         <div class="p-6 bg-base-200/65 flex items-center justify-between border-b border-black/20">

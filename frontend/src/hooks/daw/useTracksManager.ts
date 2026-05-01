@@ -45,22 +45,22 @@ const useTracksManager = () => {
 
   const addTrackInStoreAndLoadDefaultPreset = (track: Track) => {
     setTracks((prev: Track[]) => [...prev, track]);
-    if (track.presetId === 0) return;
+    if (track.presetId === -1) return;
     setAndLoadSelectedPreset(track.presetId, track.trackId);
   };
 
   const getDefaultPresetIdByCategory = (category: string): number => {
     switch (category) {
       case InstrumentTypeEnum.Synth:
-        return 6;
+        return 1;
       case InstrumentTypeEnum.Guitar:
-        return 8;
+        return 2;
       case InstrumentTypeEnum.Drum:
-        return 9;
+        return 3;
       case InstrumentTypeEnum.Audio:
-        return 0;
+        return -1;
       default:
-        return 6;
+        return 7;
     }
   };
 
@@ -77,7 +77,7 @@ const useTracksManager = () => {
       volume: newVolume,
     }));
 
-    if (track?.presetId === 0) {
+    if (track?.presetId === -1) {
       track.patterns?.forEach((pattern) => {
         const patternAudioPlayer = audioEngine.getAudioPlayer(
           pattern.patternId,

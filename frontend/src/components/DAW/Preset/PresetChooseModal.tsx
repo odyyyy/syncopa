@@ -63,6 +63,7 @@ const PRESETS_CATEGORIES: PresetCategory[] = [
 const PresetChooseModal: Component<{
   dialogRef: (el: HTMLDialogElement) => void;
   onSelect: (presetId: number) => void;
+  
 }> = (props) => {
   let modal!: HTMLDialogElement;
   const [activeTab, setActiveTab] = createSignal("lead");
@@ -182,7 +183,7 @@ const PresetChooseModal: Component<{
                   class="group relative flex flex-col p-4 rounded-2xl bg-base-300  dark:bg-white/5 hover:bg-base-content/5 dark:hover:bg-white/10 cursor-pointer transition-all duration-200 active:scale-102 t border border-transparent hover:border-black/5 dark:hover:border-white/10 hover:shadow-md"
                 >
                   <div class="flex justify-between items-start mb-2">
-                    <span class="text-[9px] font-black text-center text-primary py-0.5 px-1.5 bg-black/44 dark:bg-white/10 rounded-xl uppercase tracking-widest opacity-60">
+                    <span class="text-[9px] font-black text-center text-primary py-0.5 px-1.5  dark:bg-white/10 light:bg-base-200 rounded-xl uppercase tracking-widest opacity-60">
                       {preset.category}
                     </span>
                     <button class="size-5 flex items-center justify-center rounded-full bg-base-content/10 dark:bg-neutral-800 shadow-sm opacity-0 group-hover:opacity-100 transition-opacity">
