@@ -11,6 +11,7 @@ from coop_sessions.routes import session_ws_router
 from daw.routes import daw_router
 from projects_management.routes import project_router
 from users.routes import users_router
+from vcs.routes import vcs_router
 
 from .exceptions_handlers import (
     auth_exception_handler,
@@ -35,6 +36,7 @@ api_router.include_router(auth_router)
 api_router.include_router(users_router)
 api_router.include_router(project_router)
 api_router.include_router(daw_router)
+api_router.include_router(vcs_router)
 
 app.include_router(api_router)
 app.include_router(session_ws_router)

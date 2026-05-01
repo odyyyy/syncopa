@@ -90,6 +90,7 @@ TORTOISE_ORM: dict = {
                 "projects_management.models",
                 "projects_management.signals",
                 "daw.models",
+                "vcs.models",
             ],
             "default_connection": "default",
             "migrations": "migrations",
