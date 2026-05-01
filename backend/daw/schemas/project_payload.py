@@ -12,7 +12,7 @@ class ProjectWithPayload(BaseSchema):
     project_id: UUID4
     title: str
     owner_id: UUID4
-    invited_members: list[ProjectMember]
+    members: list[ProjectMember]
     payload: Optional["ProjectPayload"]
 
 

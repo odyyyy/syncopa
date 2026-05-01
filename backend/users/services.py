@@ -79,27 +79,34 @@ async def change_invitation_status(
 
     if (
         invitation.status == InvitationStatus.ACCEPTED.value
-        and await invitation.project.invited_members.filter(id=user_id).exists()
+        and await invitation.project.members.filter(id=user_id).exists()
     ):
         raise ValueError("Вы уже состоите в этом проекте")
 
     MAX_MEMBERS_NUMBER = 10
     if (
         invitation.status == InvitationStatus.ACCEPTED.value
-        and await invitation.project.invited_members.all().count() >= MAX_MEMBERS_NUMBER
+        and await invitation.project.members.all().count() >= MAX_MEMBERS_NUMBER
     ):
         raise ValueError("Проект достиг максимального количества участников")
 
-    if invitation.status == InvitationStatus.ACCEPTED.value:
-        from projects_management.services import add_member_to_project
+    from projects_management.services import (
+        add_member_to_project,
+        serialize_project,
+    )
 
+    if invitation.status == InvitationStatus.ACCEPTED.value:
         await add_member_to_project(
             user_id=user_id,
             project=invitation.project,
         )
 
     await invitation.save()
-    return invitation
+    await invitation.project.fetch_related("members", "owner")
+    return {
+        "invitation": invitation,
+        "project": await serialize_project(invitation.project, user_id),
+    }
 
 
 # Data update

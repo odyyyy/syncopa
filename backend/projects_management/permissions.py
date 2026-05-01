@@ -29,14 +29,14 @@ async def require_project_owner_permission(
 async def require_project_member_or_owner_permission(
     project_id: UUID4,
     user: Users = Depends(get_current_user),
-):
+) -> ProjectsPayloads:
     project_payload = (
         await ProjectsPayloads.filter(
             Q(project_id=project_id)
-            & (Q(project__owner_id=user.id) | Q(project__invited_members__id=user.id))
+            & (Q(project__owner_id=user.id) | Q(project__members__id=user.id))
         )
         .select_related("project__owner")
-        .prefetch_related("project__invited_members")
+        .prefetch_related("project__members")
         .first()
     )
 

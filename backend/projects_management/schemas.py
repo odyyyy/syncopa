@@ -15,7 +15,7 @@ class ProjectMember(BaseSchema):
 class ProjectOut(BaseSchema):
     id: UUID4
     title: str
-    invited_members: list[ProjectMember]
+    members: list[ProjectMember]
     modified_at: datetime
 
 

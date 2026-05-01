@@ -1,11 +1,16 @@
 from uuid import UUID
 
+from authx import RequestToken
+from pydantic import UUID4
+
+from auth.config import auth
 from coop_sessions.schemas import CoopSession
+from projects_management.permissions import require_project_member_or_owner_permission
 from projects_management.schemas import ProjectMember
 from projects_management.services import gather_users_avatars
 from shared.dependencies import RedisAsync, get_redis_coop
 from users.models import Users
-from users.services import get_user_avatar_image
+from users.services import get_user_avatar_image, get_user_by_id
 
 COOP_REDIS_TAG = "coop"
 SESSION_EXPIRES = 24 * 60 * 60
@@ -67,3 +72,16 @@ async def get_current_session_member(user: Users) -> ProjectMember:
         avatar=user_avatar_image,
     )
     return member
+
+
+async def get_authenticated_session_member(
+    access_token: str, project_id: UUID4
+) -> ProjectMember:
+    access_token_payload = auth.verify_token(
+        RequestToken(token=access_token, csrf=None, type="access", location="query")
+    )
+    user_id = access_token_payload.sub
+    user = await get_user_by_id(user_id)
+    await require_project_member_or_owner_permission(project_id, user)
+    current_member = await get_current_session_member(user)
+    return current_member

@@ -1,20 +1,19 @@
 import uuid
 from pathlib import Path
 
-import aiofiles
 from fastapi import HTTPException, UploadFile, status
 from starlette.responses import FileResponse
 
 from core.settings import get_settings
 from daw.models.presets import PresetsConfigs
+from daw.models.projects_payloads import ProjectsPayloads
 from daw.schemas import ProjectPayload
 from daw.schemas.preset import PresetConfig
-from projects_management.models.projects import Projects
 from shared.services import save_file
 
 
 async def update_project_payload(
-    project_with_payload: Projects, new_project_payload: ProjectPayload
+    project_with_payload: ProjectsPayloads, new_project_payload: ProjectPayload
 ):
     project_with_payload.project_payload = new_project_payload
     await project_with_payload.save()
@@ -45,7 +44,9 @@ def get_audio_file(project_id: str, audio_id: str):
                 filename=path.name,
             )
 
-    raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Аудио файл не найден")
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND, detail="Аудио файл не найден"
+    )
 
 
 def _get_mime_type(ext: str) -> str:
@@ -56,6 +57,7 @@ def _get_mime_type(ext: str) -> str:
     if ext == ".ogg":
         return "audio/ogg"
     return "application/octet-stream"
+
 
 async def save_audio_pattern(audio: UploadFile | None, project_id: str):
     validate_audio_file(audio)

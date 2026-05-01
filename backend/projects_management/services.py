@@ -48,8 +48,8 @@ async def invite_members(project: Projects, invited_members_usernames: list[str]
 
 async def get_user_projects(user_id: str):
     user_projects = (
-        await Projects.filter(Q(owner__id=user_id) | Q(invited_members__id=user_id))
-        .prefetch_related("invited_members", "owner")
+        await Projects.filter(Q(owner__id=user_id) | Q(members__id=user_id))
+        .prefetch_related("members", "owner")
         .order_by("-modified_at")
     )
     return user_projects
@@ -63,12 +63,12 @@ async def delete_project(project: Projects):
 async def add_member_to_project(user_id: str, project: Projects):
     user = await get_user_by_id(user_id)
 
-    await project.invited_members.add(user)
+    await project.members.add(user)
     await project.save()
 
 
 async def serialize_project_users(project: Projects, user_id: str):
-    members = list(project.invited_members)
+    members = list(project.members)
 
     if project.owner.id != user_id:
         members.append(project.owner)
@@ -90,7 +90,7 @@ async def serialize_project(project: Projects, user_id: str):
     return ProjectOut(
         id=project.id,
         title=project.title,
-        invited_members=serialized_members,
+        members=serialized_members,
         modified_at=project.modified_at,
     )
 

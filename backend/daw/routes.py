@@ -38,14 +38,14 @@ async def get_daw_project_with_payload(
         owner_id=project.owner.id,
         title=project.title,
         payload=project_with_payload.project_payload,
-        invited_members=await serialize_project_users(project, user_payload.sub),
+        members=await serialize_project_users(project, user_payload.sub),
     )
 
 
 @daw_router.put("/payload/{project_id}")
 async def update_daw_project_payload(
     new_project_payload: ProjectPayload,
-    project_with_payload: Projects = Depends(
+    project_with_payload: ProjectsPayloads = Depends(
         require_project_member_or_owner_permission
     ),
 ):

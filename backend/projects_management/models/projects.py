@@ -11,7 +11,7 @@ class Projects(Model):
     owner = fields.ForeignKeyField(
         to=Users, related_name="projects", on_delete=fields.CASCADE
     )
-    invited_members = fields.ManyToManyField(
+    members = fields.ManyToManyField(
         to=Users,
         related_name="project_members",
         null=True,
