@@ -6,7 +6,7 @@ type ProjectWithPayload = {
   projectId: string;
   title: string;
   ownerId: string;
-  invitedMembers: ProjectMember[];
+  members: ProjectMember[];
   payload: ProjectPayload;
 };
 

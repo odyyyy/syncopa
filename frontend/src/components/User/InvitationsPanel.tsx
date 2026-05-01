@@ -7,10 +7,11 @@ import { Resource } from "solid-js/types/server/rendering.js";
 
 type InvitationPanelProps = {
   incomeInvitations: Resource<Invitation[]>;
-  mutateInvitations: (updater: (prev: Invitation[] | undefined) => Invitation[]) => void;
+  updateInvitationPanel: (updater: (prev: Invitation[] | undefined) => Invitation[]) => void;
+  handleNewProjectOnInviteAccept: (project: ProjectItemProps) => void;
 };
 
-const InvitationsSubPanel: Component<InvitationPanelProps> = (props) => {
+const InvitationsPanel: Component<InvitationPanelProps> = (props) => {
   const { updateInvitationStatus } = useInvitationsApi();
 
   const handleStatusChange = async (
@@ -22,12 +23,20 @@ const InvitationsSubPanel: Component<InvitationPanelProps> = (props) => {
       toast.success(
         `Приглашение успешно ${status === "accepted" ? "принято" : "отклонено"}`,
       );
-      props.mutateInvitations(prev => 
+      props.updateInvitationPanel(prev => 
             (prev ?? []).filter(invite => invite.id !== invitationId)
           );
+      if (response.data.project) {
+        props.handleNewProjectOnInviteAccept(
+          response.data.project as ProjectItemProps
+        );
+      }
+      
     } else {
       toast.error("Ошибка при обновлении статуса приглашения");
     }
+    
+    
   };
 
   return (
@@ -92,4 +101,4 @@ const InvitationsSubPanel: Component<InvitationPanelProps> = (props) => {
   );
 };
 
-export default InvitationsSubPanel;
+export default InvitationsPanel;

@@ -25,7 +25,7 @@ const ProjectsManagement: Component = () => {
 
   return (
     <div class="bg-bg">
-      <UserPanel />
+      <UserPanel handleNewProjectOnInviteAccept={handleAddNewProject} />
       <div class="p-4">
         <main class="grid grid-cols-[repeat(auto-fill,minmax(320px,1fr))] gap-6 max-w-8xl mx-auto">
           <For each={projects()}>
@@ -41,12 +41,13 @@ const ProjectsManagement: Component = () => {
                           .slice(0, -3)
                       : "Неизвестно"
                   }
-                  invitedMembers={[
+                  members={[
                     {
+                      id: userData.id,
                       username: userData.username,
                       avatar: userData.avatar,
                     },
-                    ...project.invitedMembers,
+                    ...project.members,
                   ]}
                   onRemove={handleRemoveProject}
                 />

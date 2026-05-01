@@ -31,7 +31,7 @@ export function useInvitationsApi() {
   const updateInvitationStatus = (
     invitationId: string,
     status: "accepted" | "rejected",
-  ): ApiResponse<Invitation> =>
+  ): ApiResponse<InvitationPatchResponse> =>
     apiRequest(
       `${BACKEND_URL}/users/me/invitations/${invitationId}`,
       {

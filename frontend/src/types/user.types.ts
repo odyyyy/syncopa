@@ -12,6 +12,21 @@ type Invitation = {
   projectTitle: string;
 };
 
+type InvitationChangeStatus= {
+  project_id: string;
+  expires: string;
+  id: string;
+  to_user_id: string;
+  status: "accepted" | "rejected";
+  from_user_id: string;
+};
+
+
+type InvitationPatchResponse = {
+  invitation: InvitationChangeStatus;
+  project?: ProjectItemProps;
+};
+
 type UserDataUpdate = {
   username?: string;
   email?: string;

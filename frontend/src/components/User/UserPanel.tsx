@@ -11,12 +11,12 @@ import ThemeController from "../utils/ThemeController";
 import LogoutModal from "../utils/ConfirmActionModal";
 import UserAccountSettings from "./UserAccountSettings";
 import { useInvitationsApi } from "../../api/user.api";
-import InvitationsSubPanel from "./InvitationsSubPanel";
+import InvitationsPanel from "./InvitationsPanel";
 import { useAuthContext } from "../../hooks/auth/useAuthContext";
 import AvatarDefault from "./Avatars/AvatarDefault";
 import AvatarPicture from "./Avatars/AvatarPicture";
 
-const UserPanel: Component = () => {
+const UserPanel: Component<{ handleNewProjectOnInviteAccept: (project: ProjectItemProps) => void }> = (props) => {
   const [openSidebar, setOpenSidebar] = createSignal(false);
   const [settingsOpen, setSettingsOpen] = createSignal(false);
   const [logoutOpen, setLogoutOpen] = createSignal(false);
@@ -206,8 +206,9 @@ const UserPanel: Component = () => {
                 </a>
               </li>
             </ul>
-            <InvitationsSubPanel
-            mutateInvitations={mutate}
+            <InvitationsPanel
+              updateInvitationPanel={mutate}
+              handleNewProjectOnInviteAccept={props.handleNewProjectOnInviteAccept}
               incomeInvitations={incomeInvitations ?? []}
             />
           </div>

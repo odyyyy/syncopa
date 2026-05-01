@@ -2,7 +2,7 @@ interface ProjectItemProps {
   id: string;
   title: string;
   modifiedAt: string;
-  invitedMembers: ProjectMember[];
+  members: ProjectMember[];
 }
 
 type ProjectMember = {
