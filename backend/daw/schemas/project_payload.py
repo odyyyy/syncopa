@@ -24,6 +24,7 @@ class ProjectPayload(BaseSchema):
 class PayloadMetadata(BaseSchema):
     bpm: int = 120
     total_volume: int = Field(..., ge=0, le=100)
+    beat_number: int = 4
 
 
 class Track(BaseSchema):

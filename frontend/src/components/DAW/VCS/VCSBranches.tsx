@@ -2,13 +2,14 @@ import { Component, For, Show } from "solid-js";
 
 interface VCSBranchesProps {
   branches: string[];
-  currentBranch: () => string;
-  setCurrentBranch: (name: string) => void;
+  selectedBranchInModal: () => string;
+  setSelectedBranchInModal: (name: string) => void;
   isCreating: () => boolean;
   setIsCreating: (v: boolean) => void;
   newName: () => string;
   setNewName: (v: string) => void;
   onCreate: () => void;
+  currentVersionBranch: string | undefined;
 }
 
 const VCSBranches: Component<VCSBranchesProps> = (props) => {
@@ -22,15 +23,29 @@ const VCSBranches: Component<VCSBranchesProps> = (props) => {
           <For each={props.branches}>
             {(branch) => (
               <button
-                onClick={() => props.setCurrentBranch(branch)}
-                class={`w-full text-left px-3 py-2 cursor-pointer rounded-lg text-xs font-bold transition-all flex items-center justify-between ${
-                  props.currentBranch() === branch
-                    ? "bg-primary text-primary-content shadow-lg"
-                    : "hover:bg-base-300 opacity-60"
-                }`}
+                onClick={() => props.setSelectedBranchInModal(branch)}
+                classList={{
+                  "bg-primary text-primary-content shadow-md scale-[1.02] z-10": 
+                    props.selectedBranchInModal() === branch,
+              
+                  "bg-primary-content/10 text-primary border border-primary/20": 
+                    props.currentVersionBranch === branch && props.selectedBranchInModal() !== branch,
+              
+                  "hover:bg-base-300 text-base-content/70": 
+                    props.selectedBranchInModal() !== branch && props.currentVersionBranch !== branch,
+                }}
+                class="w-full text-left px-3 py-2.5 cursor-pointer rounded-lg text-xs font-bold transition-all flex items-center justify-between border border-transparent"
               >
-                {branch}
-                <Show when={props.currentBranch() === branch}>
+                <div class="flex items-center gap-2">
+                  {branch}
+                  <Show when={props.currentVersionBranch === branch}>
+                     <span class={`text-[8px] px-1 rounded ${props.selectedBranchInModal() === branch ? 'bg-primary-content text-primary' : 'bg-primary text-primary-content'}`}>
+                       ТЕКУЩАЯ
+                     </span>
+                  </Show>
+                </div>
+              
+                <Show when={props.selectedBranchInModal() === branch}>
                   <div class="size-1.5 bg-current rounded-full animate-pulse" />
                 </Show>
               </button>

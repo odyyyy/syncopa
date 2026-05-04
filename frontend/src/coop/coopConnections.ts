@@ -16,7 +16,8 @@ const setupCoopConnections = (
   const websocketConnection = new WebSocket(
     `ws://localhost:8000/ws/sessions/${projectId}?access_token=${accessToken()}`,
   );
-
+  // test local ip 192.168.1.64
+  
   websocketConnection.onopen = () => {
     toast.success("Сессия совместной работы активна");
   };

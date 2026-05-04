@@ -9,11 +9,12 @@ import { useNavigate } from "@solidjs/router";
 import ExportProgressLoading from "../Export/ExportProgressLoading";
 import useExportProject from "../../../hooks/daw/export/useExport";
 import ProjectMembersAvatars from "../../ProjectsManagement/ProjectMembersAvatars";
-import { useCoopSession } from "../../../context/coop/coopsession.context";
+import { useCoopContext } from "../../../context/coop/coopsession.context";
 import useImportAudio from "../../../hooks/daw/import/useImportAudio";
 import ImportAudioModal from "../Import/ImportAudioModal";
 import usePlayerManager from "@/hooks/daw/player/usePlayerManager";
 import toast from "solid-toast";
+import { useVCSContext } from "@/context/vcs/vcs.context";
 
 const UpperControlPanel: Component = () => {
   const { project } = useProjectContext();
@@ -25,7 +26,9 @@ const UpperControlPanel: Component = () => {
     useUpperControlPanel();
   const { exportOpen, setExportOpen } = useExportProject();
   const { importOpen, setImportOpen } = useImportAudio();
-  const { coopSessionMembers, websocketConnection } = useCoopSession();
+  const { coopSessionMembers, websocketConnection } = useCoopContext();
+  
+   const { VCSState } = useVCSContext();
 
   const navigate = useNavigate();
 
@@ -62,13 +65,21 @@ const UpperControlPanel: Component = () => {
               </div>
             </li>
             <li
+              classList={{ 
+                "disabled": VCSState.isVCSModeActive,
+                "cursor-not-allowed": VCSState.isVCSModeActive 
+              }}
+              title={VCSState.isVCSModeActive ? "Сохранение проекта недоступно в режиме работы с системой контроля версий" : ""}
               onclick={(e) => {
                 e.preventDefault();
+                
+                if (VCSState.isVCSModeActive) return;
+            
                 saveProjectChanges(project()?.projectId ?? "");
                 toast.success("Проект сохранен");
               }}
             >
-              <div class="flex flex-row">
+              <div class={`flex flex-row ${VCSState.isVCSModeActive ? "pointer-events-none opacity-50" : ""}`}>
                 <svg
                   class="w-4 h-4 fill-current ml-0.5"
                   viewBox="0 0 24 24"

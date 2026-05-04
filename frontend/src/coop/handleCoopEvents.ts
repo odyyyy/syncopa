@@ -7,7 +7,8 @@ import {
   Target,
   CoopOperationsHandlers,
 } from "../types/coop.types";
-import { useCoopSession } from "../context/coop/coopsession.context";
+import { useCoopContext } from "../context/coop/coopsession.context";
+import { useVCSContext } from "@/context/vcs/vcs.context";
 
 export const handleCoopEvents = (
   data: ConnectionData | ProjectChanges,
@@ -40,22 +41,28 @@ const handleConnectionEvents = (
   }
 };
 export const useSendChangeEvent = () => {
-  const { websocketConnection } = useCoopSession();
+  const { VCSState, setVCSState } = useVCSContext();
+  const { websocketConnection } = useCoopContext();
 
   const sendChangeEvent = (
     operation: SyncOperation,
     target: Target,
     payload: any,
   ) => {
-    websocketConnection?.send(
-      JSON.stringify({ operation, target, payload, timestamp: Date.now() }),
-    );
+    const op = { operation, target, payload, timestamp: Date.now() };
+    if (!VCSState.isVCSModeActive) {
+      websocketConnection?.send(
+        JSON.stringify(op),
+      );
+    } else {
+      setVCSState("patches", VCSState.patches.length, op);
+    }
   };
 
   return { sendChangeEvent };
 };
 
-const applyIncomeOperation = (
+export const applyIncomeOperation = (
   data: ProjectChanges,
   handlers: CoopOperationsHandlers,
 ) => {

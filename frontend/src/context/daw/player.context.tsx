@@ -13,11 +13,15 @@ const PlayerContext = createContext<PlayerContextType>();
 
 export const PlayerProvider: ParentComponent = (props) => {
   const [time, setTime] = createSignal<string>("00:00.0");
-  const [bpm, setBpm] = createSignal<number>(120);
+
+  const { project } = useProjectContext();
+  const [bpm, setBpm] = createSignal<number>(
+    project()?.payload.metadata?.bpm ?? 120,
+  );
+
   const [playerBeatPos, setPlayerBeatPos] = createSignal<number>(0);
   const [isPlaying, setIsPlaying] = createSignal<boolean>(false);
 
-  const { project } = useProjectContext();
   const [totalVolume, setTotalVolume] = createSignal(
     project()?.payload?.metadata?.totalVolume ?? 50,
   );

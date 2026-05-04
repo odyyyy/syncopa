@@ -47,6 +47,7 @@ type CoopSessionContextType = {
   coopSessionMembers: ProjectMember[];
   setCoopSessionMembers: SetStoreFunction<ProjectMember[]>;
   websocketConnection: WebSocket | null;
+  coopOperationsHandlers: CoopOperationsHandlers;
 };
 
 type ConnectionData =

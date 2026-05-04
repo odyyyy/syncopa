@@ -4,7 +4,7 @@ import AvatarDefault from "../../User/Avatars/AvatarDefault";
 import AvatarPicture from "../../User/Avatars/AvatarPicture";
 import { useProjectContext } from "@/context/daw/project.context";
 import { userData } from "../../../store/user";
-import { useCoopSession } from "../../../context/coop/coopsession.context";
+import { useCoopContext } from "../../../context/coop/coopsession.context";
 import InviteMembersPanel from "@/components/ProjectsManagement/InviteMembersPanel";
 import useSearchMembers from "@/hooks/projects_management/useSearchMembers";
 import { useProjectsApi } from "@/api/projects-management.api";
@@ -19,7 +19,7 @@ const CoopModal: Component<CoopModalProps> = (props) => {
   const { project } = useProjectContext();
   const [isInvitePanelOpen, setIsInvitePanelOpen] = createSignal(false);
   const { members, setMembers } = useSearchMembers();
-  const { coopSessionMembers } = useCoopSession();
+  const { coopSessionMembers } = useCoopContext();
   const { inviteMembers } = useProjectsApi();
 
   const inviteMembersInProject = async (membersUsernamesToInvite: string[]) => {

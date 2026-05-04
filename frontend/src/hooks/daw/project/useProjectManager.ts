@@ -3,17 +3,20 @@ import useDawApi from "../../../api/daw.api";
 import { useProjectContext } from "@/context/daw/project.context";
 import { usePlayerContext } from "@/context/daw/player.context";
 import { audioEngine } from "@/instruments/audioEngine";
+import { useTimelineContext } from "@/context/daw/timeline.context";
 
 const useProjectManager = () => {
   const { updateProjectPayload } = useDawApi();
   const { tracks } = useProjectContext();
   const { totalVolume, bpm } = usePlayerContext();
+  const { beatNumber } = useTimelineContext();
 
   const saveProjectChanges = async (projectId: string) => {
     updateProjectPayload(projectId, {
       metadata: {
         bpm: bpm(),
         totalVolume: totalVolume(),
+        beatNumber: beatNumber(),
       },
       tracks,
     }).then((res) => {

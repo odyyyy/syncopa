@@ -1,7 +1,7 @@
-import { Component } from "solid-js";
+import { Component, Show } from "solid-js";
 
 interface VCSHeaderProps {
-  currentBranch: () => string;
+  selectedBranchInModal: () => string;
   activeTab: () => "history" | "conflicts";
   setActiveTab: (v: "history" | "conflicts") => void;
   viewMode: () => "all" | "branch";
@@ -32,10 +32,17 @@ const VCSHeader: Component<VCSHeaderProps> = (props) => {
           <h2 class="text-xl font-black tracking-tight uppercase leading-none">
             Контроль версий
           </h2>
-          <div class="flex items-center gap-2 mt-1.5">
-            <span class="badge badge-primary badge-sm font-bold uppercase">
-              {props.currentBranch()}
-            </span>
+          <div class="flex items-center gap-2 mt-1.5 min-h-7">
+            <Show when={props.selectedBranchInModal() !== ""}>
+              <span class="badge badge-primary badge-sm font-bold uppercase">
+                {props.selectedBranchInModal()}
+              </span>
+            </Show>
+            <Show when={props.selectedBranchInModal() === ""}>
+              <span class="badge badge-primary badge-sm font-bold uppercase opacity-0 invisible">
+                Placeholder
+              </span>
+            </Show>
           </div>
         </div>
       </div>
@@ -67,7 +74,9 @@ const VCSHeader: Component<VCSHeaderProps> = (props) => {
         <button
           onClick={() => props.setViewMode("all")}
           class={`px-4 py-1.5 rounded-lg text-[10px] cursor-pointer font-black uppercase transition-all ${
-            props.viewMode() === "all" ? "bg-base-100 shadow-sm" : "opacity-40 hover:opacity-100"
+            props.viewMode() === "all"
+              ? "bg-base-100 shadow-sm"
+              : "opacity-40 hover:opacity-100"
           }`}
         >
           Весь проект
@@ -75,10 +84,12 @@ const VCSHeader: Component<VCSHeaderProps> = (props) => {
         <button
           onClick={() => props.setViewMode("branch")}
           class={`px-4 py-1.5 rounded-lg text-[10px] cursor-pointer font-black uppercase transition-all ${
-            props.viewMode() === "branch" ? "bg-base-100 shadow-sm" : "opacity-40 hover:opacity-100"
+            props.viewMode() === "branch"
+              ? "bg-base-100 shadow-sm"
+              : "opacity-40 hover:opacity-100"
           }`}
         >
-          Текущая ветка
+          Ветка
         </button>
       </div>
     </div>

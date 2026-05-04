@@ -19,7 +19,7 @@ class ProjectsVersions(Model):
 class Branches(Model):
     id = fields.UUIDField(primary_key=True)
     project = fields.ForeignKeyField(to=Projects, related_name="branches")
-    head_version = fields.ForeignKeyField(to=ProjectsVersions, related_name="branches")
+    head_version = fields.ForeignKeyField(to=ProjectsVersions, related_name="branches", db_index=True)
     title = fields.CharField(max_length=30)
     created_at = fields.DatetimeField(auto_now_add=True)
     modified_at = fields.DatetimeField(auto_now=True)
@@ -31,10 +31,10 @@ class Branches(Model):
 class ProjectsVersionsParents(Model):
     id = fields.UUIDField(primary_key=True)
     parent = fields.ForeignKeyField(
-        to=ProjectsVersions, related_name="children", db_index=True
+        to=ProjectsVersions, related_name="children", db_index=True, null=True
     )
     child = fields.ForeignKeyField(
-        to=ProjectsVersions, related_name="parents", db_index=True
+        to=ProjectsVersions, related_name="parents", db_index=True, null=True
     )
 
     class Meta:

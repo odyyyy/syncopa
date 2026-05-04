@@ -3,13 +3,14 @@ from pydantic import UUID4
 
 from auth.config import auth
 from daw.models.projects_payloads import ProjectsPayloads
-from daw.schemas.project_payload import ProjectPayload
 from projects_management.permissions import require_project_member_or_owner_permission
 from shared.dependencies import AccessTokenRequiredPayload
-from vcs.schemas import BranchCreateIn, BranchCreateOut
+from vcs.schemas import BranchCreateIn, BranchCreateOut, VersionCreateIn
 from vcs.services import (
     create_new_project_branch,
+    create_version,
     get_project_branches_with_versions_metadata,
+    get_version_payload,
 )
 
 vcs_router = APIRouter(
@@ -19,26 +20,33 @@ vcs_router = APIRouter(
 )
 
 
-@vcs_router.post("/{project_id}/versions")
+@vcs_router.post("/{project_id}/branches/{branch}/versions")
 async def create_project_version(
-    project_id: UUID4, branch: str, payload: ProjectPayload
+    branch: str,
+    payload: VersionCreateIn,
+    user_payload: AccessTokenRequiredPayload,
+    project_with_payload: ProjectsPayloads = Depends(
+        require_project_member_or_owner_permission
+    ),
 ):
-    pass
+    new_version = await create_version(
+        project_with_payload.project, branch, payload, user_payload.sub
+    )
+    return new_version
 
 
-@vcs_router.get("/{project_id}/versions")
-async def list_project_versions(project_id: UUID4):
-    pass
-
-
-@vcs_router.get("/{project_id}/versions/{branch}")
-async def list_project_versions_on_branch(project_id: UUID4, branch: str):
-    pass
-
-
-@vcs_router.get("/{project_id}/versions/{version_id}")
-async def get_project_version(project_id: UUID4, version_id: UUID4):
-    pass
+@vcs_router.get("/{project_id}/branches/{branch}/versions/{version_id}")
+async def get_project_version(
+    version_id: UUID4,
+    branch: str,
+    project_with_payload: ProjectsPayloads = Depends(
+        require_project_member_or_owner_permission
+    ),
+):
+    version = await get_version_payload(
+        version_id, project_with_payload.project, branch
+    )
+    return version
 
 
 @vcs_router.post("/{project_id}/versions/{version_id}/switch")
@@ -77,11 +85,6 @@ async def create_project_branch(
         branch_payload.branch_title,
     )
     return branch_with_initial_version
-
-
-@vcs_router.get("/{project_id}/branches/{branch}")
-async def get_project_branch(project_id: UUID4, branch: str):
-    pass
 
 
 @vcs_router.post("/{project_id}/branches/merge")

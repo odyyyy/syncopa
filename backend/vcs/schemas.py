@@ -17,6 +17,12 @@ class Patch(BaseSchema):
     changes: list["ProjectChanges"]
 
 
+class VersionWithPatch(BaseSchema):
+    type: str = "patch"
+    initial_version: ProjectPayload
+    patch: list["ProjectChanges"]
+
+
 class BranchesWithVersionsMetadata(BaseSchema):
     branches: list[str]
     versions: dict[str, list["VersionMetadata"]]
@@ -41,8 +47,20 @@ class VersionMetadata(BaseSchema):
     message: str
     creator_username: str
     created_at: datetime
+    is_head: bool
+    parents_ids: list[str] | None = None
 
 
 class BranchCreateOut(BaseSchema):
     branch_title: str
     initial_version: VersionMetadata
+
+
+class VersionCreateOut(BaseSchema):
+    version_metadata: VersionMetadata
+    branch_title: str
+
+
+class VersionCreateIn(BaseSchema):
+    patch: Patch
+    version_message: str

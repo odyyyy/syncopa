@@ -62,7 +62,7 @@ export const CoopSessionProvider: ParentComponent = (props) => {
       value={{
         coopSessionMembers,
         setCoopSessionMembers,
-        websocketConnection,
+        websocketConnection,coopOperationsHandlers
       }}
     >
       {/*<CoopCursor />*/}
@@ -71,7 +71,7 @@ export const CoopSessionProvider: ParentComponent = (props) => {
   );
 };
 
-export const useCoopSession = () => {
+export const useCoopContext = () => {
   const context = useContext(CoopSessionContext);
   if (!context) {
     throw new Error("CoopSessionContext не найден");

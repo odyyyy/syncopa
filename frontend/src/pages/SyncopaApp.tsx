@@ -10,6 +10,7 @@ import { PianoRollProvider } from "../context/daw/pianoroll.context";
 import * as Tone from "tone";
 import { PresetsProvider } from "../context/daw/presets.context";
 import { CoopSessionProvider } from "../context/coop/coopsession.context";
+import { VCSProvider } from "@/context/vcs/vcs.context";
 
 const SyncopaApp: Component = () => {
   const onBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -43,9 +44,11 @@ const SyncopaApp: Component = () => {
               <PianoRollProvider>
                 <PresetsProvider>
                   <CoopSessionProvider>
-                    <UpperControlPanel />
-                    <MainDawWorkspace />
-                    <LowerControlPanel />
+                    <VCSProvider>
+                      <UpperControlPanel />
+                      <MainDawWorkspace />
+                      <LowerControlPanel />
+                    </VCSProvider>
                   </CoopSessionProvider>
                 </PresetsProvider>
               </PianoRollProvider>

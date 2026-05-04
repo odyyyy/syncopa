@@ -18,6 +18,7 @@ type ProjectPayload = {
 type PayloadMetadata = {
   bpm: number;
   totalVolume: number;
+  beatNumber: number;
 };
 
 type Track = {
