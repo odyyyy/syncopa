@@ -17,10 +17,13 @@ const usePatternManager = () => {
     trackId: string,
     patternId: string = crypto.randomUUID(),
   ) => {
-    const trackIndex = tracks.findIndex((t) => t.trackId === trackId);
-    if (trackIndex === -1) return;
-
-    const pattern: PatternVST = {
+    const track = tracks.find((t) => t.trackId === trackId);
+    if (!track) return;
+  
+    const exists = track.patterns?.some((p) => p.patternId === patternId);
+    if (exists) return;
+  
+    const newPattern: PatternVST = {
       patternId,
       type: "vst",
       pos: 0,
@@ -28,12 +31,14 @@ const usePatternManager = () => {
       title: "Pattern",
       notes: [],
     };
-
-    setTracks(trackIndex, "patterns", (prev: PatternType[] | null) =>
-      prev ? [...prev, pattern] : [pattern],
+  
+    const trackIndex = tracks.indexOf(track);
+    
+    setTracks(trackIndex, "patterns", (prev) => 
+      prev ? [...prev, newPattern] : [newPattern]
     );
-
-    return pattern;
+  
+    return newPattern;
   };
 
   const editPattern = (e: MouseEvent) => {

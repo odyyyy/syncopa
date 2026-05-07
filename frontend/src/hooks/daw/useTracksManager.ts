@@ -41,12 +41,17 @@ const useTracksManager = () => {
 
     return newTrack;
   };
-  
 
   const addTrackInStoreAndLoadDefaultPreset = (track: Track) => {
-    setTracks((prev: Track[]) => [...prev, track]);
-    if (track.presetId === -1) return;
-    setAndLoadSelectedPreset(track.presetId, track.trackId);
+    if (tracks.some((t) => t.trackId === track.trackId)) {
+      return;
+    }
+
+    setTracks((prev) => [...prev, track]);
+
+    if (track.presetId !== -1) {
+      setAndLoadSelectedPreset(track.presetId, track.trackId);
+    }
   };
 
   const getDefaultPresetIdByCategory = (category: string): number => {
@@ -113,9 +118,9 @@ export default useTracksManager;
 const generateTrackTitle = (tracks: Track[]) => {
   const used = new Set(
     tracks
-      .map(t => t.title.match(/^Дорожка (\d+)$/)?.[1])
+      .map((t) => t.title.match(/^Дорожка (\d+)$/)?.[1])
       .filter(Boolean)
-      .map(Number)
+      .map(Number),
   );
   let i = 1;
   while (used.has(i)) i++;

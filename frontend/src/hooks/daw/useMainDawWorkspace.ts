@@ -52,42 +52,45 @@ const useMainDawWorkspace = () => {
     e.preventDefault();
     e.stopPropagation();
 
+    const trackEl = (e.target as HTMLElement).closest(".track") as HTMLElement;
+    const trackId = trackEl?.dataset.trackId;
+
+    const track = tracks.find((t) => t.trackId === trackId);
+
     openMenu(e.clientX, e.clientY, [
-      {
-        label: "Добавить паттерн",
-        icon: "+",
-        onClick: () => {
-          const trackId = (
-            (e.target as HTMLElement).closest(".track") as HTMLElement
-          )?.dataset.trackId;
+      ...(track && track.presetId !== -1
+        ? [
+            {
+              label: "Добавить паттерн",
+              icon: "+",
+              onClick: () => {
+                const pattern = addPatternOnTrack(trackId!);
+                if (!pattern) return;
 
-          if (!trackId) return;
-          const pattern = addPatternOnTrack(trackId);
+                sendChangeEvent(SyncOperation.CREATE, Target.PATTERN, {
+                  type: pattern.type,
+                  trackId,
+                  patternId: pattern.patternId,
+                });
+              },
+            },
+          ]
+        : []),
 
-          if (!pattern) return;
-          sendChangeEvent(SyncOperation.CREATE, Target.PATTERN, {
-            trackId,
-            patternId: pattern.patternId,
-          });
-        },
-      },
       {
         label: "Удалить дорожку",
         icon: "−",
         onClick: () => {
-          const trackId = (
-            (e.target as HTMLElement).closest(".track") as HTMLElement
-          )?.dataset.trackId;
           if (!trackId) return;
 
           const trackIndex = tracks.findIndex((t) => t.trackId === trackId);
           if (trackIndex === -1) return;
 
           setTracks((prev) => prev.filter((_, i) => i !== trackIndex));
+
           sendChangeEvent(SyncOperation.REMOVE, Target.TRACK, {
             trackId,
           });
-          
         },
       },
     ]);

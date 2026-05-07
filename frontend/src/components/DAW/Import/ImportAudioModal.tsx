@@ -2,6 +2,9 @@ import { Component, createEffect, createSignal } from "solid-js";
 import { Portal } from "solid-js/web";
 import useImportAudio from "../../../hooks/daw/import/useImportAudio";
 import toast from "solid-toast";
+import { useCoopContext } from "@/context/coop/coopsession.context";
+import { useSendChangeEvent } from "@/coop/handleCoopEvents";
+import { SyncOperation, Target } from "@/types/coop.types";
 
 const ImportAudioModal: Component<{
   open: boolean;
@@ -11,7 +14,8 @@ const ImportAudioModal: Component<{
   let audioInputRef!: HTMLInputElement;
   const [selectedFile, setSelectedFile] = createSignal<File | null>(null);
 
-  const {  addImportedAudioPatternInAudioTrack } = useImportAudio();
+  const { addImportedAudioPatternInAudioTrack } = useImportAudio();
+  const { sendChangeEvent } = useSendChangeEvent();
 
   const handleBackdropClick = (e: MouseEvent) => {
     if (e.target === dialogRef) {
@@ -28,9 +32,18 @@ const ImportAudioModal: Component<{
 
   const handleImport = async () => {
     if (selectedFile()) {
-      const importedAudio = await addImportedAudioPatternInAudioTrack(selectedFile()!);
-      if (!importedAudio) {
+      const importedAudioPattern = await addImportedAudioPatternInAudioTrack(
+        selectedFile()!,
+      );
+      if (!importedAudioPattern) {
         toast.error("Ошибка при импорте аудио-файла");
+        throw new Error("Ошибка при импорте аудио-файла");
+      } else {
+        sendChangeEvent(SyncOperation.CREATE, Target.PATTERN, {
+          type: "audio",
+          audioPattern: importedAudioPattern.audioPattern,
+          trackId: importedAudioPattern.trackId,
+        });
       }
     }
     props.onClose();
@@ -94,7 +107,7 @@ const ImportAudioModal: Component<{
                     const file = e.dataTransfer?.files[0];
                     if (file && file.type.startsWith("audio/")) {
                       setSelectedFile(file);
-                      
+
                       const dataTransfer = new DataTransfer();
                       dataTransfer.items.add(file);
                       audioInputRef.files = dataTransfer.files;

@@ -51,9 +51,7 @@ export const useSendChangeEvent = () => {
   ) => {
     const op = { operation, target, payload, timestamp: Date.now() };
     if (!VCSState.isVCSModeActive) {
-      websocketConnection?.send(
-        JSON.stringify(op),
-      );
+      websocketConnection?.send(JSON.stringify(op));
     } else {
       setVCSState("patches", VCSState.patches.length, op);
     }
@@ -80,7 +78,14 @@ export const applyIncomeOperation = (
     case Target.PATTERN:
       switch (data.operation) {
         case SyncOperation.CREATE:
-          handlers.addPattern(data.payload.trackId, data.payload.patternId);
+          if (data.payload.type === "vst") {
+            handlers.addPattern(data.payload.trackId, data.payload.patternId);
+          } else if (data.payload.type === "audio") {
+            handlers.addAudioPattern(
+              data.payload.audioPattern,
+              data.payload.trackId,
+            );
+          }
           break;
 
         case SyncOperation.REMOVE:

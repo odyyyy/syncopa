@@ -6,6 +6,7 @@ import { PatternAudio } from "../../../types/daw.types";
 import { useTimelineContext } from "@/context/daw/timeline.context";
 import { usePlayerContext } from "@/context/daw/player.context";
 import { audioEngine } from "@/instruments/audioEngine";
+import useProjectManager from "../project/useProjectManager";
 
 const useImportAudio = () => {
   const [importOpen, setImportOpen] = createSignal(false);
@@ -17,7 +18,13 @@ const useImportAudio = () => {
 
   const addImportedAudioPatternInAudioTrack = async (
     file: File,
-  ): Promise<string | null> => {
+  ): Promise<
+    | {
+        audioPattern: PatternAudio;
+        trackId: string;
+      }
+    | undefined
+  > => {
     const buffer = await file.arrayBuffer();
     validateAudioFile(file);
 
@@ -56,10 +63,13 @@ const useImportAudio = () => {
       },
     };
 
-    addAudioPatternOnTrack(audioPattern, trackIndex);
+    const trackId = addAudioPatternOnTrack(audioPattern, trackIndex);
+    if (!trackId) {
+      return;
+    }
     audioEngine.addAudioPlayer(audioPattern.patternId, audioBuffer);
-    
-    return patternId;
+
+    return { audioPattern, trackId };
   };
 
   const addAudioPatternOnTrack = (
@@ -76,7 +86,28 @@ const useImportAudio = () => {
     setTracks(trackIdx, "patterns", (prev) =>
       prev ? [...prev, audioPattern] : [audioPattern],
     );
-    
+    const track = tracks[trackIdx];
+    if (!track) {
+      return;
+    }
+    return track.trackId;
+  };
+
+  const { loadAudioPatternsUsedInProject } = useProjectManager();
+  const syncImportedAudioPattern = (
+    audioPattern: PatternAudio,
+    trackId: string,
+  ) => {
+    loadAudioPatternsUsedInProject([audioPattern.patternId]);
+
+    setTracks(
+      (track) => track.trackId === trackId,
+      "patterns",
+      (prev = []) =>
+        prev?.some((p) => p.patternId === audioPattern.patternId)
+          ? prev
+          : [...(prev ?? []), audioPattern],
+    );
   };
 
   const validateAudioFile = (file: File) => {
@@ -99,6 +130,7 @@ const useImportAudio = () => {
     setImportOpen,
     addImportedAudioPatternInAudioTrack,
     addAudioPatternOnTrack,
+    syncImportedAudioPattern,
   };
 };
 

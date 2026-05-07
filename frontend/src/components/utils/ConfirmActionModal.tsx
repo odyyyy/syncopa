@@ -1,4 +1,11 @@
-import { Component, onCleanup, onMount, createEffect, Show, mergeProps } from "solid-js";
+import {
+  Component,
+  onCleanup,
+  onMount,
+  createEffect,
+  Show,
+  mergeProps,
+} from "solid-js";
 import { Portal } from "solid-js/web";
 
 type ModalType = "info" | "warning" | "danger";
@@ -16,7 +23,10 @@ type Props = {
 };
 
 const ConfirmActionModal: Component<Props> = (rawProps) => {
-  const props = mergeProps({ confirmText: "Да", cancelText: "Нет", type: "info" as ModalType }, rawProps);
+  const props = mergeProps(
+    { confirmText: "Да", cancelText: "Нет", type: "info" as ModalType },
+    rawProps,
+  );
   let dialogRef!: HTMLDialogElement;
 
   const handleCancel = (e: Event) => {
@@ -45,18 +55,26 @@ const ConfirmActionModal: Component<Props> = (rawProps) => {
 
   const accentClass = () => {
     switch (props.type) {
-      case "danger": return "text-error";
-      case "warning": return "text-warning";
-      default: return "text-neutral";
+      case "danger":
+        return "text-error";
+      case "warning":
+        return "text-warning";
+      default:
+        return "text-base-content";
     }
   };
 
   return (
     <Portal>
-      <dialog ref={dialogRef} class="modal modal-bottom sm:modal-middle transition-all">
+      <dialog
+        ref={dialogRef}
+        class="modal modal-bottom sm:modal-middle transition-all"
+      >
         <div class="modal-box max-w-md p-0 overflow-hidden rounded-2xl border border-base-content/5 shadow-2xl">
-          <div class={`h-1.5 w-full ${props.type === 'warning' ? 'bg-warning' : props.type === 'danger' ? 'bg-error' : 'bg-primary'}`} />
-          
+          <div
+            class={`h-1.5 w-full ${props.type === "warning" ? "bg-warning" : props.type === "danger" ? "bg-error" : "bg-primary"}`}
+          />
+
           <div class="p-6 flex flex-col items-center text-center">
             <Show when={props.icon}>
               <div class={`mb-4 p-3 rounded-full bg-base-200 ${accentClass()}`}>
@@ -75,14 +93,14 @@ const ConfirmActionModal: Component<Props> = (rawProps) => {
             </Show>
 
             <div class="flex flex-col sm:flex-row gap-3 w-full mt-2">
-              <button 
-                class="btn flex-1 order-2 sm:order-1" 
+              <button
+                class="btn flex-1 order-2 sm:order-1"
                 onClick={props.onClose}
               >
                 {props.cancelText}
               </button>
-              <button 
-                class={`btn flex-1 order-1 sm:order-2 ${props.type === 'warning' ? 'btn-warning' : props.type === 'danger' ? 'btn-error' : 'btn-primary'}`} 
+              <button
+                class={`btn flex-1 order-1 sm:order-2 ${props.type === "warning" ? "btn-warning" : props.type === "danger" ? "btn-error" : "btn-primary"}`}
                 onClick={props.onConfirm}
               >
                 {props.confirmText}
