@@ -52,6 +52,8 @@ const VCSModal: Component<{
             setNewName={vcs.setNewBranchName}
             onCreate={vcs.createNewBranch}
             currentVersionBranch={vcs.VCSState.currentVersion?.branch}
+            mergeBranches={vcs.mergeBranches}
+            openSwitchModal={openSwitchModal}
           />
 
           <div class="flex-1 bg-base-200/50 flex overflow-hidden">
@@ -72,10 +74,10 @@ const VCSModal: Component<{
                       vcs.selectedBranchInModal()
                     ] || []
                   }
+                  currentVersion={vcs.VCSState.currentVersion}
                   selectedVersion={vcs.selectedVersion}
                   setSelectedVersion={vcs.setSelectedVersion}
                 />
-     
               </Show>
               <VCSInspector
                 selectedVersion={vcs.selectedVersion}
@@ -113,14 +115,19 @@ const VCSModal: Component<{
             setIsSwitchModeWarningOpen(false);
 
             vcs.websocketConnection?.close();
+            vcs.setCoopSessionMembers([]);
 
-            if (confirmAction()) {
+            try {
               await confirmAction()!();
+            } catch (error) {
+              vcs.setVcsLoading(false);
+              throw error;
             }
 
             vcs.setVCSState("isVCSModeActive", true);
             vcs.setVcsLoading(false);
-            toast.success("Действие выполнено успешно");
+
+            // toast.success("Действие выполнено успешно");
           }}
         />
       </Show>

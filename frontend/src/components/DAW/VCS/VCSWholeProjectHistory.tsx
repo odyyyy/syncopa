@@ -60,7 +60,7 @@ const VCSWholeProjectHistory: Component<VCSWholeProjectHistoryProps> = (
   };
 
   const NODE_STEP_Y = 100;
-  const NODE_STEP_X = 400; // 60
+  const NODE_STEP_X = 60; // 400
   const OFFSET_X = 40;
 
   const graphData = createMemo(() =>
@@ -108,7 +108,7 @@ const VCSWholeProjectHistory: Component<VCSWholeProjectHistoryProps> = (
   };
 
   return (
-    <div class="flex-1 overflow-auto relative custom-scrollbar bg-base-200/30">
+    <div class="flex-1 overflow-auto p-4 relative custom-scrollbar bg-base-200/30">
       <div
         class="relative min-w-max p-10"
         style={{ height: `${graphData().length * NODE_STEP_Y + 200}px` }}
@@ -140,7 +140,7 @@ const VCSWholeProjectHistory: Component<VCSWholeProjectHistoryProps> = (
 
               <div
                 onClick={() => props.setSelectedVersion(version)}
-                class={`ml-8 w-64 p-3 rounded-xl border cursor-pointer transition-all backdrop-blur-md ${
+                class={`ml-1 w-64 p-3 rounded-xl border cursor-pointer transition-all backdrop-blur-md ${
                   props.selectedVersion()?.id === version.id
                     ? "bg-base-100 border-primary shadow-xl translate-x-1"
                     : "bg-base-100/60 border-neutral/10 hover:bg-base-100 hover:border-neutral/30 shadow-sm"

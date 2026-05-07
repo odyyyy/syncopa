@@ -5,12 +5,19 @@ from auth.config import auth
 from daw.models.projects_payloads import ProjectsPayloads
 from projects_management.permissions import require_project_member_or_owner_permission
 from shared.dependencies import AccessTokenRequiredPayload
-from vcs.schemas import BranchCreateIn, BranchCreateOut, VersionCreateIn
+from vcs.schemas import (
+    BranchCreateIn,
+    BranchCreateOut,
+    MergeRequestIn,
+    MergeResultOut,
+    VersionCreateIn,
+)
 from vcs.services import (
     create_new_project_branch,
     create_version,
     get_project_branches_with_versions_metadata,
     get_version_payload,
+    merge_branches,
 )
 
 vcs_router = APIRouter(
@@ -83,10 +90,24 @@ async def create_project_branch(
         user_payload.sub,
         branch_payload.project_snapshot,
         branch_payload.branch_title,
+        branch_payload.parent_version_id,
     )
     return branch_with_initial_version
 
 
-@vcs_router.post("/{project_id}/branches/merge")
-async def merge_project_branches(project_id: UUID4, branch: str):
-    pass
+@vcs_router.post("/{project_id}/branches/merge", response_model=MergeResultOut)
+async def merge_project_branches(
+    merge_payload: MergeRequestIn,
+    user_payload: AccessTokenRequiredPayload,
+    project_with_payload: ProjectsPayloads = Depends(
+        require_project_member_or_owner_permission
+    ),
+):
+    return await merge_branches(
+        project=project_with_payload.project,
+        source_title=merge_payload.source_branch,
+        target_title=merge_payload.target_branch,
+        user_id=user_payload.sub,
+    )
+
+

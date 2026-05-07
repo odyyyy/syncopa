@@ -4,6 +4,7 @@ import { VersionMetadata } from "@/types/vcs.types";
 
 interface VCSBranchHistoryProps {
   versions: VersionMetadata[];
+  currentVersion: VersionMetadata | null;
   selectedVersion: () => VersionMetadata | null;
   setSelectedVersion: (v: VersionMetadata | null) => void;
 }
@@ -11,7 +12,7 @@ interface VCSBranchHistoryProps {
 const VCSBranchHistory: Component<VCSBranchHistoryProps> = (props) => {
   return (
     <div class="flex-1 overflow-y-auto relative p-6 custom-scrollbar">
-      <div class="absolute left-10 top-0 bottom-0 w-0.5 bg-neutral/10" />
+      <div class="absolute left-10 top-0 bottom-0 w-0.5 bg-neutral/15" />
       <div class="space-y-8 relative">
         <For each={props.versions}>
           {(version, i) => (
@@ -41,15 +42,14 @@ const VCSBranchHistory: Component<VCSBranchHistoryProps> = (props) => {
                   <div class="absolute top-4 left-1/2 -translate-x-1/2 w-0.5 h-8 bg-neutral/10" />
                 </Show>
               </div>
-
               <div
-                class={`flex-1 p-4 rounded-2xl border transition-all ${
-                  version.isHead && props.selectedVersion()?.id !== version.id
-                    ? "bg-base-300/80 border-primary/20"
-                    : props.selectedVersion()?.id === version.id
-                      ? "bg-base-300 border-primary/40 shadow-md"
-                      : "bg-base-300/60 border-transparent hover:bg-base-200"
-                }`}
+                classList={{
+                  "bg-base-content/15": version.id === props.currentVersion?.id,
+                  "bg-base-300/80 border-primary/20": version.isHead && props.selectedVersion()?.id !== version.id,
+                  "bg-base-300 border-primary/40 shadow-md": props.selectedVersion()?.id === version.id,
+                  "bg-base-300/60 border-transparent hover:bg-base-200": !version.isHead && props.selectedVersion()?.id !== version.id,
+                }}
+                class="flex-1 p-4 rounded-2xl border transition-all"
               >
                 <div class="flex justify-between items-start mb-1">
                   <div class="flex items-center gap-2">
@@ -59,6 +59,12 @@ const VCSBranchHistory: Component<VCSBranchHistoryProps> = (props) => {
                     <Show when={version.isHead}>
                       <span class="badge badge-primary badge-xs font-black text-[8px] px-1.5 h-4">
                         HEAD
+                      </span>
+                    
+                    </Show>
+                    <Show when={version.id === props.currentVersion?.id}>
+                      <span class="badge badge-base-content badge-sm font-black text-[8px] p-2 h-4">
+                        ТЕКУЩАЯ
                       </span>
                     </Show>
                   </div>

@@ -35,8 +35,10 @@ const useVcsModal = () => {
     createBranch,
     loadSelectedVersion: loadVersion,
     createVersion,
+    requestMerge,
+    getProjectBranchesWithVersionsMetadata,
   } = useVcsApi();
-  const { project, setTracks } = useProjectContext();
+  const { project, setTracks, tracks } = useProjectContext();
   const { setBpm } = usePlayerContext();
 
   const createNewBranch = async () => {
@@ -47,6 +49,7 @@ const useVcsModal = () => {
       project()?.projectId!,
       branchName,
       project()?.payload!,
+      VCSState.currentVersion?.id ?? null,
     );
 
     if (res.type === "success") {
@@ -66,6 +69,11 @@ const useVcsModal = () => {
         versions: { ...prev.versions, [branchName]: [initialVersion] },
       }));
 
+      setVCSState((prev) => ({
+        ...prev,
+        currentVersion: { ...initialVersion, branch: branchName },
+      }));
+
       toast.success(`Ветка ${branchName} успешно создана!`);
     } else if (res.type === "error") {
       toast.error(res.detail);
@@ -73,7 +81,8 @@ const useVcsModal = () => {
     }
   };
 
-  const { coopOperationsHandlers, websocketConnection } = useCoopContext();
+  const { coopOperationsHandlers, websocketConnection, setCoopSessionMembers } =
+    useCoopContext();
   const { setTotalVolume } = usePlayerContext();
   const { setBeatNumber } = useTimelineContext();
 
@@ -99,6 +108,7 @@ const useVcsModal = () => {
       selectedBranchInModal(),
       selectedVersion()?.id!,
     );
+
     if (res.type === "error") {
       toast.error(res.detail);
       throw new Error(res.detail);
@@ -115,7 +125,7 @@ const useVcsModal = () => {
     } else if (res.data.type === "patch") {
       setTracks(res.data.initialVersion.tracks);
       setProjectMetadata(res.data.initialVersion.metadata!);
-      
+      // TODO: дописать COOP эвенты на изменение BPM, BeatNumber, TotalVolume???
       for (const operation of res.data.patch) {
         applyIncomeOperation(operation, coopOperationsHandlers);
       }
@@ -127,6 +137,7 @@ const useVcsModal = () => {
       ...selectedVersion()!,
       branch: selectedBranchInModal(),
     });
+
   };
 
   const commitVersion = async (versionMessage: string) => {
@@ -199,6 +210,83 @@ const useVcsModal = () => {
     });
   };
 
+  const mergeBranches = async (sourceBranch: string) => {
+    const currentBranch = VCSState.currentVersion?.branch;
+    if (!sourceBranch || !currentBranch) {
+      toast.error("Некорректные данные для слияния");
+      return;
+    }
+
+    const res = await requestMerge(
+      project()?.projectId!,
+      sourceBranch,
+      currentBranch,
+    );
+
+    if (res.type === "error") {
+      toast.error(res.detail || "Ошибка при подготовке слияния", {
+        duration: 6000,
+      });
+      return;
+    }
+
+    const { operations, conflicts, mergedVersionId } = res.data;
+
+    if (conflicts && conflicts.length > 0) {
+      setActiveTab("conflicts");
+      toast.error(
+        `Найдено конфликтов: ${conflicts.length}. Требуется ручное разрешение.`,
+      );
+      console.warn("Конфликты слияния:", conflicts);
+      return;
+    }
+
+    if (!operations || operations.length === 0) {
+      if (mergedVersionId) {
+        await _syncVersionState(mergedVersionId, currentBranch);
+      }
+      toast.success("Ветки уже синхронизированы");
+      return;
+    }
+
+    try {
+      for (const operation of operations) {
+        applyIncomeOperation(operation, coopOperationsHandlers);
+      }
+
+      if (mergedVersionId) {
+        await _syncVersionState(mergedVersionId, currentBranch);
+      }
+
+      toast.success(
+        `Слияние завершено: применено ${operations.length} операций`,
+      );
+    } catch (error) {
+      toast.error("Критическая ошибка при обновлении проекта");
+      console.error("Patch application failed:", error);
+    }
+  };
+
+  const _syncVersionState = async (versionId: string, branchTitle: string) => {
+    const res = await getProjectBranchesWithVersionsMetadata(
+      project()?.projectId!,
+    );
+    if (res.type === "success") {
+      setVersionControlStore("branches", res.data.branches);
+      setVersionControlStore("versions", res.data.versions);
+
+      const branchVersions = res.data.versions[branchTitle] ?? [];
+      const mergedVersion = branchVersions.find((v) => v.id === versionId);
+
+      if (mergedVersion) {
+        setVCSState("currentVersion", {
+          ...mergedVersion,
+          branch: branchTitle,
+        });
+      }
+    }
+  };
+
   return {
     isCreatingNewBranch,
     setIsCreatingNewBranch,
@@ -223,6 +311,8 @@ const useVcsModal = () => {
     setVcsLoading,
     websocketConnection,
     VCSState,
+    mergeBranches,
+    setCoopSessionMembers,
   };
 };
 

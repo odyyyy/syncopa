@@ -22,7 +22,17 @@ const VCSFooter: Component<VCSFooterProps> = (props) => {
           />
           <button
             class="btn btn-primary h-24 w-40 rounded-2xl font-black uppercase tracking-widest shadow-lg shadow-primary/20 flex flex-col gap-1 hover:scale-[1.02] transition-transform"
-            onClick={() => { props.openSwitchModal(() => props.commitVersion(versionMessage()));
+            onClick={() => {
+              props.openSwitchModal(() =>
+                props.commitVersion(versionMessage()),
+              );
+            }}
+            onKeyDown={(e) => {
+              if (e.key === "Enter" && e.shiftKey) {
+                props.openSwitchModal(() =>
+                  props.commitVersion(versionMessage()),
+                );
+              }
             }}
           >
             <span class="text-[1.1em] tracking-tight">ЗАФИКСИРОВАТЬ</span>

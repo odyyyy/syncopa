@@ -2,7 +2,7 @@ import { useAuthFetch } from "@/hooks/auth/useAuthFetch";
 import { apiRequest } from "./base.api";
 import { BACKEND_URL } from "@/config/config";
 import { ProjectPayload } from "@/types/daw.types";
-import { BranchesWithVersionsMetadata, BranchCreated, VersionPayload, VersionMetadata, VersionCreated } from "@/types/vcs.types";
+import { BranchesWithVersionsMetadata, BranchCreated, VersionPayload,  VersionCreated, MergeResult } from "@/types/vcs.types";
 import { Patch } from "@/types/vcs.types";
 
 export const useVcsApi = () => {
@@ -23,6 +23,7 @@ export const useVcsApi = () => {
     projectId: string,
     branchTitle: string,
     projectSnapshot: ProjectPayload,
+    parentVersionId: string | null,
   ): ApiResponse<BranchCreated> =>
     apiRequest(
       `${BACKEND_URL}/vcs/projects/${projectId}/branches`,
@@ -34,6 +35,7 @@ export const useVcsApi = () => {
         body: JSON.stringify({
           branchTitle,
           projectSnapshot,
+          parentVersionId
         }),
       },
       protectedRequest,
@@ -72,12 +74,32 @@ export const useVcsApi = () => {
       },
       protectedRequest,
     );
+  
+  const requestMerge = (
+    projectId: string,
+    sourceBranch: string,
+    targetBranch: string,
+  ): ApiResponse<MergeResult> =>
+    apiRequest(
+      `${BACKEND_URL}/vcs/projects/${projectId}/branches/merge`,
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          source_branch: sourceBranch,
+          target_branch: targetBranch,
+        }),
+      },
+      protectedRequest,
+    );
 
   return {
     getProjectBranchesWithVersionsMetadata,
     createBranch,
     loadSelectedVersion,
-    createVersion,
+    createVersion,requestMerge
   };
   
 

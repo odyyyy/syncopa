@@ -1,4 +1,5 @@
 from datetime import datetime
+from typing import Any
 
 from pydantic import field_validator
 
@@ -31,6 +32,7 @@ class BranchesWithVersionsMetadata(BaseSchema):
 class BranchCreateIn(BaseSchema):
     branch_title: str
     project_snapshot: ProjectPayload
+    parent_version_id: str | None = None
 
     @field_validator("branch_title", mode="before")
     @classmethod
@@ -64,3 +66,22 @@ class VersionCreateOut(BaseSchema):
 class VersionCreateIn(BaseSchema):
     patch: Patch
     version_message: str
+
+
+class MergeRequestIn(BaseSchema):
+    source_branch: str
+    target_branch: str
+
+
+class ConflictDetail(BaseSchema):
+    type: str
+    entity_id: str
+    source_value: Any | None = None
+    target_value: Any | None = None
+
+
+class MergeResultOut(BaseSchema):
+    operations: list[ProjectChanges] = []
+    conflicts: list[ConflictDetail] = []
+    merged_version_id: str | None = None
+

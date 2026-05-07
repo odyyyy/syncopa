@@ -20,10 +20,10 @@ const VCSConflicts: Component = () => {
       <h3 class="text-lg font-black uppercase">
         Конфликтов не обнаружено
       </h3>
-      <p class="text-xs font-bold max-w-xs mt-2">
+      {/*<p class="text-xs font-bold max-w-xs mt-2">
         Все изменения синхронизированы и готовы к слиянию без
         вмешательства.
-      </p>
+      </p>*/}
     </div>
   );
 };
