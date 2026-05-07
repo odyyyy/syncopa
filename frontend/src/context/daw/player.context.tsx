@@ -16,7 +16,7 @@ export const PlayerProvider: ParentComponent = (props) => {
 
   const { project } = useProjectContext();
   const [bpm, setBpm] = createSignal<number>(
-    project()?.payload.metadata?.bpm ?? 120,
+    project()?.payload?.metadata?.bpm ?? 120,
   );
 
   const [playerBeatPos, setPlayerBeatPos] = createSignal<number>(0);
