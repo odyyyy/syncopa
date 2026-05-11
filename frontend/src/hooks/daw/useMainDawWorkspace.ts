@@ -7,6 +7,8 @@ import usePatternManager from "./pattern/usePatternManager";
 import { useSendChangeEvent } from "../../coop/handleCoopEvents";
 import { SyncOperation, Target } from "../../types/coop.types";
 import { useTimelineContext } from "@/context/daw/timeline.context";
+import { PatternVST } from "@/types/daw.types";
+import { useClipboardContext } from "@/context/daw/clipboard.context";
 
 const useMainDawWorkspace = () => {
   const { tracks, setTracks } = useProjectContext();
@@ -47,6 +49,7 @@ const useMainDawWorkspace = () => {
   const { openMenu } = useContextMenu();
   const { addPatternOnTrack } = usePatternManager();
   const { sendChangeEvent } = useSendChangeEvent();
+  const { clipboard } = useClipboardContext();
 
   const handleContextMenu = (e: MouseEvent) => {
     e.preventDefault();
@@ -64,17 +67,58 @@ const useMainDawWorkspace = () => {
               label: "Добавить паттерн",
               icon: "+",
               onClick: () => {
-                const pattern = addPatternOnTrack(trackId!);
+                const patternId = crypto.randomUUID();
+                const newPattern: PatternVST = {
+                  patternId,
+                  type: "vst",
+                  pos: 0,
+                  width: 1,
+                  title: "Pattern",
+                  notes: [],
+                };
+
+                const pattern = addPatternOnTrack(trackId!, newPattern);
                 if (!pattern) return;
 
                 sendChangeEvent(SyncOperation.CREATE, Target.PATTERN, {
                   type: pattern.type,
                   trackId,
-                  patternId: pattern.patternId,
+                  pattern: pattern,
                 });
               },
             },
-          ]
+            clipboard()
+              ? {
+                  label: "Вставить",
+                  icon: "⇧",
+                  onClick: () => {
+                    if (!clipboard() || !trackId || clipboard()?.type !== "vst")
+                      return;
+
+                    const rect = trackEl.getBoundingClientRect();
+                    const posX = e.clientX - rect.left + trackEl.scrollLeft;
+
+                    const copiedPattern = {
+                      ...(clipboard() as PatternVST),
+                      patternId: crypto.randomUUID(),
+                      pos: posX / tactWidth(),
+                    };
+
+                    const newPattern = addPatternOnTrack(
+                      trackId,
+                      copiedPattern,
+                    );
+                    if (!newPattern) return;
+
+                    sendChangeEvent(SyncOperation.CREATE, Target.PATTERN, {
+                      type: copiedPattern.type,
+                      trackId,
+                      pattern: newPattern,
+                    });
+                  },
+                }
+              : null,
+          ].filter(Boolean)
         : []),
 
       {

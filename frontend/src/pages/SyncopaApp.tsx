@@ -11,6 +11,7 @@ import * as Tone from "tone";
 import { PresetsProvider } from "../context/daw/presets.context";
 import { CoopSessionProvider } from "../context/coop/coopsession.context";
 import { VCSProvider } from "@/context/vcs/vcs.context";
+import { ClipboardProvider } from "@/context/daw/clipboard.context";
 
 const SyncopaApp: Component = () => {
   const onBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -46,7 +47,9 @@ const SyncopaApp: Component = () => {
                   <CoopSessionProvider>
                     <VCSProvider>
                       <UpperControlPanel />
-                      <MainDawWorkspace />
+                      <ClipboardProvider>
+                        <MainDawWorkspace />
+                      </ClipboardProvider>
                       <LowerControlPanel />
                     </VCSProvider>
                   </CoopSessionProvider>

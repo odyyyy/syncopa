@@ -79,7 +79,7 @@ export const applyIncomeOperation = (
       switch (data.operation) {
         case SyncOperation.CREATE:
           if (data.payload.type === "vst") {
-            handlers.addPattern(data.payload.trackId, data.payload.patternId);
+            handlers.addPattern(data.payload.trackId, data.payload.pattern);
           } else if (data.payload.type === "audio") {
             handlers.addAudioPattern(
               data.payload.audioPattern,

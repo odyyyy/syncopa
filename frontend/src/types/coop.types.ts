@@ -1,5 +1,5 @@
 import { SetStoreFunction } from "solid-js/store";
-import { Note, PatternAudio, Track } from "./daw.types";
+import { Note, PatternAudio, PatternVST, Track } from "./daw.types";
 import { Effect } from "./presets.types";
 
 type CoopSession = {
@@ -58,7 +58,7 @@ type ConnectionData =
 type CoopOperationsHandlers = {
   addTrack: (track: Track) => void;
   removeTrack: (trackId: string) => void;
-  addPattern: (trackId: string, patternId: string) => void;
+  addPattern: (trackId: string, pattern: PatternVST) => void;
   addAudioPattern: (audioPattern: PatternAudio, trackId: string) => void;
   removePattern: (patternId: string, trackId: string) => void;
   transformPattern: (
