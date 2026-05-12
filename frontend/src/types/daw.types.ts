@@ -133,6 +133,12 @@ type PianoRollContextType = {
   setPianoRollHeight: Setter<number>;
 };
 
+type RecordPreviewPattern = {
+  trackId: string;
+  pos: number;
+  width: number;
+}
+
 export type {
   ProjectWithPayload,
   ProjectPayload,
@@ -152,5 +158,5 @@ export type {
   TimelineContextType,
   ContextMenuItem,
   PianoRollContextType,
-  PatternAndTrack,
+  PatternAndTrack,RecordPreviewPattern
 };

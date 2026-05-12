@@ -25,7 +25,6 @@ const useImportAudio = () => {
       }
     | undefined
   > => {
-    const buffer = await file.arrayBuffer();
     validateAudioFile(file);
 
     const trackIndex = tracks.findIndex((track) => track.presetId === -1);
@@ -37,6 +36,19 @@ const useImportAudio = () => {
       );
     }
 
+    const audioPatternData = await saveAndAddAudioPattern(file, trackIndex);
+
+    return {
+      audioPattern: audioPatternData.audioPattern,
+      trackId: audioPatternData.trackId,
+    };
+  };
+
+  const saveAndAddAudioPattern = async (
+    file: File,
+    trackIndex: number | undefined = undefined,
+  ) => {
+    const buffer = await file.arrayBuffer();
     const audioContext = new AudioContext();
     const audioBuffer = await audioContext.decodeAudioData(buffer);
 
@@ -65,7 +77,8 @@ const useImportAudio = () => {
 
     const trackId = addAudioPatternOnTrack(audioPattern, trackIndex);
     if (!trackId) {
-      return;
+      toast.error("Ошибка при добавлении аудио на дорожку");
+      throw new Error("Ошибка при добавлении аудио на дорожку");
     }
     audioEngine.addAudioPlayer(audioPattern.patternId, audioBuffer);
 
@@ -131,6 +144,7 @@ const useImportAudio = () => {
     addImportedAudioPatternInAudioTrack,
     addAudioPatternOnTrack,
     syncImportedAudioPattern,
+    saveAndAddAudioPattern,
   };
 };
 

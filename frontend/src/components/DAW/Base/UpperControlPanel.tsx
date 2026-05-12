@@ -1,4 +1,4 @@
-import { Component, Show } from "solid-js";
+import { Component, createMemo, For, Show } from "solid-js";
 import ThemeController from "../../utils/ThemeController";
 import useProjectManager from "../../../hooks/daw/project/useProjectManager";
 import { useProjectContext } from "@/context/daw/project.context";
@@ -15,6 +15,7 @@ import ImportAudioModal from "../Import/ImportAudioModal";
 import usePlayerManager from "@/hooks/daw/player/usePlayerManager";
 import toast from "solid-toast";
 import { useVCSContext } from "@/context/vcs/vcs.context";
+import useRecordAudio from "@/hooks/daw/record/useRecordAudio";
 
 const UpperControlPanel: Component = () => {
   const { project } = useProjectContext();
@@ -27,10 +28,22 @@ const UpperControlPanel: Component = () => {
   const { exportOpen, setExportOpen } = useExportProject();
   const { importOpen, setImportOpen } = useImportAudio();
   const { coopSessionMembers, websocketConnection } = useCoopContext();
-  
-   const { VCSState } = useVCSContext();
+
+  const { VCSState } = useVCSContext();
 
   const navigate = useNavigate();
+
+  const { tracks } = useProjectContext();
+  const availableAudioTracks = createMemo(() =>
+    tracks.filter((t) => t.presetId === -1),
+  );
+  const {
+    selectedTrackIdToRecord,
+    setSelectedTrackIdToRecord,
+    startRecording,
+    stopRecording,
+    isRecording,
+  } = useRecordAudio();
 
   return (
     <nav class="navbar bg-base-200/50 p-2.5 shadow-sm relative z-40 shrink-0 h-20">
@@ -65,21 +78,27 @@ const UpperControlPanel: Component = () => {
               </div>
             </li>
             <li
-              classList={{ 
-                "disabled": VCSState.isVCSModeActive,
-                "cursor-not-allowed": VCSState.isVCSModeActive 
+              classList={{
+                disabled: VCSState.isVCSModeActive,
+                "cursor-not-allowed": VCSState.isVCSModeActive,
               }}
-              title={VCSState.isVCSModeActive ? "Сохранение проекта недоступно в режиме работы с системой контроля версий" : ""}
+              title={
+                VCSState.isVCSModeActive
+                  ? "Сохранение проекта недоступно в режиме работы с системой контроля версий"
+                  : ""
+              }
               onclick={(e) => {
                 e.preventDefault();
-                
+
                 if (VCSState.isVCSModeActive) return;
-            
+
                 saveProjectChanges(project()?.projectId ?? "");
                 toast.success("Проект сохранен");
               }}
             >
-              <div class={`flex flex-row ${VCSState.isVCSModeActive ? "pointer-events-none opacity-50" : ""}`}>
+              <div
+                class={`flex flex-row ${VCSState.isVCSModeActive ? "pointer-events-none opacity-50" : ""}`}
+              >
                 <svg
                   class="w-4 h-4 fill-current ml-0.5"
                   viewBox="0 0 24 24"
@@ -216,8 +235,8 @@ const UpperControlPanel: Component = () => {
         </button>
       </div>
 
-      <div class="navbar-center">
-        <ul class="menu menu-horizontal bg-base-200 rounded-box">
+      <div class="navbar-center bg-base-200 rounded-box">
+        <ul class="menu menu-horizontal ">
           {/* Backward */}
           <li
             class="tooltip tooltip-bottom"
@@ -274,23 +293,121 @@ const UpperControlPanel: Component = () => {
             </a>
           </li>
           {/* Record */}
-          <li class="tooltip tooltip-bottom tooltip-error" data-tip="Запись">
-            <a>
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                class="w-5 h-5 fill-red-500"
-                viewBox="0 0 52 52"
-              >
-                <path d="M26 8c9.9 0 18 8.1 18 18s-8.1 18-18 18S8 35.9 8 26 16.1 8 26 8" />
-              </svg>
-            </a>
+          <li class="group relative flex justify-center">
+            <Show when={!isRecording()}>
+              <button class="cursor-pointer" onClick={startRecording}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5 fill-red-500"
+                  viewBox="0 0 52 52"
+                >
+                  <path d="M26 8c9.9 0 18 8.1 18 18s-8.1 18-18 18S8 35.9 8 26 16.1 8 26 8" />
+                </svg>
+              </button>
+            </Show>
+
+            <Show when={isRecording()}>
+              <button class="cursor-pointer" onClick={stopRecording}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5 fill-red-500"
+                  viewBox="0 0 24 24"
+                >
+                  <rect x="6" y="6" width="12" height="12" rx="2" />
+                </svg>
+              </button>
+            </Show>
+
+            <div class="absolute top-full left-1/2 -translate-x-1/2 w-12 h-3" />
+
+            <div
+              class="
+              absolute top-full left-1/2 -translate-x-1/2 mt-2 z-50
+              w-44 rounded-xl border border-error/20 bg-base-200 shadow-2xl
+              opacity-0 pointer-events-none scale-95
+              group-hover:opacity-100 group-hover:pointer-events-auto group-hover:scale-100
+              transition-all duration-200 origin-top overflow-hidden
+              flex flex-col items-center
+            "
+            >
+              <Show when={!isRecording()}>
+                <div class="max-h-40 overflow-y-auto p-1 w-full custom-scrollbar">
+                  <ul class="menu bg-base-200 rounded-box w-fit">
+                    <For each={availableAudioTracks()}>
+                      {(track) => (
+                        <li>
+                          <button
+                            onClick={() =>
+                              setSelectedTrackIdToRecord(track.trackId)
+                            }
+                            class={`w-full px-2 py-1.5 rounded-lg text-[10px] font-semibold
+                              transition-all flex items-center justify-center gap-2
+                              ${
+                                selectedTrackIdToRecord() === track.trackId
+                                  ? "bg-error/10 text-error"
+                                  : "hover:bg-base-300 opacity-60 hover:opacity-100"
+                              }`}
+                          >
+                            <div
+                              class={`size-1.5 rounded-full shrink-0 ${
+                                selectedTrackIdToRecord() === track.trackId
+                                  ? "bg-error shadow-[0_0_5px_rgba(239,68,68,0.5)]"
+                                  : "bg-base-content/20"
+                              }`}
+                            />
+                            <span class="truncate">{track.title}</span>
+                          </button>
+                        </li>
+                      )}
+                    </For>
+                  </ul>
+                </div>
+
+                <div class="w-full bg-base-300/40 p-1.5 border-t border-error/5 flex flex-col items-center gap-1.5">
+                  <button
+                    disabled={!selectedTrackIdToRecord()}
+                    onClick={startRecording}
+                    class="
+                      w-10/12 flex items-center justify-center gap-1.5
+                      cursor-pointer py-1 rounded-lg text-[9px] font-black uppercase tracking-wider
+                      transition-all duration-300
+                      disabled:opacity-10 disabled:grayscale disabled:cursor-not-allowed
+                      enabled:opacity-80 enabled:bg-error enabled:text-white enabled:shadow-md
+                      enabled:hover:scale-105 enabled:active:scale-95 enabled:hover:opacity-100
+                    "
+                  >
+                    СТАРТ
+                  </button>
+
+                  <span class="text-[8px] font-bold opacity-30 uppercase tracking-tighter text-center pb-0.5">
+                    {!selectedTrackIdToRecord()
+                      ? "выберите дорогу"
+                      : "запись готова"}
+                  </span>
+                </div>
+              </Show>
+
+              <Show when={isRecording()}>
+                <div class="w-full bg-base-300/40 p-3 flex flex-col items-center gap-2">
+                  <div class="flex items-center gap-2">
+                    <div class="size-2 rounded-full bg-red-500 animate-pulse" />
+                    <span class="text-[10px] font-bold uppercase opacity-70">
+                      Идёт запись...
+                    </span>
+                  </div>
+                  <p class="text-[10px] italic text-center opacity-80">
+                    Нажмите кнопку чтобы завершить запись
+                  </p>
+                </div>
+              </Show>
+            </div>
           </li>
           <li class="text-xl ml-5 text-base-content/95 font-bold hover:bg">
             {time()}
           </li>
         </ul>
         <div class="flex items-center ml-3">
-          <label class="swap mr-2 bg-base-content/5 rounded-lg p-0.5">
+          <label class="swap mr-2  rounded-lg p-0.5">
             <input
               type="checkbox"
               checked
@@ -327,7 +444,7 @@ const UpperControlPanel: Component = () => {
             onChange={(e: Event) => {
               setTotalVolume(Number((e.target as HTMLInputElement).value));
             }}
-            class="range range-xs max-w-36 max-h-7"
+            class="range range-xs max-w-36 max-h-7 mr-5"
           />
         </div>
       </div>
