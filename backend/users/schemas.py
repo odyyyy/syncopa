@@ -85,7 +85,7 @@ class UserUpdateIn(BaseSchema):
         if file.size > 1024 * 1024:
             raise ValueError("Размер файла не должен превышать 1 Мб")
         from users.services import supported_images_extensions
-        
+
         if file.content_type not in supported_images_extensions.keys():
             raise ValueError(
                 "Файл должен быть изображением (JPEG, PNG, WEBP, JPG, GIF)"

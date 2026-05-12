@@ -1,4 +1,11 @@
-import { Component, createSignal, Index, onCleanup, onMount, Show } from "solid-js";
+import {
+  Component,
+  createSignal,
+  Index,
+  onCleanup,
+  onMount,
+  Show,
+} from "solid-js";
 import TrackController from "../Track/TrackController";
 import BaseTactsGrid from "../Track/BaseTactsGrid";
 import useMainDawWorkspace from "../../../hooks/daw/useMainDawWorkspace";
@@ -36,10 +43,14 @@ const MainDawWorkspace: Component = () => {
   const { selectPresetFromModal } = useSwitchPreset();
   const { tracks } = useProjectContext();
   const { tactElementsNumber } = useTimelineContext();
-  
+
   const { isPianoRollOpen, pianoRollHeight } = usePianoRollContext();
-  const [isTrackInstrumentChooseModalOpen, setIsTrackInstrumentChooseModalOpen] = createSignal(false);
-  const [isPresetChooseModalOpen, setIsPresetChooseModalOpen] = createSignal(false);
+  const [
+    isTrackInstrumentChooseModalOpen,
+    setIsTrackInstrumentChooseModalOpen,
+  ] = createSignal(false);
+  const [isPresetChooseModalOpen, setIsPresetChooseModalOpen] =
+    createSignal(false);
 
   const { initializeProjectEffects } = useEffectsManager();
   onMount(async () => {
@@ -128,22 +139,11 @@ const MainDawWorkspace: Component = () => {
             handlePlayerHeadChangePos(e, mainTracksPanelRef);
           }}
         >
-          <BaseTactsGrid
-            tactElementsNumber={tactElementsNumber}
-            width={tactWidth}
-          />
+          <BaseTactsGrid width={tactWidth} />
 
           <PlayerHead />
 
-          <Index each={tracks}>
-            {(track) => (
-              <Track
-                trackId={track().trackId}
-                patterns={track().patterns ?? []}
-                tactElementsNumber={tactElementsNumber()}
-              />
-            )}
-          </Index>
+          <Index each={tracks}>{(track) => <Track track={track} />}</Index>
         </div>
       </div>
       <Show when={isPianoRollOpen()}>

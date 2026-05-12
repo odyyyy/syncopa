@@ -55,7 +55,6 @@ async def coop_session_manager(
     try:
         while True:
             income_data: dict = await websocket.receive_json()
-            print(income_data)
             await session_connection_manager.broadcast(
                 user_id,
                 session_id,

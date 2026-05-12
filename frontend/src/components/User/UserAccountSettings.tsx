@@ -52,6 +52,8 @@ const UserAccountSettings: Component<UserSettingsProps> = (
     props.onClose();
   };
   const [isUpdating, setIsUpdating] = createSignal(false);
+
+  const AVATAR_SIZE = 30;
   return (
     <dialog ref={dialogRef} class="modal" onClose={onClose}>
       <div class="modal-box flex items-center justify-center flex-col gap-3 bg-base-200">
@@ -66,15 +68,15 @@ const UserAccountSettings: Component<UserSettingsProps> = (
           onClick={() => fileInputRef?.click()}
         >
           <Show when={!avatarPreview() && !userData.avatar}>
-            <AvatarDefault username={userData.username} size={25} />
+            <AvatarDefault username={userData.username} size={AVATAR_SIZE} />
           </Show>
 
           <Show when={!avatarPreview() && userData.avatar}>
-            <AvatarPicture src={userData.avatar} username={userData.username} size={25} />
+            <AvatarPicture src={userData.avatar} username={userData.username} size={AVATAR_SIZE} />
           </Show>
 
           <Show when={avatarPreview()}>
-            <AvatarPicture src={avatarPreview()!} username={userData.username} size={25} />
+            <AvatarPicture src={avatarPreview()!} username={userData.username} size={AVATAR_SIZE} />
           </Show>
 
           <div

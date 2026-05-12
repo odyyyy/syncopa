@@ -1,14 +1,15 @@
+import { useTimelineContext } from "@/context/daw/timeline.context";
 import { Component, Index } from "solid-js";
 
 
 type BaseTactsGridProps = {
-  tactElementsNumber: () => number;
   width: () => number;
 };
 const BaseTactsGrid: Component<BaseTactsGridProps> = (props) => {
+  const { tactElementsNumber } = useTimelineContext();
   return (
     <div class="bg-base-200/90 grid grid-flow-col w-full">
-      <Index each={Array.from({ length: props.tactElementsNumber() })}>
+      <Index each={Array.from({ length: tactElementsNumber() })}>
         {(_, index) => (
           <div
             style={{ width: `${props.width()}px` }}

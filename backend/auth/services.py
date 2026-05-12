@@ -7,7 +7,6 @@ from tortoise import transactions
 
 from shared.dependencies import RedisAsync
 from users.models import Role, Users
-from users.services import get_user_by_id
 
 from .config import auth
 from .exceptions import AuthException

@@ -13,7 +13,6 @@ from daw.services import (
     save_audio_pattern,
     update_project_payload,
 )
-from projects_management.models.projects import Projects
 from projects_management.permissions import require_project_member_or_owner_permission
 from projects_management.services import serialize_project_users
 from shared.dependencies import AccessTokenRequiredPayload

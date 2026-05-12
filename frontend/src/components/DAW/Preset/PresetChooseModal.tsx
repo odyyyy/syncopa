@@ -63,7 +63,6 @@ const PRESETS_CATEGORIES: PresetCategory[] = [
 const PresetChooseModal: Component<{
   dialogRef: (el: HTMLDialogElement) => void;
   onSelect: (presetId: number) => void;
-  
 }> = (props) => {
   let modal!: HTMLDialogElement;
   const [activeTab, setActiveTab] = createSignal("lead");
@@ -85,15 +84,16 @@ const PresetChooseModal: Component<{
     usePresetsContext();
 
   const [searchQuery, setSearchQuery] = createSignal("");
-  
+
   const currentTrackPreset = createMemo(() => {
-    // TODO: change presets in list buttom preset choose modal
-    return presets.find((p) => p.id === presetModalState().presetId) ?? {
-      title: "???",
-      id: undefined,
-    };
+    return (
+      presets.find((p) => p.id === presetModalState().presetId) ?? {
+        title: "???",
+        id: undefined,
+      }
+    );
   });
-  
+
   const filteredPresets = createMemo(() => {
     return presets.filter(
       (p) =>
@@ -222,7 +222,7 @@ const PresetChooseModal: Component<{
               </span>
               <span
                 title={currentTrackPreset().title}
-                class="text-xs font-mono text-primary truncate max-w-20"
+                class="text-xs font-mono text-primary truncate max-w-30"
               >
                 {currentTrackPreset().title}
               </span>
@@ -235,11 +235,11 @@ const PresetChooseModal: Component<{
                 class="select select-xs bg-inherit border-none outline-none truncate max-w-35"
                 onChange={(e) => {
                   const trackId = e.currentTarget.value;
-              
+
                   const track = avaliableTracks()?.find(
-                    (t) => t.trackId === trackId
+                    (t) => t.trackId === trackId,
                   );
-              
+
                   setPresetModalState({
                     trackId,
                     presetId: track?.presetId,
@@ -259,9 +259,9 @@ const PresetChooseModal: Component<{
               </select>
             </div>
           </div>
-          <button class="btn btn-dash duration-300 transition-all border-base-content/55 btn-sm rounded-xl px-6 font-bold hover:bg-base-content/10 hover:border-base-content/55">
+          {/*<button class="btn btn-dash duration-300 transition-all border-base-content/55 btn-sm rounded-xl px-6 font-bold hover:bg-base-content/10 hover:border-base-content/55">
             Создать пресет
-          </button>
+          </button>*/}
         </div>
       </div>
     </ModalMenu>

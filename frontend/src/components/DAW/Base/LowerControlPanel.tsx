@@ -10,13 +10,12 @@ const LowerControlPanel: Component = () => {
   let effectsDialogRef!: HTMLDialogElement;
   let vcsDialogRef!: HTMLDialogElement;
   let choosePresetRef!: HTMLDialogElement;
-  
+
   const [isCoopModalOpen, setIsCoopModalOpen] = createSignal(false);
   const [isEffectsModalOpen, setIsEffectsModalOpen] = createSignal(false);
   const [isVCSModalOpen, setIsVCSModalOpen] = createSignal(false);
   const [isChoosePresetOpen, setIsChoosePresetOpen] = createSignal(false);
-  
-  
+
   const { selectPresetFromModal } = useSwitchPreset();
 
   return (
@@ -43,7 +42,7 @@ const LowerControlPanel: Component = () => {
             </svg>
           </div>
 
-          <button class="btn btn-circle btn-lg">X</button>
+          <button class="btn btn-circle btn-lg">✕</button>
 
           {/* Coop */}
           <button
@@ -89,7 +88,8 @@ const LowerControlPanel: Component = () => {
           </button>
 
           {/* Presets */}
-          <button class="btn btn-lg btn-circle"
+          <button
+            class="btn btn-lg btn-circle"
             onClick={() => {
               setIsChoosePresetOpen(true);
               choosePresetRef.showModal();
@@ -144,13 +144,22 @@ const LowerControlPanel: Component = () => {
         </div>
       </nav>
       <Show when={isCoopModalOpen()}>
-        <CoopModal dialogRef={(el) => (coopDialogRef = el)} onClose={() => setIsCoopModalOpen(false)} />
+        <CoopModal
+          dialogRef={(el) => (coopDialogRef = el)}
+          onClose={() => setIsCoopModalOpen(false)}
+        />
       </Show>
       <Show when={isEffectsModalOpen()}>
-        <EffectsModal dialogRef={(el) => (effectsDialogRef = el)} onClose={() => setIsEffectsModalOpen(false)} />
+        <EffectsModal
+          dialogRef={(el) => (effectsDialogRef = el)}
+          onClose={() => setIsEffectsModalOpen(false)}
+        />
       </Show>
       <Show when={isVCSModalOpen()}>
-        <VCSModal dialogRef={(el) => (vcsDialogRef = el)} onClose={() => setIsVCSModalOpen(false)} />
+        <VCSModal
+          dialogRef={(el) => (vcsDialogRef = el)}
+          onClose={() => setIsVCSModalOpen(false)}
+        />
       </Show>
       <Show when={isChoosePresetOpen()}>
         <PresetChooseModal

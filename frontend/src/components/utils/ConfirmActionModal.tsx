@@ -72,7 +72,7 @@ const ConfirmActionModal: Component<Props> = (rawProps) => {
       >
         <div class="modal-box max-w-md p-0 overflow-hidden rounded-2xl border border-base-content/5 shadow-2xl">
           <div
-            class={`h-1.5 w-full ${props.type === "warning" ? "bg-warning" : props.type === "danger" ? "bg-error" : "bg-primary"}`}
+            class={`h-1.5 w-full ${props.type === "warning" ? "bg-warning" : props.type === "danger" ? "bg-error" : "bg-base-content/50"}`}
           />
 
           <div class="p-6 flex flex-col items-center text-center">
