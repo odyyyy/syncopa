@@ -3,7 +3,7 @@ import ModalMenu from "../ModalMenu";
 import AvatarDefault from "../../User/Avatars/AvatarDefault";
 import AvatarPicture from "../../User/Avatars/AvatarPicture";
 import { useProjectContext } from "@/context/daw/project.context";
-import { userData } from "../../../store/user";
+import { userData } from "../../../store/user.store";
 import { useCoopContext } from "../../../context/coop/coopsession.context";
 import InviteMembersPanel from "@/components/ProjectsManagement/InviteMembersPanel";
 import useSearchMembers from "@/hooks/projects_management/useSearchMembers";

@@ -4,7 +4,7 @@ import { PatternType, RecordPreviewPattern } from "../../../types/daw.types";
 import { useTimelineContext } from "@/context/daw/timeline.context";
 import { Track as TrackType } from "../../../types/daw.types";
 import RecordingAudioPattern from "../Pattern/RecordingAudioPattern";
-import { recordingAudioPatternPreview } from "@/store/recording";
+import { recordingAudioPatternPreview } from "@/store/recording.store";
 
 type TrackProps = {
   track: Accessor<TrackType>;

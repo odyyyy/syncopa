@@ -1,6 +1,6 @@
 import toast from "solid-toast";
 import { useProjectContext } from "@/context/daw/project.context";
-import { accessToken } from "../store/auth";
+import { accessToken } from "../store/auth.store";
 import { ConnectionData, ProjectChanges, CoopOperationsHandlers } from "../types/coop.types";
 
 import { SetStoreFunction } from "solid-js/store";
@@ -16,7 +16,6 @@ const setupCoopConnections = (
   const websocketConnection = new WebSocket(
     `ws://localhost:8000/ws/sessions/${projectId}?access_token=${accessToken()}`,
   );
-  // test local ip 192.168.1.64
   
   websocketConnection.onopen = () => {
     toast.success("Сессия совместной работы активна");

@@ -1,17 +1,25 @@
+import { useTimelineContext } from "@/context/daw/timeline.context";
 import { PatternAudio } from "@/types/daw.types";
 import { Component } from "solid-js";
 
 const AudioPatternWaveform: Component<{ pattern: () => PatternAudio }> = (
   props,
 ) => {
+  const { tactWidth } = useTimelineContext();
+  const patternTitle = props.pattern().title.replace(/\.(mp3|wav|ogg|flac|m4a)$/, "") || "Аудиофайл";
   return (
     <div class="w-full h-full flex items-center justify-center">
-      <div class="w-full bg-neutral/25 h-full light:bg-base-content/5 flex flex-col items-center justify-center ">
-        <div class="light:text-neutral/60 text-base-content/60 text-[10px] font-bold uppercase tracking-wider mb-3 truncate pointer-events-none">
-          {props.pattern().title.replace(/\.(mp3|wav|ogg|flac|m4a)$/, "") ||
-            "Аудиофайл"}
+      <div class="w-full bg-neutral/25 h-full light:bg-base-content/5 flex flex-col items-center justify-center " >
+        <div
+          title={patternTitle}
+          style={{
+            "font-size": `${Math.min(12, Math.max(4.5, 4.5 + (tactWidth() - 80) * (7 / 320)))}px`,
+          }}
+          class="light:text-neutral/60 text-base-content/60 font-bold uppercase tracking-wider mb-3 truncate pointer-events-none"
+        >
+          {patternTitle}
         </div>
-        <div class="flex items-center justify-center w-full  h-12 min-h-12">
+        <div class="flex items-center justify-center w-full h-12 min-h-12">
           {(() => {
             const seed = props
               .pattern()
@@ -19,11 +27,14 @@ const AudioPatternWaveform: Component<{ pattern: () => PatternAudio }> = (
               .reduce((acc, char) => acc + char.charCodeAt(0), 0);
 
             const lineCount = 60;
-            const containerWidth = 100; 
+            const containerWidth = 100;
             const lineWidth = containerWidth / lineCount;
 
             return Array.from({ length: lineCount }).map((_, i) => {
-              const noise = Math.sin(i * 0.5) * 12 + Math.cos(seed + i * 0.3) * 10 + Math.sin(seed * i * 0.1) * 8;
+              const noise =
+                Math.sin(i * 0.5) * 12 +
+                Math.cos(seed + i * 0.3) * 10 +
+                Math.sin(seed * i * 0.1) * 8;
               const height = 40 + noise;
               const clampedHeight = Math.max(20, Math.min(70, height));
 

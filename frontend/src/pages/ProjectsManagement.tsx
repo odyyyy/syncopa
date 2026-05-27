@@ -3,7 +3,7 @@ import ProjectItemCard from "../components/ProjectsManagement/ProjectItemCard";
 import ProjectCreatePopup from "../components/ProjectsManagement/ProjectCreateItem";
 import UserPanel from "../components/User/UserPanel";
 import { useProjectsApi } from "../api/projects-management.api";
-import { userData } from "../store/user";
+import { userData } from "../store/user.store";
 
 const ProjectsManagement: Component = () => {
   const { getProjectsList } = useProjectsApi();

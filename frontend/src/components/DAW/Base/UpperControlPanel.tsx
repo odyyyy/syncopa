@@ -14,7 +14,6 @@ import useImportAudio from "../../../hooks/daw/import/useImportAudio";
 import ImportAudioModal from "../Import/ImportAudioModal";
 import usePlayerManager from "@/hooks/daw/player/usePlayerManager";
 import toast from "solid-toast";
-import { useVCSContext } from "@/context/vcs/vcs.context";
 import useRecordAudio from "@/hooks/daw/record/useRecordAudio";
 
 const UpperControlPanel: Component = () => {
@@ -22,14 +21,12 @@ const UpperControlPanel: Component = () => {
   const { time, isPlaying, setPlayerBeatPos, setTotalVolume, totalVolume } =
     usePlayerContext();
   const { startOrPausePlaying } = usePlayerManager();
-  const { saveProjectChanges } = useProjectManager();
+  const { saveProjectFile } = useProjectManager();
   const { muteOrUnmuteMasterVolume, setExitModalOpen, exitModalOpen } =
     useUpperControlPanel();
   const { exportOpen, setExportOpen } = useExportProject();
   const { importOpen, setImportOpen } = useImportAudio();
   const { coopSessionMembers, websocketConnection } = useCoopContext();
-
-  const { VCSState } = useVCSContext();
 
   const navigate = useNavigate();
 
@@ -77,28 +74,35 @@ const UpperControlPanel: Component = () => {
                 </p>
               </div>
             </li>
+
             <li
-              classList={{
-                disabled: VCSState.isVCSModeActive,
-                "cursor-not-allowed": VCSState.isVCSModeActive,
+              onClick={(e) => {
+                e.preventDefault();
+                // openSavedProject();
               }}
-              title={
-                VCSState.isVCSModeActive
-                  ? "Сохранение проекта недоступно в режиме работы с системой контроля версий"
-                  : ""
-              }
+            >
+              <div class="flex flex-row">
+                <svg
+                  viewBox="0 0 20 20"
+                  xmlns="http://www.w3.org/2000/svg"
+                  class="w-5 h-5 fill-current"
+                >
+                  <path d="M10.707 10.707a1 1 0 0 1-1.414-1.414l6-6a1 1 0 1 1 1.414 1.414z" />
+                  <path d="M15 15v-3.5a1 1 0 1 1 2 0V16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h4.5a1 1 0 0 1 0 2H5v10zm2-7a1 1 0 1 1-2 0V4a1 1 0 1 1 2 0z" />
+                  <path d="M12 5a1 1 0 1 1 0-2h4a1 1 0 1 1 0 2z" />
+                </svg>
+                <a>Открыть</a>
+              </div>
+            </li>
+
+            <li
               onclick={(e) => {
                 e.preventDefault();
-
-                if (VCSState.isVCSModeActive) return;
-
-                saveProjectChanges(project()?.projectId ?? "");
+                saveProjectFile();
                 toast.success("Проект сохранен");
               }}
             >
-              <div
-                class={`flex flex-row ${VCSState.isVCSModeActive ? "pointer-events-none opacity-50" : ""}`}
-              >
+              <div class="flex flex-row">
                 <svg
                   class="w-4 h-4 fill-current ml-0.5"
                   viewBox="0 0 24 24"
@@ -407,12 +411,14 @@ const UpperControlPanel: Component = () => {
           </li>
         </ul>
         <div class="flex items-center ml-3">
-          <label class="swap mr-2  rounded-lg p-0.5">
+          <label class="swap mr-2 rounded-lg p-0.5">
             <input
               type="checkbox"
               checked
+              id="masterVolume"
               onChange={muteOrUnmuteMasterVolume}
             />
+            <span class="sr-only">Громкость</span>
 
             <svg
               class="swap-on fill-current h-7 w-7"
@@ -434,6 +440,9 @@ const UpperControlPanel: Component = () => {
               <path d="M3,9H7L12,4V20L7,15H3V9M16.59,12L14,9.41L15.41,8L18,10.59L20.59,8L22,9.41L19.41,12L22,14.59L20.59,16L18,13.41L15.41,16L14,14.59L16.59,12Z" />
             </svg>
           </label>
+          <label for="volumeSlider" class="sr-only">
+            Громкость
+          </label>
 
           <input
             type="range"
@@ -441,6 +450,7 @@ const UpperControlPanel: Component = () => {
             max="100"
             value={totalVolume()}
             step="1"
+            id="volumeSlider"
             onChange={(e: Event) => {
               setTotalVolume(Number((e.target as HTMLInputElement).value));
             }}

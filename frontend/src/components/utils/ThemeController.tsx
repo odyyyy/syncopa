@@ -20,6 +20,7 @@ const ThemeController: Component = () => {
     <label class="swap swap-rotate cursor-pointer ">
       <input 
         type="checkbox" 
+        aria-label="Переключить цветовую тему"
         checked={theme() === "luxury"} 
         onChange={toggleTheme} 
       />

@@ -6,7 +6,7 @@ import {
   onMount,
   Show,
 } from "solid-js";
-import { userData } from "../../store/user";
+import { userData } from "../../store/user.store";
 import ThemeController from "../utils/ThemeController";
 import LogoutModal from "../utils/ConfirmActionModal";
 import UserAccountSettings from "./UserAccountSettings";

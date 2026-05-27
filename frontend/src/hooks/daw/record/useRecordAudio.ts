@@ -3,8 +3,8 @@ import { useTimelineContext } from "@/context/daw/timeline.context";
 import {
   recordingAudioPatternPreview,
   setRecordingAudioPatternPreview,
-} from "@/store/recording";
-import { createEffect, createSignal } from "solid-js";
+} from "@/store/recording.store";
+import { createSignal } from "solid-js";
 import toast from "solid-toast";
 import * as Tone from "tone";
 import useImportAudio from "../import/useImportAudio";
@@ -28,30 +28,54 @@ const useRecordAudio = () => {
       toast.error("Выберите аудио-дорожку для записи");
       return;
     }
+  
+    try {
+      await Tone.start();
+    } catch (e) {
+      toast.error("Не удалось запустить аудио-движок");
+      return;
+    }
+  
     const audioInputDevice = new Tone.UserMedia();
     const rec = new Tone.Recorder();
     audioInputDevice.connect(rec);
-    await audioInputDevice
-      .open()
-      .then(function () {
-        setIsRecording(true);
-        rec.start();
-        setRecorder(rec);
-        toast.success("Запись началась!");
-        setRecordingAudioPatternPreview({
-          trackId: selectedTrackIdToRecord()!,
-          pos: playerBeatPos(),
-          width: 0,
-        });
-      })
-      .catch(() => {
-        toast.error(
-          "Для начала записи Вы должны дать разрешение на использование аудио-устройства на данной странице",
-          {
-            duration: 5000,
-          },
-        );
+  
+    try {
+      await audioInputDevice.open();
+  
+      const synth = new Tone.MembraneSynth().toDestination();
+      const startTime = Tone.now();
+  
+      for (let i = 0; i < 4; i++) {
+        synth.triggerAttackRelease("C5", "16n", startTime + i * 0.5);
+      }
+  
+      const playbackDuration = 0.5 * 4;
+      await new Promise((res) => setTimeout(res, playbackDuration * 1000));
+  
+      synth.dispose();
+  
+      setIsRecording(true);
+      rec.start();
+      setRecorder(rec);
+  
+      toast.success("Запись началась!");
+  
+      setRecordingAudioPatternPreview({
+        trackId: selectedTrackIdToRecord()!,
+        pos: playerBeatPos(),
+        width: 0,
       });
+  
+    } catch (error) {
+      audioInputDevice.dispose();
+      rec.dispose();
+      
+      toast.error(
+        "Для начала записи Вы должны дать разрешение на использование аудио-устройства на данной странице",
+        { duration: 5000 }
+      );
+    }
   };
 
   const { saveAndAddAudioPattern } = useImportAudio();

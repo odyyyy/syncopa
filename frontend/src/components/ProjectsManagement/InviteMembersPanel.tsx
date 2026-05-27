@@ -1,4 +1,4 @@
-import { userData } from "@/store/user";
+import { userData } from "@/store/user.store";
 import { Component, For, Suspense, Show, Accessor } from "solid-js";
 import AvatarDefault from "../User/Avatars/AvatarDefault";
 import AvatarPicture from "../User/Avatars/AvatarPicture";

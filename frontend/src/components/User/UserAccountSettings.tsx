@@ -5,7 +5,7 @@ import {
   Show,
 } from "solid-js";
 import useUserDataUpdate from "../../hooks/users/useUserDataUpdate";
-import { userData } from "../../store/user";
+import { userData } from "../../store/user.store";
 import PasswordVisibilityBtn from "../utils/PasswordVisibilityBtn";
 import LoadingOverlay from "../utils/Loaders/LoadingOverlay";
 import AvatarPicture from "./Avatars/AvatarPicture";

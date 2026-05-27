@@ -27,6 +27,37 @@ const useProjectManager = () => {
     });
   };
 
+  const saveProjectFile = async () => {
+    const projectData = {
+      metadata: {
+        bpm: bpm(),
+        totalVolume: totalVolume(),
+        beatNumber: beatNumber(),
+      },
+      tracks,
+    };
+
+    try {
+      const jsonString = JSON.stringify(projectData, null, 2);
+      const blob = new Blob([jsonString], { type: "application/json" });
+      const url = URL.createObjectURL(blob);
+
+      const link = document.createElement("a");
+      link.href = url;
+      const d = new Date();
+      link.download = `${project()?.title}_${d.getDate()}-${d.getMonth() + 1}-${d.getFullYear()}-${d.getHours()}-${d.getMinutes()}.json`;
+
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      toast.error("При сохранении проекта произошла ошибка");
+      throw error;
+    }
+  };
+
   const { project } = useProjectContext();
   const { loadAudioPatternFile } = useDawApi();
 
@@ -59,6 +90,7 @@ const useProjectManager = () => {
   return {
     saveProjectChanges,
     loadAudioPatternsUsedInProject,
+    saveProjectFile,
   };
 };
 

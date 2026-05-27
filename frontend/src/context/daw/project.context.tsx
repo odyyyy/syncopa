@@ -12,6 +12,7 @@ import { useNavigate, useParams } from "@solidjs/router";
 import { createStore } from "solid-js/store";
 import SyncopaLoader from "../../components/utils/Loaders/SyncopaLoading";
 import {
+  PayloadMetadata,
   ProjectContextType,
   ProjectWithPayload,
   Track,
@@ -24,24 +25,31 @@ export const ProjectProvider: ParentComponent = (props) => {
   const { getProjectWithPayload } = useDawApi();
   const navigate = useNavigate();
 
-  const [project] = createResource<ProjectWithPayload | null>(async () => {
-    const res = await getProjectWithPayload(uuid!);
-    if (res.type === "success") {
-      return res.data;
-    } else if (res.type === "error") {
-      if (res.status === 404) {
-        toast.error("Проект не найден");
-      } else if (res.status === 403) {
-        toast.error("Проект не доступен");
-      } else {
-        toast.error("Ошибка загрзуки проекта");
+  const [project, { mutate }] = createResource<ProjectWithPayload | null>(
+    async () => {
+      const res = await getProjectWithPayload(uuid!);
+      if (res.type === "success") {
+        return res.data;
+      } else if (res.type === "error") {
+        if (res.status === 404) {
+          toast.error("Проект не найден");
+        } else if (res.status === 403) {
+          toast.error("Проект не доступен");
+        } else {
+          toast.error("Ошибка загрзуки проекта");
+        }
+        navigate("/not-found");
       }
-      navigate("/not-found");
-    }
-    return null;
-  });
+      return null;
+    },
+  );
 
   const [tracks, setTracks] = createStore<Track[]>([]);
+  const DEFAULT_METADATA: PayloadMetadata = {
+    bpm: 120,
+    totalVolume: 50,
+    beatNumber: 4,
+  };
 
   return (
     <Switch>
@@ -51,8 +59,21 @@ export const ProjectProvider: ParentComponent = (props) => {
 
       <Match when={project()}>
         {(projectValue) => {
-          if (tracks.length === 0 && projectValue().payload?.tracks) {
+          if (projectValue().payload?.tracks) {
             setTracks(projectValue().payload.tracks ?? []);
+          }
+
+          if (!projectValue().payload) {
+            mutate((prev) => {
+              if (!prev) return prev;
+              return {
+                ...prev,
+                payload: {
+                  metadata:DEFAULT_METADATA,
+                  tracks: [],
+                },
+              };
+            });
           }
 
           return (

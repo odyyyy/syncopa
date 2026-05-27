@@ -6,9 +6,9 @@ import {
   ParentComponent,
 } from "solid-js";
 import { BACKEND_URL } from "../config/config";
-import { accessToken, setAccessToken } from "../store/auth";
+import { accessToken, setAccessToken } from "../store/auth.store";
 import { logoutFetch, refreshToken } from "../api/auth.api";
-import { setUserData } from "../store/user";
+import { setUserData } from "../store/user.store";
 import { apiRequest } from "../api/base.api";
 
 export const AuthContext = createContext<AuthContextType>();

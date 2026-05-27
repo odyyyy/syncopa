@@ -8,7 +8,7 @@ const AvatarPicture: Component<{ src: string; username: string; size: number }> 
       title={props.username}
     >
       <div class="rounded-full" style={{ width: `${pixelSize}px`, height: `${pixelSize}px` }}>
-        <img src={props.src} />
+        <img src={props.src} alt={props.username} />
       </div>
     </div>
   );

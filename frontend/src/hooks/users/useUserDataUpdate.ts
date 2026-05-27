@@ -1,7 +1,7 @@
 import { createSignal } from "solid-js";
 import { useUserDataManagementApi } from "../../api/user.api";
 import toast from "solid-toast";
-import { setUserData } from "../../store/user";
+import { setUserData } from "../../store/user.store";
 
 export default function useUserDataUpdate() {
   const [openPasswordChangeFields, setOpenPasswordChangeFields] =

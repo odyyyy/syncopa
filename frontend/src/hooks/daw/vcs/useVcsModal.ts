@@ -38,7 +38,7 @@ const useVcsModal = () => {
     requestMerge,
     getProjectBranchesWithVersionsMetadata,
   } = useVcsApi();
-  const { project, setTracks, tracks } = useProjectContext();
+  const { project, setTracks } = useProjectContext();
   const { setBpm } = usePlayerContext();
 
   const createNewBranch = async () => {
@@ -137,7 +137,6 @@ const useVcsModal = () => {
       ...selectedVersion()!,
       branch: selectedBranchInModal(),
     });
-
   };
 
   const commitVersion = async (versionMessage: string) => {

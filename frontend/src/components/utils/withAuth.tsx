@@ -9,7 +9,7 @@ export function withAuth(ComponentToProtect: Component): Component {
 
     return (
       <Show when={!loading()} fallback={<SyncopaLoader />}>
-        <Show when={accessToken()} fallback={<Navigate href="/login" />}>
+        <Show when={accessToken()} fallback={<Navigate href="/register" />}>
           <ComponentToProtect />
         </Show>
       </Show>

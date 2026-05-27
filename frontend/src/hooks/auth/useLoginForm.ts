@@ -3,7 +3,7 @@ import { createSignal } from "solid-js";
 import { createStore } from "solid-js/store";
 import toast from "solid-toast";
 import { login } from "../../api/auth.api";
-import { setAccessToken } from "../../store/auth";
+import { setAccessToken } from "../../store/auth.store";
 import { setupUserData } from "../../context/auth.context";
 import { createFieldHandler } from "../shared";
 
