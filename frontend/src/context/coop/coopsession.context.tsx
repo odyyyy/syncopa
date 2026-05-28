@@ -4,6 +4,7 @@ import CoopCursor from "../../components/DAW/Coop/CoopCursor";
 import {
   CoopSessionContextType,
   CoopOperationsHandlers,
+  RemoteCursor,
 } from "../../types/coop.types";
 import setupCoopConnectionsAndHandleEvents from "../../coop/coopConnections";
 import usePatternManager from "../../hooks/daw/pattern/usePatternManager";
@@ -20,6 +21,9 @@ export const CoopSessionProvider: ParentComponent = (props) => {
   const [coopSessionMembers, setCoopSessionMembers] = createStore<
     ProjectMember[]
   >([]);
+  const [remoteCursors, setRemoteCursors] = createStore<
+    Record<string, RemoteCursor>
+  >({});
 
   const patternManager = usePatternManager();
   const patternTransform = useUpdatePatternPosAndWidth();
@@ -48,16 +52,13 @@ export const CoopSessionProvider: ParentComponent = (props) => {
   const websocketConnection = setupCoopConnectionsAndHandleEvents(
     setCoopSessionMembers,
     coopOperationsHandlers,
+    setRemoteCursors,
   );
 
   onMount(() => {
-    const handlePopState = (e: PopStateEvent) => {
-      websocketConnection.close();
-    };
+    const handlePopState = () => websocketConnection.close();
     window.addEventListener("popstate", handlePopState);
-    return () => {
-      window.removeEventListener("popstate", handlePopState);
-    };
+    return () => window.removeEventListener("popstate", handlePopState);
   });
 
   return (
@@ -67,9 +68,11 @@ export const CoopSessionProvider: ParentComponent = (props) => {
         setCoopSessionMembers,
         websocketConnection,
         coopOperationsHandlers,
+        remoteCursors,
+        setRemoteCursors,
       }}
     >
-      {/*<CoopCursor />*/}
+      <CoopCursor />
       {props.children}
     </CoopSessionContext.Provider>
   );
@@ -77,8 +80,6 @@ export const CoopSessionProvider: ParentComponent = (props) => {
 
 export const useCoopContext = () => {
   const context = useContext(CoopSessionContext);
-  if (!context) {
-    throw new Error("CoopSessionContext не найден");
-  }
+  if (!context) throw new Error("CoopSessionContext не найден");
   return context;
 };

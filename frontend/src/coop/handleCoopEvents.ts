@@ -1,4 +1,4 @@
-import { SetStoreFunction } from "solid-js/store";
+import { produce, SetStoreFunction } from "solid-js/store";
 import {
   ProjectChanges,
   ConnectionState,
@@ -6,6 +6,7 @@ import {
   SyncOperation,
   Target,
   CoopOperationsHandlers,
+  RemoteCursor,
 } from "../types/coop.types";
 import { useCoopContext } from "../context/coop/coopsession.context";
 import { useVCSContext } from "@/context/vcs/vcs.context";
@@ -14,9 +15,14 @@ export const handleCoopEvents = (
   data: ConnectionData | ProjectChanges,
   setCoopSessionMembers: SetStoreFunction<ProjectMember[]>,
   handlers: CoopOperationsHandlers,
+  setRemoteCursors?: SetStoreFunction<Record<string, RemoteCursor>>,
 ) => {
   if ("event" in data && "member" in data) {
-    handleConnectionEvents(data as ConnectionData, setCoopSessionMembers);
+    handleConnectionEvents(
+      data as ConnectionData,
+      setCoopSessionMembers,
+      setRemoteCursors,
+    );
   } else if ("operation" in data && "target" in data && "payload" in data) {
     applyIncomeOperation(data as ProjectChanges, handlers);
   }
@@ -25,6 +31,7 @@ export const handleCoopEvents = (
 const handleConnectionEvents = (
   data: ConnectionData,
   setCoopSessionMembers: SetStoreFunction<ProjectMember[]>,
+  setRemoteCursors?: SetStoreFunction<Record<string, RemoteCursor>>,
 ) => {
   switch (data.event) {
     case ConnectionState.INIT:
@@ -34,12 +41,20 @@ const handleConnectionEvents = (
       setCoopSessionMembers((prev: ProjectMember[]) => [...prev, data.member]);
       break;
     case ConnectionState.DISCONNECTED:
-      setCoopSessionMembers((prev: ProjectMember[]) =>
+      setCoopSessionMembers((prev) =>
         prev.filter((member) => member.id !== data.member.id),
       );
+      if (setRemoteCursors) {
+        setRemoteCursors(
+          produce((state) => {
+            delete state[data.member.id];
+          }),
+        );
+      }
       break;
   }
 };
+
 export const useSendChangeEvent = () => {
   const { VCSState, setVCSState } = useVCSContext();
   const { websocketConnection } = useCoopContext();
@@ -56,7 +71,6 @@ export const useSendChangeEvent = () => {
       setVCSState("patches", VCSState.patches.length, op);
     }
   };
-
   return { sendChangeEvent };
 };
 
@@ -75,6 +89,7 @@ export const applyIncomeOperation = (
           break;
       }
       break;
+
     case Target.PATTERN:
       switch (data.operation) {
         case SyncOperation.CREATE:
@@ -103,6 +118,7 @@ export const applyIncomeOperation = (
           break;
       }
       break;
+
     case Target.NOTE:
       switch (data.operation) {
         case SyncOperation.CREATE:
@@ -132,6 +148,7 @@ export const applyIncomeOperation = (
           break;
       }
       break;
+
     case Target.PRESET:
       switch (data.operation) {
         case SyncOperation.UPDATE:
@@ -139,6 +156,7 @@ export const applyIncomeOperation = (
           break;
       }
       break;
+
     case Target.TRACK_VOLUME:
       switch (data.operation) {
         case SyncOperation.UPDATE:
@@ -146,6 +164,7 @@ export const applyIncomeOperation = (
           break;
       }
       break;
+
     case Target.EFFECT:
       switch (data.operation) {
         case SyncOperation.CREATE:

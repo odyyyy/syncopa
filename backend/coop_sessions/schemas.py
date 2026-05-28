@@ -33,6 +33,7 @@ class Target(StrEnum):
     PRESET = "preset"
     TRACK_VOLUME = "track_volume"
     EFFECT = "effect"
+    CURSOR = "cursor"
 
 
 class ConnectionState(StrEnum):

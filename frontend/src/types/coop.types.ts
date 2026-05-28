@@ -29,6 +29,7 @@ enum Target {
   PRESET = "preset",
   TRACK_VOLUME = "track_volume",
   EFFECT = "effect",
+  CURSOR = "cursor",
 }
 
 enum ConnectionState {
@@ -48,6 +49,8 @@ type CoopSessionContextType = {
   setCoopSessionMembers: SetStoreFunction<ProjectMember[]>;
   websocketConnection: WebSocket | null;
   coopOperationsHandlers: CoopOperationsHandlers;
+  remoteCursors: Record<string, CoopCursorType>;
+  setRemoteCursors: SetStoreFunction<Record<string, CoopCursorType>>;
 };
 
 type ConnectionData =
@@ -84,13 +87,20 @@ type CoopOperationsHandlers = {
   removeEffectFromPattern: (patternId: string, effectType: string) => void;
 };
 
+type CoopCursorType = {
+  userId: string;
+  username: string;
+  x: number;
+  y: number;
+};
+
 export type {
   CoopSession,
   ProjectChanges,
   ProjectMember,
   CoopSessionContextType,
   ConnectionData,
-  CoopOperationsHandlers,
+  CoopOperationsHandlers, CoopCursorType as RemoteCursor
 };
 
 export { SyncOperation, Target, ConnectionState };
