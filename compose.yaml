@@ -7,9 +7,10 @@ services:
       - ./frontend:/frontend
       - /frontend/node_modules/
       - /frontend/public/assets:/frontend/public/assets
-    restart: always
     ports:
       - "3000:3000"
+    depends_on:
+      - backend
     networks:
       - frontend-network
 
