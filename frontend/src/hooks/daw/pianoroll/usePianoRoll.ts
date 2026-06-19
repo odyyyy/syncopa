@@ -9,12 +9,13 @@ import useNoteManager from "./useNoteManager";
 import { useSendChangeEvent } from "../../../coop/handleCoopEvents";
 import { SyncOperation, Target } from "../../../types/coop.types";
 import { useContextMenu } from "../../../context/daw/contextmenu.context";
+import { generateUUID } from "@/config/config";
 
 const usePianoRoll = () => {
   const { tracks } = useProjectContext();
   const { currentPatternAndTrackId, currentPatternWidthInTacts } =
     usePianoRollContext();
-  const { beatNumber } = useTimelineContext();
+  const { tactWidth, beatNumber } = useTimelineContext();
 
   const { isPianoRollOpen } = usePianoRollContext();
   const [synth, setSynth] = createSignal<PolySynthInstance | undefined>();
@@ -55,32 +56,36 @@ const usePianoRoll = () => {
     return `${noteNames[noteIndex]}${octave}`;
   }).reverse();
 
-  const { addNote } = useNoteManager();
+  const { addNote, removeNote } = useNoteManager();
   const { sendChangeEvent } = useSendChangeEvent();
-  const addNoteInPianoRoll = (e: MouseEvent, pianoPanelWidth: number) => {
-    const note = (e.target as HTMLElement).parentElement?.dataset.note;
+
+  const addNoteInPianoRoll = (e: MouseEvent, scrollLeft: number = 0) => {
+    const note =
+      (e.target as HTMLElement)
+        .closest("[data-note]")
+        ?.getAttribute("data-note") ??
+      (e.target as HTMLElement).parentElement?.dataset.note;
     if (!note) return;
 
-    let noteBeatPos = Math.ceil(
-      (e.clientX - pianoPanelWidth) / (e.target as HTMLElement).offsetWidth,
-    );
+    const beatWidthPx = (tactWidth() * 3) / beatNumber();
+    const isZoomedIn = beatWidthPx >= 80;
+    const step = isZoomedIn ? 0.25 : 1;
 
-    const patternBeatsWidth = currentPatternWidthInTacts() * beatNumber();
+    const totalBeats = currentPatternWidthInTacts() * beatNumber();
 
-    noteBeatPos =
-      noteBeatPos <= currentPatternWidthInTacts() * beatNumber()
-        ? noteBeatPos
-        : Math.ceil(patternBeatsWidth);
+    const rect = (e.currentTarget as HTMLElement).getBoundingClientRect();
+    const clickX = e.clientX - rect.left + scrollLeft;
+
+    const rawPos = clickX / beatWidthPx + 1;
+    const snappedPos = Math.floor((rawPos - 1) / step) * step + 1;
+
+    const pos = Math.min(Math.max(1, snappedPos), totalBeats + 1 - step);
 
     const newNote: Note = {
-      noteId: crypto.randomUUID(),
-      pos: noteBeatPos,
+      noteId: generateUUID(),
+      pos,
       note,
-      duration:
-        noteBeatPos === Math.ceil(patternBeatsWidth) &&
-        patternBeatsWidth % 1 > 0
-          ? patternBeatsWidth % 1
-          : 1,
+      duration: step,
       velocity: 1,
     };
 
@@ -94,11 +99,9 @@ const usePianoRoll = () => {
       patternId: currentPatternAndTrackId.patternId,
       note: newNote,
     });
-
     (synth() as PolySynthInstance)?.triggerAttackRelease(newNote.note, 1);
   };
 
-  const { removeNote } = useNoteManager();
   const removeNoteFromPianoRoll = (e: MouseEvent) => {
     const noteId = (e.currentTarget as HTMLElement).dataset?.noteId;
     if (!noteId) return;
@@ -171,11 +174,30 @@ const usePianoRoll = () => {
     e.preventDefault();
     e.stopPropagation();
 
+    const noteEl = (e.target as HTMLElement).closest(
+      "[data-note-id]",
+    ) as HTMLElement | null;
+    if (!noteEl) return;
+
+    const noteId = noteEl.dataset.noteId;
+    if (!noteId) return;
+
     openMenu(e.clientX, e.clientY, [
       {
         label: "Удалить ноту",
         icon: "✕",
-        onClick: () => removeNoteFromPianoRoll(e),
+        onClick: () => {
+          removeNote(
+            currentPatternAndTrackId.trackId,
+            currentPatternAndTrackId.patternId,
+            noteId,
+          );
+          sendChangeEvent(SyncOperation.REMOVE, Target.NOTE, {
+            trackId: currentPatternAndTrackId.trackId,
+            patternId: currentPatternAndTrackId.patternId,
+            noteId,
+          });
+        },
       },
     ]);
   };

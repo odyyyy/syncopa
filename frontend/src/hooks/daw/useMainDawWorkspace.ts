@@ -9,6 +9,7 @@ import { SyncOperation, Target } from "../../types/coop.types";
 import { useTimelineContext } from "@/context/daw/timeline.context";
 import { PatternVST } from "@/types/daw.types";
 import { useClipboardContext } from "@/context/daw/clipboard.context";
+import {generateUUID} from "@/config/config"
 
 const useMainDawWorkspace = () => {
   const { tracks, setTracks } = useProjectContext();
@@ -67,7 +68,7 @@ const useMainDawWorkspace = () => {
               label: "Добавить паттерн",
               icon: "+",
               onClick: () => {
-                const patternId = crypto.randomUUID();
+                const patternId = generateUUID();
                 const newPattern: PatternVST = {
                   patternId,
                   type: "vst",
@@ -100,7 +101,7 @@ const useMainDawWorkspace = () => {
 
                     const copiedPattern = {
                       ...(clipboard() as PatternVST),
-                      patternId: crypto.randomUUID(),
+                      patternId: generateUUID(),
                       pos: posX / tactWidth(),
                     };
 

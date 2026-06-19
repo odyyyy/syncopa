@@ -8,12 +8,13 @@ import { PolySynthInstance } from "../../types/presets.types";
 import * as Tone from "tone";
 import { createSignal } from "solid-js";
 import { InstrumentTypeEnum } from "@/components/DAW/Track/TrackInstrumentChooseModal";
+import {generateUUID} from "@/config/config"
 
 const useTracksManager = () => {
   const { setAndLoadSelectedPreset } = usePresetsContext();
   const { tracks, setTracks } = useProjectContext();
   const [isMuted, setIsMuted] = createSignal(false);
-
+  
   const addNewTrack = (
     title: string | undefined = undefined,
     presetCategory: string,
@@ -22,12 +23,12 @@ const useTracksManager = () => {
       toast.error("Максимальное количество дорожек достигнуто");
       return;
     }
-
+  
     if (!title) {
       title = generateTrackTitle(tracks);
     }
-
-    const trackId = crypto.randomUUID();
+  
+    const trackId = generateUUID();
     const presetId = getDefaultPresetIdByCategory(presetCategory);
     const newTrack = {
       trackId: trackId,
@@ -36,9 +37,9 @@ const useTracksManager = () => {
       patterns: [],
       volume: 50,
     };
-
+  
     addTrackInStoreAndLoadDefaultPreset(newTrack);
-
+  
     return newTrack;
   };
 
