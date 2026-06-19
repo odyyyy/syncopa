@@ -156,7 +156,7 @@ const Pattern: Component<{
                       }}
                     >
                       <div
-                        class="absolute h-1 bg-primary/54 light:bg-neutral/60"
+                        class="absolute h-1 bg-primary/54 light:bg-neutral/50"
                         style={{
                           left: `${(Math.max(note.pos - 1, 0) * patternWidth()) / patternWidthInTacts() / 4.04}px`,
                           width: `${(note.duration * patternWidth()) / 4.2 / patternWidthInTacts()}px`,

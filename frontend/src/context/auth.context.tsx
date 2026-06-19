@@ -71,7 +71,6 @@ export const setupUserData = async () => {
   });
 
   if (response.type === "error") {
-    toast.error("Ошибка при получении данных пользователя");
     throw new Error("Ошибка при получении данных пользователя");
   }
 

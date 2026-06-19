@@ -127,7 +127,7 @@ const LowerControlPanel: Component = () => {
               when={isMenuOpen()}
               fallback={
                 <button
-                  class="w-13 h-13 btn btn-circle bg-[#141414] border border-primary/5 text-base-content hover:bg-base-content/80 hover:text-black shadow-xl"
+                  class="w-13 h-13 btn btn-circle light:bg-base-300 bg-[#141414] border border-primary/5 text-base-content hover:bg-base-content/80 hover:text-black shadow-xl"
                   onClick={() => setIsMenuOpen(true)}
                 >
                   <svg
@@ -150,7 +150,7 @@ const LowerControlPanel: Component = () => {
               }
             >
               <button
-                class="w-13 h-13 btn btn-circle bg-[#141414] border-2 border-primary/5 text-base-content hover:bg-base-content/80 hover:text-black shadow-xl text-xl font-medium"
+                class="w-13 h-13 btn btn-circle bg-[#141414] light:bg-base-300 border-2 border-primary/5 text-base-content hover:bg-base-content/80 hover:text-black shadow-xl text-xl font-medium"
                 onClick={() => setIsMenuOpen(false)}
               >
                 ✕
