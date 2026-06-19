@@ -28,52 +28,60 @@ const useRecordAudio = () => {
       toast.error("Выберите аудио-дорожку для записи");
       return;
     }
-  
+
     try {
+      if (Tone.context.lookAhead > 0.03) {
+        Tone.context.lookAhead = 0.01;
+      }
       await Tone.start();
     } catch (e) {
       toast.error("Не удалось запустить аудио-движок");
       return;
     }
-  
+
     const audioInputDevice = new Tone.UserMedia();
     const rec = new Tone.Recorder();
     audioInputDevice.connect(rec);
-  
+
     try {
-      await audioInputDevice.open();
-  
+      await audioInputDevice.open({
+        echoCancellation: false,
+        noiseSuppression: false,
+        autoGainControl: false,
+        latency: 0,
+      } as any);
+
       const synth = new Tone.MembraneSynth().toDestination();
+      const beatInterval = 0.5;
+      const beatCount = 4;
       const startTime = Tone.now();
-  
-      for (let i = 0; i < 4; i++) {
-        synth.triggerAttackRelease("C5", "16n", startTime + i * 0.5);
+
+      for (let i = 0; i < beatCount; i++) {
+        synth.triggerAttackRelease("C5", "16n", startTime + i * beatInterval);
       }
-  
-      const playbackDuration = 0.5 * 4;
-      await new Promise((res) => setTimeout(res, playbackDuration * 1000));
-  
-      synth.dispose();
-  
-      setIsRecording(true);
-      rec.start();
-      setRecorder(rec);
-  
-      toast.success("Запись началась!");
-  
-      setRecordingAudioPatternPreview({
-        trackId: selectedTrackIdToRecord()!,
-        pos: playerBeatPos(),
-        width: 0,
-      });
-  
+
+      const recordAtToneTime = startTime + beatCount * beatInterval;
+
+      Tone.Draw.schedule(() => {
+        synth.dispose();
+        rec.start();
+        setIsRecording(true);
+        setRecorder(rec);
+
+        toast.success("Запись началась!");
+
+        setRecordingAudioPatternPreview({
+          trackId: selectedTrackIdToRecord()!,
+          pos: playerBeatPos(),
+          width: 0,
+        });
+      }, recordAtToneTime);
     } catch (error) {
       audioInputDevice.dispose();
       rec.dispose();
-      
       toast.error(
         "Для начала записи Вы должны дать разрешение на использование аудио-устройства на данной странице",
-        { duration: 5000 }
+        { duration: 5000 },
       );
     }
   };

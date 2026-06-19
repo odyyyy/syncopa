@@ -145,12 +145,12 @@ const EffectsModal: Component<{
         </div>
 
         <div class="flex flex-1 min-h-87.5">
-          <div class="w-20 bg-base-200/90 border-r border-black/10 flex flex-col items-center py-8 gap-6">
+          <div class="w-20 bg-base-200/90 border-r border-black/10 flex flex-col items-center py-8 gap-6 ">
             <For each={Object.values(FX_DATA)}>
               {(fx) => (
                 <button
                   onClick={() => setSelectedFx(fx)}
-                  class={`relative size-12 rounded-2xl flex flex-col items-center justify-center transition-all border-2 ${
+                  class={`relative size-12 rounded-2xl flex flex-col items-center justify-center transition-all border-2 cursor-pointer ${
                     selectedFx().id === fx.id
                       ? "bg-primary/10 border-primary text-primary shadow-[0_0_15px_rgba(var(--p),0.2)]"
                       : "bg-base-300 border-transparent opacity-30 hover:opacity-100"
@@ -199,7 +199,7 @@ const EffectsModal: Component<{
               </Show>
             </div>
 
-            <div class="grid grid-cols-3 gap-10">
+            <div class="flex w-full items-center justify-evenly ">
               <For each={selectedFx().params}>
                 {(param) => (
                   <AudioKnob

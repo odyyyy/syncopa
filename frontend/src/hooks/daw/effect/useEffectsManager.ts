@@ -53,6 +53,21 @@ export const FX_DATA = {
       { label: "Wet", key: "wet", min: 0, max: 100, unit: "%", default: 25 },
     ],
   },
+  DISTORTION: {
+    id: "distortion",
+    name: "Distortion",
+    params: [
+      {
+        label: "Amount",
+        key: "amount",
+        min: 0,
+        max: 100,
+        unit: "%",
+        default: 20,
+      },
+      { label: "Wet", key: "wet", min: 0, max: 100, unit: "%", default: 50 },
+    ],
+  },
 };
 
 const useEffectsManager = () => {
@@ -244,6 +259,12 @@ const normalizeEffectParams = (type: string, params: Record<string, any>) => {
         feedback: params.feedback / 100,
         wet,
       };
+    case "distortion":
+      return {
+        type,
+        amount: params.amount / 100,
+        wet,
+      };
     default:
       return { ...params, wet };
   }
@@ -258,7 +279,9 @@ const toneEffectFactory = (effectParams: Effect): Tone.ToneAudioNode => {
     case "delay":
       return new Tone.FeedbackDelay(params as DelayConfig);
     case "distortion":
-      return new Tone.Distortion((params as DistortionConfig).amount);
+      const dist = new Tone.Distortion((params as any).amount);
+      dist.wet.value = (params as any).wet;
+      return dist;
     default:
       return new Tone.Gain();
   }
